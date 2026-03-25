@@ -149,6 +149,7 @@
     .empty-msg{color:var(--muted);font-size:14px;text-align:center;padding:20px 0;}
     .section-header{font-size:14px;font-weight:600;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em;}
     .price-row{display:flex;align-items:center;gap:8px;margin-top:4px;font-size:13px;}
+    .price-preview{border:1px solid var(--border);border-radius:12px;padding:10px;background:#fff;font-weight:700;color:var(--pink);text-align:center;}
     .price-jpy{color:var(--muted);}
     .price-krw{font-weight:700;color:var(--pink);}
     .price-na{color:var(--muted);opacity:.5;font-size:12px;}
@@ -309,6 +310,7 @@ let items = [
 ];
 
 let editIdx = null;
+let pendingKRW = 0;
 let calY = new Date().getFullYear();
 let calM = new Date().getMonth();
 
@@ -403,13 +405,14 @@ async function refreshRate(){
 }
 
 function autoKRW(){
-  const jpy = parseInt(document.getElementById('f-price-jpy').value)||0;
-  if(jpy) document.getElementById('f-price-krw').value = Math.round(jpy * exchangeRate);
+  const jpy = parseFloat(document.getElementById('f-price-jpy').value)||0;
+  pendingKRW = jpy ? Math.round(jpy * exchangeRate) : 0;
+  document.getElementById('krw-preview').textContent = jpy ? `₩${pendingKRW.toLocaleString()}` : '—';
 }
 
 function autoKRWEdit(){
-  const jpy = parseInt(document.getElementById('e-price-jpy').value)||0;
-  if(jpy) document.getElementById('e-price-krw').value = Math.round(jpy * exchangeRate);
+  const jpy = parseFloat(document.getElementById('e-price-jpy').value)||0;
+  document.getElementById('e-price-krw').value = jpy ? Math.round(jpy * exchangeRate) : '';
 }
 
 refreshRate();
@@ -448,6 +451,7 @@ function editItem(idx){
   document.getElementById('e-img').value = it.img||'';
   document.getElementById('e-price-jpy').value = it.priceJpy||'';
   document.getElementById('e-price-krw').value = it.priceKrw||'';
+  if(!it.priceKrw && it.priceJpy) autoKRWEdit();
   document.getElementById('edit-modal').classList.add('open');
 }
 
