@@ -11,6 +11,12 @@
     :root { --bg: #f5f7fc; --card: #ffffff; --primary: #4c5bf7; --primary-dark: #1f2340; --accent: #5dd6ff; --muted: #6b7280; --border: #e5e8f2; --pill: #f0f2ff; }
     * { box-sizing: border-box; }
     body { margin: 0; font-family: 'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif; background: var(--bg); color: var(--primary-dark); }
+    body.locked { overflow: hidden; }
+    .gate { position: fixed; inset:0; background:#fff; display:flex; justify-content:center; align-items:center; z-index:999; }
+    .gate-card { width:min(360px,90vw); border:1px solid var(--border); border-radius:24px; padding:28px; text-align:center; box-shadow:0 20px 40px rgba(0,0,0,0.12); }
+    .gate-card input { width:100%; padding:12px; margin:16px 0; border-radius:14px; border:1px solid var(--border); font-size:16px; }
+    .gate-card button { width:100%; padding:12px; border:none; border-radius:14px; background:var(--primary); color:#fff; font-weight:600; cursor:pointer; }
+    .gate-error { color:#ff4d6d; font-size:13px; height:18px; margin-top:8px; }
     .container { width: min(1120px, 94vw); margin: 0 auto; padding: 40px 0 80px; }
     header { padding: 40px 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 28px; align-items: center; }
     h1 { font-size: clamp(34px, 5vw, 52px); margin: 12px 0 16px; color: var(--primary-dark); }
@@ -48,7 +54,16 @@
     .ad-banner button { background:#ff4d6d; }
   </style>
 </head>
-<body>
+<body class='locked'>
+  <div class="gate" id="gate">
+    <div class="gate-card">
+      <h2>YakSok 테스트 페이지</h2>
+      <p style="color:var(--muted);">개발 중인 화면입니다. 접근 코드를 입력해주세요.</p>
+      <input id="gate-input" type="password" placeholder="Access Code" />
+      <button id="gate-btn">입장하기</button>
+      <div class="gate-error" id="gate-error"></div>
+    </div>
+  </div>
   <div class="container">
     <div class="logo-wrap">
       <svg width="220" height="90" viewBox="0 0 600 220" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -275,6 +290,27 @@
     renderCatalog();
     renderMeds();
     renderAlerts();
+  </script>
+  <script>
+    (function(){
+      const ACCESS_CODE = 'yak2026';
+      const gate = document.getElementById('gate');
+      const input = document.getElementById('gate-input');
+      const error = document.getElementById('gate-error');
+      if(localStorage.getItem('yak-access') === 'granted'){
+        gate.style.display = 'none';
+        document.body.classList.remove('locked');
+      }
+      document.getElementById('gate-btn').addEventListener('click', () => {
+        if(input.value.trim().toLowerCase() === ACCESS_CODE){
+          gate.style.display = 'none';
+          document.body.classList.remove('locked');
+          localStorage.setItem('yak-access','granted');
+        } else {
+          error.textContent = '코드가 올바르지 않습니다.';
+        }
+      });
+    })();
   </script>
 </body>
 </html>
