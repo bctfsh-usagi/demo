@@ -147,6 +147,8 @@
     .saved-note .del-btn{position:absolute;top:10px;right:12px;background:none;border:none;cursor:pointer;color:var(--muted);font-size:15px;}
 
     .empty-msg{color:var(--muted);font-size:14px;text-align:center;padding:20px 0;}
+    .filter-toggle{padding:7px 16px;border-radius:99px;border:1px solid var(--border);background:#fff;font-family:inherit;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .15s;}
+    .filter-toggle.active{background:var(--pink);color:#fff;border-color:var(--pink);}
     .section-header{font-size:14px;font-weight:600;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em;}
     .price-row{display:flex;align-items:center;gap:8px;margin-top:4px;font-size:13px;}
     .price-preview{border:1px solid var(--border);border-radius:12px;padding:10px;background:#fff;font-weight:700;color:var(--pink);text-align:center;}
@@ -222,10 +224,15 @@
         <div class="form-group"><label>가격 (원화 ₩ 자동계산)</label><input type="number" id="f-price-krw" placeholder="자동 입력"/></div>
       </div>
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;font-size:13px;color:var(--muted);">
-        적용 환율: <strong id="rate-display">로드 중...</strong>
-        <button type="button" style="background:var(--pink-light);color:var(--pink);border:none;border-radius:8px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;" onclick="refreshRate()">🔄 환율 갱신</button>
+        <span>¥ 적용 환율: <strong id="rate-display">로드 중...</strong></span>
+        <button type="button" style="background:var(--pink-light);color:var(--pink);border:none;border-radius:8px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;" onclick="refreshRate()">🔄 갱신</button>
       </div>
       <button class="btn-primary" onclick="addItem()">추가하기</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+      <button class="filter-toggle active" id="ft-all" onclick="setFilter('all')">전체</button>
+      <button class="filter-toggle" id="ft-ongoing" onclick="setFilter('ongoing')">진행 중</button>
+      <button class="filter-toggle" id="ft-done" onclick="setFilter('done')">수령 완료</button>
     </div>
     <div class="items-grid" id="items-grid"></div>
   </div>
@@ -310,6 +317,7 @@ let items = [
 ];
 
 let editIdx = null;
+let itemFilter = 'all';
 let pendingKRW = 0;
 let calY = new Date().getFullYear();
 let calM = new Date().getMonth();
@@ -326,6 +334,14 @@ function openTab(id) {
 }
 
 // --- D-DAY ---
+function setFilter(f){
+  itemFilter = f;
+  ['all','ongoing','done'].forEach(k=>{
+    const el = document.getElementById('ft-'+k);
+    if(el) el.classList.toggle('active', k===f);
+  });
+  renderItems();
+}
 function dDay(dateStr) {
   if(!dateStr) return '';
   const today = new Date(); today.setHours(0,0,0,0);
@@ -355,7 +371,10 @@ function renderItems() {
   const grid = document.getElementById('items-grid');
   if(!items.length){grid.innerHTML='<div class="empty-msg">등록된 항목이 없습니다.</div>';return;}
   const today = new Date(); today.setHours(0,0,0,0);
-  grid.innerHTML = items.map((it,idx) => {
+  let filtered = items;
+  if(itemFilter==='ongoing') filtered = items.filter(i=>!i.checks[2]);
+  else if(itemFilter==='done') filtered = items.filter(i=>i.checks[2]);
+  grid.innerHTML = filtered.map((it,idx) => {
     const checks = CHECKS.map((lb,ci)=>`
       <label class="check-item">
         <input type="checkbox" ${it.checks[ci]?'checked':''} onchange="toggleCheck(${idx},${ci},this)">
@@ -405,14 +424,17 @@ async function refreshRate(){
 }
 
 function autoKRW(){
-  const jpy = parseFloat(document.getElementById('f-price-jpy').value)||0;
-  pendingKRW = jpy ? Math.round(jpy * exchangeRate) : 0;
-  document.getElementById('krw-preview').textContent = jpy ? `₩${pendingKRW.toLocaleString()}` : '—';
+  const raw = parseFloat(document.getElementById('f-price-raw').value)||0;
+  const cur = document.getElementById('f-currency').value;
+  pendingKRW = raw ? (cur==='jpy' ? Math.round(raw * exchangeRate) : raw) : 0;
+  document.getElementById('krw-preview').textContent = pendingKRW ? `= ₩${pendingKRW.toLocaleString()}` : '';
 }
 
 function autoKRWEdit(){
-  const jpy = parseFloat(document.getElementById('e-price-jpy').value)||0;
-  document.getElementById('e-price-krw').value = jpy ? Math.round(jpy * exchangeRate) : '';
+  const raw = parseFloat(document.getElementById('e-price-raw').value)||0;
+  const cur = document.getElementById('e-currency').value;
+  const krw = raw ? (cur==='jpy' ? Math.round(raw * exchangeRate) : raw) : 0;
+  document.getElementById('e-krw-preview').textContent = krw ? `= ₩${krw.toLocaleString()}` : '';
 }
 
 refreshRate();
@@ -464,8 +486,10 @@ function saveEdit(){
   items[editIdx].date = document.getElementById('e-date').value;
   items[editIdx].link = document.getElementById('e-link').value.trim();
   items[editIdx].img = document.getElementById('e-img').value.trim();
-  items[editIdx].priceJpy = parseInt(document.getElementById('e-price-jpy').value)||0;
-  items[editIdx].priceKrw = parseInt(document.getElementById('e-price-krw').value)||0;
+  const eRaw = parseFloat(document.getElementById('e-price-raw').value)||0;
+  const eCur = document.getElementById('e-currency').value;
+  items[editIdx].priceJpy = eCur==='jpy' ? eRaw : 0;
+  items[editIdx].priceKrw = eRaw ? (eCur==='jpy' ? Math.round(eRaw*exchangeRate) : eRaw) : 0;
   closeEditModal();
   renderItems();renderCalendar();
 }
