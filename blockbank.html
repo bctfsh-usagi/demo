@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Neobank · Web3 Core</title>
+  <style>
+    :root {
+      --bg: #f5f6fa;
+      --card: #ffffff;
+      --text: #0e111a;
+      --muted: #7b8196;
+      --accent: #246bff;
+      --border: #e5e8f0;
+    }
+    * { box-sizing:border-box; }
+    body {
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family:'SUIT','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+      line-height:1.6;
+    }
+    .wrap { width:min(1080px,94vw); margin:0 auto; padding:32px 0 60px; }
+    header { display:flex; justify-content:space-between; align-items:center; margin-bottom:28px; }
+    header h1 { margin:0; font-size:22px; font-weight:600; }
+    nav span { color:var(--muted); font-size:14px; margin-left:20px; }
+    .grid { display:grid; grid-template-columns:2fr 1fr; gap:20px; }
+    .card { background:var(--card); border-radius:20px; padding:24px; border:1px solid var(--border); }
+    .balance { font-size:36px; font-weight:600; margin:8px 0 20px; }
+    .quick-actions { display:flex; gap:12px; }
+    .pill { padding:10px 16px; border-radius:999px; border:1px solid var(--border); font-size:14px; }
+    .ai-panel { display:flex; flex-direction:column; gap:16px; }
+    .ai-log { background:#f0f3ff; border-radius:16px; padding:16px; font-size:14px; color:#1b2b6d; }
+    .ai-input { border:1px solid var(--border); border-radius:16px; padding:14px; font-size:15px; width:100%; }
+    .ai-meta { font-size:12px; color:var(--muted); }
+    .list { margin-top:16px; display:flex; flex-direction:column; gap:12px; }
+    .item { display:flex; justify-content:space-between; font-size:15px; }
+    .subtitle { font-size:14px; color:var(--muted); margin:0; }
+    .cta { display:flex; gap:12px; margin-top:18px; }
+    .cta button { flex:1; padding:12px 16px; border-radius:14px; border:none; cursor:pointer; font-weight:600; }
+    .primary { background:var(--accent); color:#fff; }
+    .secondary { background:#eff2ff; color:var(--accent); }
+    .actions { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; }
+    .action-card { border:1px solid var(--border); border-radius:16px; padding:16px; font-size:14px; }
+    footer { text-align:center; font-size:12px; color:var(--muted); margin-top:40px; }
+    @media(max-width:860px){ .grid { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Neobank Core</h1>
+      <nav>
+        <span>대시보드</span>
+        <span>자산</span>
+        <span>서명 요청</span>
+        <span>지원</span>
+      </nav>
+    </header>
+
+    <section class="grid">
+      <div class="card">
+        <p class="subtitle">총 자산</p>
+        <div class="balance">₩ 128,420,000</div>
+        <div class="quick-actions">
+          <div class="pill">입출금 계좌</div>
+          <div class="pill">BTC · ETH · USDC</div>
+          <div class="pill">RWA · NFT</div>
+        </div>
+        <div class="list">
+          <div class="item"><span>KRW 입출금</span><strong>₩ 62,450,000</strong></div>
+          <div class="item"><span>ETH 지갑</span><strong>2.4 ETH</strong></div>
+          <div class="item"><span>BTC 지갑</span><strong>0.83 BTC</strong></div>
+          <div class="item"><span>USDC (L2)</span><strong>24,000 USDC</strong></div>
+        </div>
+      </div>
+
+      <div class="card ai-panel">
+        <div>
+          <p class="subtitle">AI 명령</p>
+          <div class="ai-log">
+            <strong>AI</strong><br>
+            “어제 생성된 서명 요청 2건을 검토했고 모두 승인 준비 완료입니다. 지금 ETH 0.2를 계좌 0x91...17으로 송금할까요?”
+          </div>
+          <input class="ai-input" placeholder="예) 리니어 ETH 0.2 전송해줘"/>
+          <p class="ai-meta">명령을 입력하면 안전한 온체인 서명 흐름이 자동으로 실행됩니다.</p>
+        </div>
+        <div class="cta">
+          <button class="primary">명령 실행</button>
+          <button class="secondary">내역 보기</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid" style="margin-top:20px;">
+      <div class="card">
+        <p class="subtitle">실행 대기 중 서명</p>
+        <div class="list">
+          <div class="item"><span>ETH 송금 · 개인</span><strong>대기</strong></div>
+          <div class="item"><span>USDC → L2 브릿지</span><strong>대기</strong></div>
+          <div class="item"><span>RWA 증권 매수</span><strong>검토중</strong></div>
+        </div>
+      </div>
+      <div class="card">
+        <p class="subtitle">알림</p>
+        <div class="list">
+          <div class="item"><span>BTC 가격 알림</span><strong>+3.2%</strong></div>
+          <div class="item"><span>세이프티 지갑</span><strong>서명 필요</strong></div>
+          <div class="item"><span>AI 제안 투자</span><strong>새 추천</strong></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:20px;">
+      <p class="subtitle">빠른 액션</p>
+      <div class="actions">
+        <div class="action-card">온체인 송금</div>
+        <div class="action-card">브릿지 이동</div>
+        <div class="action-card">토큰 스테이킹</div>
+        <div class="action-card">RWA 구독</div>
+      </div>
+    </section>
+
+    <footer>© 2026 Neobank Core</footer>
+  </div>
+</body>
+</html>

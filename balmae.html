@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>발매일기 · 기다림을 기록하는 다이어리</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=SUIT:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f9f7ff;
+      --card: #ffffff;
+      --lavender: #c4b5fd;
+      --deep: #433266;
+      --muted: #867da0;
+      --line: #e9e1ff;
+      --accent: #f6d7ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'SUIT','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+      background: var(--bg);
+      color: var(--deep);
+    }
+    .container {
+      width: min(1080px, 92vw);
+      margin: 0 auto;
+      padding: 48px 0 80px;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+    header h1 {
+      font-size: clamp(32px, 6vw, 58px);
+      margin: 12px 0;
+    }
+    header p {
+      color: var(--muted);
+      margin: 0;
+    }
+    .diary-card {
+      background: var(--card);
+      border-radius: 28px;
+      padding: 32px;
+      border: 1px solid var(--line);
+      box-shadow: 0 20px 45px rgba(67,50,102,0.08);
+      margin-bottom: 28px;
+    }
+    .section-title {
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+    .works-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 18px;
+    }
+    .work-card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .work-card h3 {
+      margin: 0;
+      font-size: 20px;
+    }
+    .tag {
+      display: inline-flex;
+      padding: 4px 10px;
+      background: var(--accent);
+      border-radius: 999px;
+      font-size: 12px;
+      color: var(--deep);
+    }
+    form {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 18px;
+      align-items: end;
+    }
+    label {
+      display: flex;
+      flex-direction: column;
+      font-size: 14px;
+      color: var(--muted);
+    }
+    input, textarea, select {
+      margin-top: 6px;
+      padding: 12px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      font-family: inherit;
+      font-size: 15px;
+      background: #fff;
+    }
+    textarea { resize: vertical; min-height: 60px; }
+    button {
+      border: none;
+      padding: 14px;
+      border-radius: 18px;
+      background: var(--lavender);
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity .2s;
+    }
+    button:hover { opacity: .9; }
+    .timeline {
+      margin-top: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .goods-card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .goods-card strong { font-size: 16px; }
+    .goods-card small { color: var(--muted); }
+    .alarm-btn {
+      border-radius: 12px;
+      padding: 8px 14px;
+      background: #fff;
+      border: 1px dashed var(--lavender);
+      color: var(--lavender);
+      cursor: pointer;
+    }
+    .alarm-btn.active {
+      background: var(--lavender);
+      color: #fff;
+      border-color: transparent;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="tag">발매일기 · 기다림 기록장</div>
+      <h1>기다림을 기록하고, 놓치지 않는 다이어리</h1>
+      <p>앨범 · 굿즈 · 협업 발매일을 감성적으로 저장하고, 원하는 순간에 알림을 받아요.</p>
+    </header>
+
+    <section class="diary-card">
+      <div class="section-title">1. 작품 등록하기</div>
+      <form id="workForm">
+        <label>작품 이름<input id="workName" placeholder="예: Lunar Echo" required></label>
+        <label>타입<select id="workType"><option>앨범</option><option>굿즈</option><option>협업</option></select></label>
+        <label style="grid-column: span 2; min-width: 100%;">기대 메모<textarea id="workNote" placeholder="기다리는 이유를 남겨보세요"></textarea></label>
+        <button type="submit">기다림 시작</button>
+      </form>
+      <div id="worksList" class="works-grid" style="margin-top:20px;"></div>
+    </section>
+
+    <section class="diary-card">
+      <div class="section-title">2. 굿즈 타임라인 & 알림</div>
+      <div id="timeline"></div>
+    </section>
+  </div>
+
+  <script>
+    const works = [
+      { name: 'Lunar Echo', type: '앨범', note: '밤하늘 콘셉트라 꼭 LP로 듣고 싶어!', goods: [
+        { title: '한정판 포토북', preorder: '2026-04-05', release: '2026-04-18', alarm: false },
+        { title: '별빛 아크릴 키링', preorder: '2026-04-12', release: '2026-04-28', alarm: true }
+      ]},
+      { name: 'Aurora Bloom', type: '굿즈', note: '봄 시즌 포스터 + 라이트 스틱', goods: [
+        { title: '라이트 스틱 Ver.2', preorder: '2026-05-01', release: '2026-05-20', alarm: false }
+      ]}
+    ];
+
+    const worksList = document.getElementById('worksList');
+    const timeline = document.getElementById('timeline');
+
+    function renderWorks() {
+      worksList.innerHTML = works.map(work => `
+        <div class="work-card">
+          <div><span class="tag">${work.type}</span></div>
+          <h3>${work.name}</h3>
+          <p>${work.note || '기대 메모가 아직 없어요.'}</p>
+          <small>굿즈 ${work.goods.length}개</small>
+        </div>
+      `).join('');
+    }
+
+    function renderTimeline() {
+      timeline.innerHTML = works.map(work => `
+        <div class="timeline">
+          <h3>${work.name}</h3>
+          ${work.goods.map((item, idx) => `
+            <div class="goods-card">
+              <div>
+                <strong>${item.title}</strong>
+                <small>사전예약 ${item.preorder} · 발매 ${item.release}</small>
+              </div>
+              <button class="alarm-btn ${item.alarm ? 'active' : ''}" data-work="${work.name}" data-index="${idx}">
+                ${item.alarm ? '알림 취소' : '알림 켜기'}
+              </button>
+            </div>
+          `).join('')}
+        </div>
+      `).join('');
+    }
+
+    document.getElementById('workForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = workName.value.trim();
+      const type = workType.value;
+      const note = workNote.value.trim();
+      if (!name) return;
+      works.push({ name, type, note, goods: [] });
+      workName.value = '';
+      workNote.value = '';
+      renderWorks();
+      renderTimeline();
+    });
+
+    timeline.addEventListener('click', (e) => {
+      if (e.target.classList.contains('alarm-btn')) {
+        const workName = e.target.dataset.work;
+        const idx = Number(e.target.dataset.index);
+        const work = works.find(w => w.name === workName);
+        if (work && work.goods[idx]) {
+          work.goods[idx].alarm = !work.goods[idx].alarm;
+          renderTimeline();
+        }
+      }
+    });
+
+    renderWorks();
+    renderTimeline();
+  </script>
+</body>
+</html>

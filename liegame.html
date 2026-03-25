@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>거짓말 탐지 퀴즈</title>
+  <style>
+    :root {
+      --bg: #1f1f2b;
+      --card: #2c2c3b;
+      --primary: #ff6b81;
+      --accent: #ffeaa7;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin:0;
+      background: var(--bg);
+      color:#fff;
+      font-family: 'SUIT','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      min-height:100vh;
+      padding:20px;
+    }
+    .game {
+      width:min(420px, 100%);
+      background: var(--card);
+      border-radius: 24px;
+      padding: 28px;
+      box-shadow:0 20px 40px rgba(0,0,0,0.35);
+    }
+    h1 { text-align:center; margin:0 0 20px; font-size: 24px; }
+    button {
+      width:100%;
+      border:none;
+      border-radius: 14px;
+      padding:14px;
+      margin:8px 0;
+      font-size:16px;
+      font-weight:600;
+      cursor:pointer;
+      background:#3c3c4f;
+      color:#fff;
+    }
+    button.primary { background: var(--primary); }
+    button:hover { opacity:0.9; }
+    .hidden { display:none; }
+    .banner { margin-top:16px; padding:12px; border-radius:12px; background:#14141f; font-size:13px; text-align:center; color:#ffeaa7; }
+  </style>
+</head>
+<body>
+  <div class="game">
+    <div id="start-screen">
+      <h1>거짓말 탐지 퀴즈</h1>
+      <p style="text-align:center; opacity:0.8;">3개의 선택지 중 거짓을 골라보세요! 틀리면 즉시 게임 종료.</p>
+      <button class="primary" id="start-btn">시작하기</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div style="display:flex; justify-content:space-between; font-size:14px; margin-bottom:10px; opacity:0.8;">
+        <span>점수: <span id="score">0</span></span>
+        <span>최고점수: <span id="best">0</span></span>
+      </div>
+      <h2 style="font-size:18px;">다음 중 거짓은?</h2>
+      <div id="choices"></div>
+      <p id="result" style="min-height:44px; margin-top:14px;"></p>
+      <button id="next-btn" class="hidden">다음 문제</button>
+    </div>
+
+    <div id="gameover" class="hidden">
+      <h2>게임 종료!</h2>
+      <p>최종 점수: <strong id="final-score"></strong></p>
+      <p>최고 점수: <strong id="final-best"></strong></p>
+      <button class="primary" id="restart-btn">다시 하기</button>
+    </div>
+
+    <div class="banner">광고 자리 · 10초 만에 즐기는 초간단 거짓말 챌린지!</div>
+  </div>
+
+  <script>
+    const startScreen = document.getElementById('start-screen');
+    const quizScreen = document.getElementById('quiz-screen');
+    const overScreen = document.getElementById('gameover');
+    const startBtn = document.getElementById('start-btn');
+    const scoreEl = document.getElementById('score');
+    const bestEl = document.getElementById('best');
+    const choicesBox = document.getElementById('choices');
+    const resultEl = document.getElementById('result');
+    const nextBtn = document.getElementById('next-btn');
+    const finalScore = document.getElementById('final-score');
+    const finalBest = document.getElementById('final-best');
+    const restartBtn = document.getElementById('restart-btn');
+
+    const bestScore = Number(localStorage.getItem('lie-best')) || 0;
+    bestEl.textContent = bestScore;
+
+    const questions = [
+      { choices:["페퍼로니 피자는 채식 메뉴다","지구는 태양을 공전한다","고래는 포유류다"], lie:0, explain:"페퍼로니는 고기 토핑이라 채식 메뉴가 아니에요." },
+      { choices:["커피에는 카페인이 없다","씨앗에서 식물이 자란다","빙하도 물로 이루어져 있다"], lie:0, explain:"커피에는 카페인이 들어있죠!" },
+      { choices:["AI는 전혀 창의적이지 않다","블록체인은 데이터를 위/변조하기 어렵게 한다","태양은 동쪽에서 뜬다"], lie:0, explain:"AI도 학습 데이터 기반으로 새로운 조합을 만들어냅니다." },
+      { choices:["모든 고양이는 물에서 숨을 쉰다","빙수는 차가운 디저트다","바다는 소금기를 가진 물이다"], lie:0, explain:"고양이는 물속에서 숨 쉴 수 없어요!" }
+    ];
+
+    let current = 0;
+    let score = 0;
+    let canAnswer = true;
+
+    function startGame() {
+      startScreen.classList.add('hidden');
+      overScreen.classList.add('hidden');
+      quizScreen.classList.remove('hidden');
+      score = 0;
+      scoreEl.textContent = score;
+      current = Math.floor(Math.random()*questions.length);
+      renderQuestion();
+    }
+
+    function renderQuestion() {
+      const q = questions[current];
+      resultEl.textContent = '';
+      nextBtn.classList.add('hidden');
+      canAnswer = true;
+      choicesBox.innerHTML = '';
+      q.choices.forEach((text, idx) => {
+        const btn = document.createElement('button');
+        btn.textContent = text;
+        btn.onclick = () => handleChoice(idx);
+        choicesBox.appendChild(btn);
+      });
+    }
+
+    function handleChoice(idx) {
+      if (!canAnswer) return;
+      canAnswer = false;
+      const q = questions[current];
+      setTimeout(() => {
+        if (idx === q.lie) {
+          score++;
+          scoreEl.textContent = score;
+          resultEl.textContent = `정답! ${q.explain}`;
+          nextBtn.classList.remove('hidden');
+        } else {
+          resultEl.textContent = `오답! 정답은 ${q.lie+1}번. ${q.explain}`;
+          endGame();
+        }
+      }, 200); // 0.2초 내 반응
+    }
+
+    nextBtn.onclick = () => {
+      current = Math.floor(Math.random()*questions.length);
+      renderQuestion();
+    };
+
+    function endGame() {
+      quizScreen.classList.add('hidden');
+      overScreen.classList.remove('hidden');
+      finalScore.textContent = score;
+      const currentBest = Number(localStorage.getItem('lie-best')) || 0;
+      if (score > currentBest) {
+        localStorage.setItem('lie-best', score);
+        finalBest.textContent = score;
+      } else {
+        finalBest.textContent = currentBest;
+      }
+      bestEl.textContent = localStorage.getItem('lie-best');
+    }
+
+    startBtn.onclick = startGame;
+    restartBtn.onclick = () => {
+      startScreen.classList.remove('hidden');
+      overScreen.classList.add('hidden');
+    };
+  </script>
+</body>
+</html>

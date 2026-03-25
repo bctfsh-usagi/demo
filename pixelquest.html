@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PixelQuest Ledger</title>
+  <style>
+    :root {
+      --green: #6ab04c;
+      --dark: #2f3542;
+      --sand: #f6d365;
+      --water: #74b9ff;
+      --stone: #95a5a6;
+    }
+    body {
+      margin: 0;
+      background: #1e272e;
+      color: #f1f2f6;
+      font-family: 'Press Start 2P', 'SUIT', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px;
+      gap: 20px;
+    }
+    canvas {
+      width: 320px;
+      height: 320px;
+      image-rendering: pixelated;
+      border: 6px solid #f1f2f6;
+      border-radius: 18px;
+      background: #2d3436;
+    }
+    h1 { margin: 0; font-size: 18px; }
+    .panel {
+      width: min(360px, 90vw);
+      background: rgba(45,52,54,0.8);
+      border: 2px solid #f1f2f6;
+      border-radius: 14px;
+      padding: 16px;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+    .encounter {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .encounter-card {
+      width: 320px;
+      background: #fffbea;
+      border-radius: 16px;
+      padding: 18px;
+      color: #2f3542;
+      font-family: 'SUIT', sans-serif;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+    .encounter-card h3 { margin: 0 0 8px; }
+    button {
+      border: none;
+      padding: 10px 16px;
+      border-radius: 10px;
+      margin-right: 10px;
+      margin-top: 12px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .mint-log {
+      margin-top: 12px;
+      font-size: 11px;
+      color: #f6d365;
+    }
+  </style>
+</head>
+<body>
+  <h1>PixelQuest Ledger</h1>
+  <canvas id="map" width="160" height="160"></canvas>
+  <div class="panel">
+    <strong>Story Brief</strong><br>
+    AI 던전마스터: "라일락 숲에 미지의 생명이 나타났어. 포획하면 온체인 계약을 체결할 수 있어!"<br>
+    <div class="mint-log" id="ledger">Ledger: 아직 포획 기록이 없습니다.</div>
+  </div>
+
+  <div class="encounter" id="encounter">
+    <div class="encounter-card">
+      <h3 id="monster-name"></h3>
+      <p id="monster-desc"></p>
+      <p style="font-size:12px; color:#6c5ce7;">포획 성공 시 NFT가 민팅되고, 당신의 지갑으로 전송됩니다.</p>
+      <button id="catch-btn" style="background:#55efc4;">포획 시도</button>
+      <button id="run-btn" style="background:#ff7675;">도망가기</button>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('map');
+    const ctx = canvas.getContext('2d');
+    const tile = 16;
+    const mapData = [
+      [1,1,1,1,1,1,1,1,2,2],
+      [1,3,3,1,1,4,4,1,2,2],
+      [1,3,3,1,1,4,4,1,1,1],
+      [1,1,1,1,1,1,1,1,1,1],
+      [2,2,1,1,3,3,1,2,2,1],
+      [2,2,1,3,3,3,1,2,2,1],
+      [1,1,1,1,1,1,1,1,1,1],
+      [1,4,4,1,2,2,1,3,3,1],
+      [1,4,4,1,2,2,1,3,3,1],
+      [1,1,1,1,1,1,1,1,1,1]
+    ];
+    const colors = { 1: '#6ab04c', 2: '#b0db7d', 3: '#74b9ff', 4: '#95a5a6' };
+    const player = { x: 1, y: 1 };
+    const monsters = [
+      { name: '모네 샘물', desc: '물결에서 태어난 수채화 몬스터. 포획 시 수분 회복 버프를 준다.' },
+      { name: '코랄 버니', desc: '산호빛 귀를 가진 토끼. 블록체인 지갑을 따뜻하게 보살핀다.' },
+      { name: '데님 리자드', desc: '청록빛 도마뱀. 공격을 받으면 방어 토큰을 생성한다.' }
+    ];
+
+    function drawMap() {
+      for (let y=0; y<mapData.length; y++) {
+        for (let x=0; x<mapData[0].length; x++) {
+          ctx.fillStyle = colors[mapData[y][x]] || '#6ab04c';
+          ctx.fillRect(x*tile, y*tile, tile, tile);
+        }
+      }
+      ctx.fillStyle = '#f5cd79';
+      ctx.fillRect(player.x*tile, player.y*tile, tile, tile);
+    }
+
+    function move(dx, dy) {
+      const nx = Math.max(0, Math.min(mapData[0].length-1, player.x + dx));
+      const ny = Math.max(0, Math.min(mapData.length-1, player.y + dy));
+      player.x = nx; player.y = ny;
+      drawMap();
+      if (mapData[ny][nx] === 2 && Math.random() < 0.4) {
+        triggerEncounter();
+      }
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowUp') move(0,-1);
+      if (e.key === 'ArrowDown') move(0,1);
+      if (e.key === 'ArrowLeft') move(-1,0);
+      if (e.key === 'ArrowRight') move(1,0);
+    });
+
+    const encounterBox = document.getElementById('encounter');
+    const monsterName = document.getElementById('monster-name');
+    const monsterDesc = document.getElementById('monster-desc');
+    const ledger = document.getElementById('ledger');
+
+    let currentMonster = null;
+
+    function triggerEncounter() {
+      currentMonster = monsters[Math.floor(Math.random()*monsters.length)];
+      monsterName.textContent = currentMonster.name;
+      monsterDesc.textContent = currentMonster.desc;
+      encounterBox.style.display = 'flex';
+    }
+
+    document.getElementById('catch-btn').onclick = () => {
+      if (Math.random() < 0.7) {
+        ledger.textContent = `Ledger: ${currentMonster.name} 포획 성공! (테스트넷 NFT 민팅 예정)`;
+      } else {
+        ledger.textContent = `Ledger: ${currentMonster.name}가 도망쳤어요... 기록 실패.`;
+      }
+      encounterBox.style.display = 'none';
+    };
+    document.getElementById('run-btn').onclick = () => {
+      ledger.textContent = 'Ledger: 포획 실패. 다음 기회를 노려보자!';
+      encounterBox.style.display = 'none';
+    };
+
+    drawMap();
+  </script>
+</body>
+</html>
