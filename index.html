@@ -270,26 +270,45 @@
 <div class="toast-area" id="toastArea"></div>
 
 <script>
-const API_BASE = 'http://localhost:5001';
-let catalog = [];
+const catalog = [
+  {name:'혈압약',desc:'고혈압 치료·혈압 조절',category:'처방약',times:['08:00','20:00'],dose:'1정',info:'아침·저녁 1일 2회',impact:'매일 필수',warn:true},
+  {name:'당뇨약',desc:'혈당 조절·인슐린 분비 촉진',category:'처방약',times:['08:00','13:00','19:00'],dose:'1정',info:'식전 1일 3회',impact:'식전 복용 필수',warn:true},
+  {name:'콜레스테롤약',desc:'LDL 콜레스테롤 저하',category:'처방약',times:['21:00'],dose:'1정',info:'취침 전 1일 1회',impact:'매일 필수',warn:true},
+  {name:'위장약',desc:'위산 억제·위장 보호',category:'처방약',times:['09:00','13:00','19:00'],dose:'1포',info:'식후 30분 1일 3회',impact:'식후 복용',warn:false},
+  {name:'관절약',desc:'관절 통증 완화·연골 보호',category:'처방약',times:['09:00','21:00'],dose:'1정',info:'식후 1일 2회',impact:'식사와 함께',warn:true},
+  {name:'철분제',desc:'빈혈 예방·혈색소 생성',category:'처방약',times:['07:30'],dose:'1정',info:'공복 1일 1회',impact:'공복 복용',warn:true},
+  {name:'갑상선약',desc:'갑상선 호르몬 보충',category:'처방약',times:['07:00'],dose:'1정',info:'기상 직후 공복',impact:'공복 필수',warn:true},
+  {name:'아스피린',desc:'혈전 예방·항혈소판',category:'처방약',times:['12:00'],dose:'1정',info:'식후 1일 1회',impact:'출혈 주의',warn:true},
+  {name:'수면보조제',desc:'수면 유도·불면 개선',category:'처방약',times:['22:00'],dose:'1정',info:'취침 30분 전',impact:'졸음 주의',warn:true},
+  {name:'항생제',desc:'세균 감염 치료',category:'처방약',times:['08:00','16:00','24:00'],dose:'1정',info:'8시간 간격',impact:'임의 중단 금지',warn:true},
+  {name:'비타민D',desc:'뼈 건강·면역력 강화',category:'비타민/미네랄',times:['09:00'],dose:'1정',info:'식후 1일 1회',impact:'뼈/면역',warn:false},
+  {name:'비타민C',desc:'항산화·면역력 강화',category:'비타민/미네랄',times:['09:00','21:00'],dose:'1정',info:'식후 1일 2회',impact:'항산화',warn:false},
+  {name:'종합비타민',desc:'필수 비타민·미네랄 복합',category:'비타민/미네랄',times:['09:00'],dose:'1정',info:'식후 1일 1회',impact:'영양 보충',warn:false},
+  {name:'마그네슘',desc:'근육·신경 기능 유지',category:'비타민/미네랄',times:['21:00'],dose:'1정',info:'취침 전 1일 1회',impact:'수면·근육',warn:false},
+  {name:'아연',desc:'면역력·상처 회복',category:'비타민/미네랄',times:['12:00'],dose:'1정',info:'식후 1일 1회',impact:'면역 보조',warn:false},
+  {name:'칼슘제',desc:'골다공증 예방·뼈 강화',category:'비타민/미네랄',times:['21:00'],dose:'1정',info:'저녁 식후',impact:'뼈 건강',warn:false},
+  {name:'엽산',desc:'임산부 필수·세포 분열',category:'비타민/미네랄',times:['09:00'],dose:'1정',info:'식후 1일 1회',impact:'임산부 필수',warn:true},
+  {name:'아로나민',desc:'비타민B 복합·피로 회복',category:'비타민/미네랄',times:['08:30','19:30'],dose:'1정',info:'식후 1일 2회',impact:'피로 회복',warn:false},
+  {name:'오메가3',desc:'혈중지질 개선·심혈관 보호',category:'건강기능식품',times:['12:00'],dose:'2캡슐',info:'식후 1일 1회',impact:'혈관 건강',warn:false},
+  {name:'프로바이오틱스',desc:'장 건강·유익균 증식',category:'건강기능식품',times:['08:00'],dose:'1포',info:'공복 1일 1회',impact:'장 건강',warn:false},
+  {name:'루테인',desc:'눈 건강·황반 변성 예방',category:'건강기능식품',times:['12:00'],dose:'1정',info:'식후 1일 1회',impact:'눈 건강',warn:false},
+  {name:'코엔자임Q10',desc:'세포 에너지·항산화',category:'건강기능식품',times:['09:00'],dose:'1정',info:'식후 1일 1회',impact:'항산화',warn:false},
+  {name:'홍삼',desc:'면역력·피로 회복',category:'건강기능식품',times:['09:00','21:00'],dose:'1포',info:'식전 1일 2회',impact:'면역·피로',warn:false},
+  {name:'두통약',desc:'두통·편두통 완화',category:'일반의약품',times:['08:00'],dose:'1정',info:'필요시 복용',impact:'공복 자제',warn:false},
+  {name:'소화효소제',desc:'소화 촉진·소화불량 개선',category:'일반의약품',times:['09:00','13:00','19:00'],dose:'1정',info:'식후 1일 3회',impact:'식사와 함께',warn:false},
+  {name:'알레르기약',desc:'알레르기·항히스타민',category:'일반의약품',times:['22:00'],dose:'1정',info:'취침 전 1일 1회',impact:'졸음 유발',warn:true},
+  {name:'코감기약',desc:'코막힘·콧물 완화',category:'일반의약품',times:['08:00','20:00'],dose:'1정',info:'식후 1일 2회',impact:'졸음 유발',warn:false},
+  {name:'기침약',desc:'기침·가래 완화',category:'일반의약품',times:['09:00','15:00','21:00'],dose:'1포',info:'식후 1일 3회',impact:'식사와 함께',warn:false},
+  {name:'지사제',desc:'설사 증상 완화',category:'일반의약품',times:['08:00','14:00','20:00'],dose:'1정',info:'필요시 복용',impact:'필요시',warn:false},
+  {name:'지혈제',desc:'출혈 방지·혈액 응고',category:'처방약',times:['09:00','21:00'],dose:'1정',info:'식후 1일 2회',impact:'복용 지속',warn:true},
+];
 
-async function loadCatalog(q='') {
-  try {
-    const res = await fetch(`${API_BASE}/api/drugs/search?q=${encodeURIComponent(q)}`);
-    const data = await res.json();
-    catalog = data.results || [];
-    return catalog;
-  } catch(e) {
-    console.warn('API unavailable, using fallback');
-    catalog = [
-      { name:'혈압약', desc:'혈압 조절', category:'처방약', times:['08:00','20:00'], dose:'1정', info:'아침·저녁', impact:'매일 필수', warn:true },
-      { name:'오메가3', desc:'혈중지질 개선', category:'건강기능식품', times:['12:00'], dose:'2캡슐', info:'식후', impact:'꾸준히', warn:false },
-      { name:'비타민D', desc:'뼈 건강·면역력', category:'비타민/미네랄', times:['09:00'], dose:'1정', info:'식후', impact:'뼈/면역', warn:false },
-      { name:'마그네슘', desc:'근육·신경 기능', category:'비타민/미네랄', times:['21:00'], dose:'1정', info:'취침 전', impact:'수면', warn:false },
-      { name:'철분제', desc:'빈혈 예방', category:'처방약', times:['07:30'], dose:'1정', info:'공복', impact:'공복 복용', warn:true },
-    ];
-    return catalog;
-  }
+function loadCatalog(q='') {
+  const lower = q.trim().toLowerCase();
+  const results = lower
+    ? catalog.filter(c => c.name.toLowerCase().includes(lower) || c.desc.toLowerCase().includes(lower) || c.category.toLowerCase().includes(lower))
+    : catalog.slice(0, 10);
+  return Promise.resolve(results);
 }
 
 const myMeds = [];
