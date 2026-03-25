@@ -9,18 +9,17 @@
   <style>
     :root {
       --pink: #e84393;
-      --pink-light: #fce7f3;
+      --pink-light: #fdeaf4;
       --bg: #f7f8fb;
       --card: #ffffff;
       --text: #1a1a2e;
       --muted: #6b7280;
-      --border: #e8eaf2;
+      --border: #e6e8f0;
       --radius: 20px;
     }
     *{box-sizing:border-box;margin:0;padding:0;}
     body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--bg);color:var(--text);}
 
-    /* NAV */
     nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:60px;}
     .nav-brand{font-size:18px;font-weight:700;color:var(--pink);display:flex;align-items:center;gap:8px;}
     .nav-links{display:flex;gap:24px;}
@@ -28,139 +27,88 @@
     .nav-links a:hover{color:var(--pink);}
     .nav-btn{background:var(--pink);color:#fff;border:none;border-radius:20px;padding:8px 18px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;}
 
-    /* HERO */
     .hero{text-align:center;padding:48px 20px 32px;}
     .hero h1{font-size:clamp(30px,5vw,48px);font-weight:700;letter-spacing:-1px;}
     .hero h1 span{color:var(--pink);}
     .hero p{color:var(--muted);margin-top:10px;font-size:15px;}
 
-    /* WRAP */
     .wrap{width:min(1100px,95vw);margin:0 auto;padding:0 0 80px;}
 
-    /* TABS */
     .tabs{display:flex;gap:4px;margin-bottom:24px;border-bottom:2px solid var(--border);}
     .tab-btn{padding:10px 20px;border:none;background:none;font-family:inherit;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s;}
     .tab-btn.active{color:var(--pink);border-bottom-color:var(--pink);}
     .tab-panel{display:none;}
     .tab-panel.active{display:block;}
 
-    /* CARD BASE */
     .card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);padding:24px;box-shadow:0 2px 12px rgba(0,0,0,.04);}
 
-    /* ITEM CARDS GRID */
     .items-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:18px;}
-
-    /* ITEM CARD */
-    .item-card{background:var(--card);border-radius:18px;border:1px solid var(--border);overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.05);transition:transform .2s,box-shadow .2s;}
+    .item-card{background:#fff;border-radius:18px;border:1px solid var(--border);overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.05);transition:transform .2s,box-shadow .2s;}
     .item-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(232,67,147,.1);}
-
-    /* THUMB */
-    .item-thumb{width:100%;height:160px;position:relative;overflow:hidden;background:linear-gradient(135deg,#fce7f3,#ffe4f4);}
+    .item-thumb{width:100%;height:160px;position:relative;background:linear-gradient(135deg,#fdeaf4,#ffeaf7);}
     .item-thumb img{width:100%;height:100%;object-fit:cover;}
-    .item-thumb-placeholder{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;}
-    .item-thumb-placeholder .initial{font-size:34px;font-weight:800;color:rgba(232,67,147,.35);letter-spacing:-1px;}
-    .item-thumb-placeholder .hint{font-size:11px;color:rgba(232,67,147,.5);}
-    .item-thumb-actions{position:absolute;top:8px;right:8px;display:flex;gap:6px;opacity:0;transition:opacity .2s;}
-    .item-card:hover .item-thumb-actions{opacity:1;}
-    .thumb-action-btn{background:rgba(0,0,0,.5);color:#fff;border:none;border-radius:8px;padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;}
-    .item-done-badge{position:absolute;top:10px;left:10px;background:rgba(16,185,129,.9);color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;}
+    .thumb-empty{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:rgba(232,67,147,.5);font-size:13px;letter-spacing:.05em;}
+    .thumb-empty span{font-size:32px;font-weight:800;color:rgba(232,67,147,.3);}
+    .thumb-actions{position:absolute;top:10px;right:10px;display:flex;gap:6px;opacity:0;transition:opacity .2s;}
+    .item-card:hover .thumb-actions{opacity:1;}
+    .thumb-btn{background:rgba(0,0,0,.55);color:#fff;border:none;border-radius:8px;padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;}
+    .done-badge{position:absolute;top:10px;left:10px;background:rgba(16,185,129,.9);color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;}
 
-    /* ITEM BODY */
     .item-body{padding:16px;}
-    .item-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+    .item-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
     .item-badge{display:inline-flex;align-items:center;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;}
-    .badge-gacha{background:#fce7f3;color:#e84393;}
+    .badge-gacha{background:#fdeaf4;color:#e84393;}
     .badge-prize{background:#fef3c7;color:#d97706;}
     .badge-goods{background:#dbeafe;color:#2563eb;}
     .badge-event{background:#dcfce7;color:#16a34a;}
     .item-actions{display:flex;gap:6px;}
-    .icon-btn{background:var(--bg);border:none;border-radius:8px;width:28px;height:28px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;transition:background .15s;}
-    .icon-btn:hover{background:var(--pink-light);}
-    .item-body h3{font-size:16px;font-weight:700;margin-bottom:3px;line-height:1.3;}
-    .item-work{font-size:13px;color:var(--muted);margin-bottom:10px;}
+    .icon-btn{background:var(--bg);border:none;border-radius:8px;width:28px;height:28px;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+    .item-body h3{font-size:16px;font-weight:700;margin-bottom:4px;}
+    .item-work{font-size:13px;color:var(--muted);margin-bottom:8px;}
     .date-row{font-size:12px;color:var(--muted);margin-bottom:2px;display:flex;align-items:center;gap:6px;}
     .date-row strong{color:var(--pink);}
-    .item-link{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--pink);text-decoration:none;font-weight:600;margin-top:6px;}
+    .price-row{font-size:13px;font-weight:700;color:var(--pink);margin:6px 0;}
+    .price-na{font-size:12px;color:var(--muted);opacity:.5;}
+    .item-link{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--pink);text-decoration:none;font-weight:600;margin-top:4px;}
     .item-link:hover{text-decoration:underline;}
     .checklist{margin-top:12px;padding-top:12px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:8px;}
     .check-item{display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;}
-    .check-item input[type=checkbox]{accent-color:var(--pink);width:15px;height:15px;cursor:pointer;flex-shrink:0;}
+    .check-item input{accent-color:var(--pink);width:15px;height:15px;cursor:pointer;}
     .check-item span.done{text-decoration:line-through;color:var(--muted);}
 
-    /* FORM */
-    .add-form{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);padding:24px;margin-bottom:20px;}
+    .filter-toggle{padding:7px 16px;border-radius:99px;border:1px solid var(--border);background:#fff;font-family:inherit;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;}
+    .filter-toggle.active{background:var(--pink);color:#fff;border-color:var(--pink);}
+
+    .add-form{background:#fff;border-radius:var(--radius);border:1px solid var(--border);padding:24px;margin-bottom:20px;}
     .add-form h3{font-size:16px;font-weight:700;margin-bottom:18px;}
     .form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:14px;}
     .form-group{display:flex;flex-direction:column;gap:5px;}
     .form-group label{font-size:12px;font-weight:600;color:var(--muted);}
-    .form-group input,.form-group select{padding:10px 12px;border-radius:12px;border:1px solid var(--border);font-family:inherit;font-size:14px;background:var(--bg);outline:none;transition:border .15s;}
-    .form-group input:focus,.form-group select:focus{border-color:var(--pink);}
+    .form-group input,.form-group select{padding:10px 12px;border-radius:12px;border:1px solid var(--border);font-family:inherit;font-size:14px;background:var(--bg);outline:none;}
     .btn-primary{background:var(--pink);color:#fff;border:none;border-radius:12px;padding:11px 24px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;}
 
-    /* MODAL */
-    .modal-backdrop{position:fixed;inset:0;background:rgba(20,20,40,.5);z-index:200;display:none;align-items:center;justify-content:center;}
-    .modal-backdrop.open{display:flex;}
-    .modal{background:#fff;border-radius:24px;padding:28px;width:min(500px,92vw);max-height:90vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,.18);}
-    .modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
-    .modal-header h3{font-size:17px;font-weight:700;}
-    .modal-close{background:none;border:none;font-size:22px;cursor:pointer;color:var(--muted);}
+    .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin-bottom:18px;}
+    .stat-box{background:#fff;border:1px solid var(--border);border-radius:14px;padding:16px;text-align:center;}
+    .stat-box .val{font-size:24px;font-weight:700;color:var(--pink);}
+    .stat-box .lbl{font-size:11px;color:var(--muted);margin-top:4px;}
 
-    /* CALENDAR */
-    .cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
-    .cal-header h3{font-size:17px;font-weight:700;}
-    .cal-nav-btn{background:var(--pink-light);border:none;border-radius:50%;width:30px;height:30px;cursor:pointer;font-size:15px;color:var(--pink);font-weight:700;}
-    .calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;}
-    .cal-day-label{text-align:center;font-size:12px;font-weight:600;color:var(--muted);padding:3px 0;}
-    .cal-day{aspect-ratio:1;border-radius:9px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;font-size:13px;font-weight:500;border:1px solid var(--border);background:var(--card);transition:all .2s;position:relative;}
-    .cal-day:hover{border-color:rgba(232,67,147,.4);}
-    .cal-day.today{background:var(--pink);color:#fff;border-color:var(--pink);}
-    .cal-day.has-entry{border-color:rgba(232,67,147,.4);background:var(--pink-light);}
-    .cal-day .dot{width:5px;height:5px;border-radius:50%;background:var(--pink);position:absolute;bottom:4px;}
-    .cal-day.today .dot{background:#fff;}
-    .cal-day.empty{background:transparent;border-color:transparent;cursor:default;}
-
-    /* COLLECTION */
-    .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:14px;margin-bottom:20px;}
-    .stat-box{background:#fff;border-radius:14px;border:1px solid var(--border);padding:16px 14px;text-align:center;}
-    .stat-box .val{font-size:28px;font-weight:700;color:var(--pink);}
-    .stat-box .lbl{font-size:12px;color:var(--muted);margin-top:2px;}
     .filter-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px;}
-    .filter-select{padding:8px 12px;border-radius:10px;border:1px solid var(--border);background:#fff;font-family:inherit;font-size:13px;outline:none;}
     .collection-card{background:#fff;border:1px solid var(--border);border-radius:14px;display:flex;gap:14px;padding:14px;margin-bottom:10px;}
-    .col-thumb{width:80px;height:60px;border-radius:10px;overflow:hidden;background:linear-gradient(135deg,#fce7f3,#ffe4f4);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .col-thumb{width:80px;height:60px;border-radius:10px;overflow:hidden;background:var(--pink-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
     .col-thumb img{width:100%;height:100%;object-fit:cover;}
-    .col-thumb .col-initial{font-size:20px;font-weight:800;color:rgba(232,67,147,.35);}
+    .col-thumb .initial{font-weight:800;font-size:20px;color:rgba(232,67,147,.4);}
     .col-info h4{font-size:15px;font-weight:700;margin-bottom:3px;}
     .col-info .meta{font-size:12px;color:var(--muted);}
-    .col-info .tags{margin-top:5px;display:flex;gap:6px;flex-wrap:wrap;}
 
-    /* DIARY */
-    .diary-card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);padding:24px;margin-bottom:18px;}
-    .diary-card h3{font-size:16px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
-    .diary-card h3 .tag{font-size:11px;background:var(--pink-light);color:var(--pink);padding:3px 9px;border-radius:20px;}
-    textarea.note-area{width:100%;min-height:110px;border:1px solid var(--border);border-radius:12px;padding:12px 14px;font-family:inherit;font-size:14px;background:var(--bg);resize:vertical;outline:none;line-height:1.7;transition:border .15s;}
-    textarea.note-area:focus{border-color:var(--pink);}
+    .note-area{width:100%;min-height:110px;border:1px solid var(--border);border-radius:12px;padding:12px;font-family:inherit;background:var(--bg);resize:vertical;outline:none;}
     .save-note-btn{margin-top:10px;background:var(--pink-light);color:var(--pink);border:none;border-radius:10px;padding:8px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;}
     .saved-notes{display:flex;flex-direction:column;gap:10px;margin-top:14px;}
     .saved-note{background:var(--pink-light);border-radius:12px;padding:13px 16px;font-size:14px;line-height:1.7;position:relative;}
-    .saved-note .note-date{font-size:12px;color:var(--pink);font-weight:600;margin-bottom:5px;}
-    .saved-note .del-btn{position:absolute;top:10px;right:12px;background:none;border:none;cursor:pointer;color:var(--muted);font-size:15px;}
 
     .empty-msg{color:var(--muted);font-size:14px;text-align:center;padding:20px 0;}
-    .filter-toggle{padding:7px 16px;border-radius:99px;border:1px solid var(--border);background:#fff;font-family:inherit;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .15s;}
-    .filter-toggle.active{background:var(--pink);color:#fff;border-color:var(--pink);}
-    .section-header{font-size:14px;font-weight:600;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em;}
-    .price-row{display:flex;align-items:center;gap:8px;margin-top:4px;font-size:13px;}
-    .price-preview{border:1px solid var(--border);border-radius:12px;padding:10px;background:#fff;font-weight:700;color:var(--pink);text-align:center;}
-    .price-jpy{color:var(--muted);}
-    .price-krw{font-weight:700;color:var(--pink);}
-    .price-na{color:var(--muted);opacity:.5;font-size:12px;}
-    .stat-spending{font-size:11px;color:var(--muted);margin-top:2px;}
-
   </style>
 </head>
 <body>
-
 <nav>
   <div class="nav-brand">🎀 발매일기</div>
   <div class="nav-links">
@@ -168,19 +116,19 @@
     <a href="#" onclick="openTab('items-panel')">발매 목록</a>
     <a href="#" onclick="openTab('collection-panel')">내 컬렉션</a>
   </div>
-  <button class="nav-btn" onclick="openTab('items-panel');setTimeout(()=>document.getElementById('add-panel').scrollIntoView({behavior:'smooth'}),100)">+ 새 발매 등록</button>
+  <button class="nav-btn" onclick="openTab('items-panel');setTimeout(()=>document.getElementById('add-panel').scrollIntoView({behavior:'smooth'}),120)">+ 새 발매 등록</button>
 </nav>
 
 <div class="hero">
   <h1>굿즈 & 가챠 <span>발매일기</span></h1>
-  <p>좋아하는 작품의 발매일을 관리하고, 수령 컬렉션으로 쌓아가세요.</p>
+  <p>사전예약부터 수령까지, 발매 정보를 기록하고 컬렉션으로 쌓아가세요.</p>
 </div>
 
 <div class="wrap">
   <div class="tabs">
     <button class="tab-btn active" id="tab-calendar" onclick="openTab('calendar-panel')">📅 캘린더</button>
     <button class="tab-btn" id="tab-items" onclick="openTab('items-panel')">🎁 발매 목록</button>
-    <button class="tab-btn" id="tab-collection" onclick="openTab('collection-panel')">📦 내 컬렉션</button>
+    <button class="tab-btn" id="tab-collection" onclick="openTab('collection-panel')">📦 컬렉션</button>
     <button class="tab-btn" id="tab-diary" onclick="openTab('diary-panel')">⭐ 메모</button>
   </div>
 
@@ -188,14 +136,14 @@
   <div id="calendar-panel" class="tab-panel active">
     <div class="card">
       <div class="cal-header">
-        <button class="cal-nav-btn" onclick="changeMonth(-1)">‹</button>
+        <button class="icon-btn" onclick="changeMonth(-1)">‹</button>
         <h3 id="cal-title"></h3>
-        <button class="cal-nav-btn" onclick="changeMonth(1)">›</button>
+        <button class="icon-btn" onclick="changeMonth(1)">›</button>
       </div>
       <div class="calendar-grid" id="cal-labels"></div>
       <div class="calendar-grid" id="cal-grid" style="margin-top:6px;"></div>
     </div>
-    <div id="day-detail" style="display:none;margin-top:14px;" class="card">
+    <div id="day-detail" class="card" style="display:none;margin-top:14px;">
       <h3 id="day-detail-title" style="font-size:15px;font-weight:700;margin-bottom:10px;"></h3>
       <div id="day-detail-list"></div>
     </div>
@@ -206,30 +154,29 @@
     <div class="add-form" id="add-panel">
       <h3>✏️ 새 발매 등록</h3>
       <div class="form-row">
-        <div class="form-group"><label>작품명</label><input id="f-work" placeholder="산리오, 원피스 ..."/></div>
-        <div class="form-group"><label>상품명</label><input id="f-title" placeholder="하트 가챠 Vol.3 ..."/></div>
+        <div class="form-group"><label>작품명</label><input id="f-work" placeholder="산리오, 원피스..."/></div>
+        <div class="form-group"><label>상품명</label><input id="f-title" placeholder="하트 가챠 Vol.3"/></div>
         <div class="form-group"><label>카테고리</label>
-          <select id="f-cat">
-            <option value="gacha">가챠가챠</option>
-            <option value="prize">프라이즈</option>
-            <option value="goods">굿즈</option>
-            <option value="event">이벤트</option>
-          </select>
+          <select id="f-cat"><option value="gacha">가챠가챠</option><option value="prize">프라이즈</option><option value="goods">굿즈</option><option value="event">이벤트</option></select>
         </div>
         <div class="form-group"><label>사전예약일 (선택)</label><input type="date" id="f-preorder"/></div>
-        <div class="form-group"><label>발매일</label><input type="date" id="f-date"/></div>
+        <div<class="form-group"><label>발매일</label><input type="date" id="f-date"/></div>
         <div class="form-group"><label>관련 링크 (선택)</label><input id="f-link" placeholder="https://..."/></div>
         <div class="form-group"><label>이미지 URL (선택)</label><input id="f-img" placeholder="https://..."/></div>
-        <div class="form-group"><label>가격 (엔화 ¥)</label><input type="number" id="f-price-jpy" placeholder="예: 500" oninput="autoKRW()"/></div>
-        <div class="form-group"><label>가격 (원화 ₩ 자동계산)</label><input type="number" id="f-price-krw" placeholder="자동 입력"/></div>
-      </div>
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;font-size:13px;color:var(--muted);">
-        <span>¥ 적용 환율: <strong id="rate-display">로드 중...</strong></span>
-        <button type="button" style="background:var(--pink-light);color:var(--pink);border:none;border-radius:8px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;" onclick="refreshRate()">🔄 갱신</button>
+        <div class="form-group"><label>가격</label>
+          <div style="display:flex;gap:6px;">
+            <select id="f-currency" style="width:70px;border-radius:12px;border:1px solid var(--border);padding:10px 8px;font-family:inherit;font-size:14px;background:#fff;outline:none;">
+              <option value="jpy">¥</option>
+              <option value="krw">₩</option>
+            </select>
+            <input type="number" id="f-price" placeholder="금액" style="flex:1;"/>
+          </div>
+        </div>
       </div>
       <button class="btn-primary" onclick="addItem()">추가하기</button>
     </div>
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+
+    <div style="display:flex;gap:8px;margin:0 0 16px;flex-wrap:wrap;">
       <button class="filter-toggle active" id="ft-all" onclick="setFilter('all')">전체</button>
       <button class="filter-toggle" id="ft-ongoing" onclick="setFilter('ongoing')">진행 중</button>
       <button class="filter-toggle" id="ft-done" onclick="setFilter('done')">수령 완료</button>
@@ -242,32 +189,29 @@
     <div class="stats-row" id="col-stats"></div>
     <div class="card">
       <div class="filter-row">
-        <span class="section-header" style="margin:0">필터</span>
-        <select class="filter-select" id="col-filter-period" onchange="renderCollection()">
+        <select class="filter-select" id="col-period" onchange="renderCollection()">
           <option value="all">전체 기간</option>
           <option value="month">이번 달</option>
           <option value="year">올해</option>
         </select>
-        <select class="filter-select" id="col-filter-work" onchange="renderCollection()"></select>
-        <select class="filter-select" id="col-filter-cat" onchange="renderCollection()"></select>
+        <select class="filter-select" id="col-work" onchange="renderCollection()"></select>
+        <select class="filter-select" id="col-cat" onchange="renderCollection()"></select>
       </div>
+      <div id="col-breakdown" style="margin-bottom:12px;"></div>
       <div id="col-list"></div>
     </div>
   </div>
 
   <!-- DIARY -->
   <div id="diary-panel" class="tab-panel">
-    <div class="diary-card">
-      <h3>⭐ 메모 & 위시리스트 <span class="tag">자유롭게</span></h3>
-      <textarea class="note-area" id="note-input" placeholder="갖고 싶은 굿즈, 응모 결과, 기대 포인트를 자유롭게 기록하세요..."></textarea>
+    <div class="card">
+      <h3>⭐ 메모 & 위시리스트</h3>
+      <textarea class="note-area" id="note-input" placeholder="갖고 싶은 굿즈, 응모 결과 등을 기록하세요..."></textarea>
       <button class="save-note-btn" onclick="saveNote()">💾 저장</button>
     </div>
-    <div class="diary-card">
+    <div class="card">
       <h3>🗂️ 저장된 메모</h3>
-      <div class="saved-notes" id="saved-notes">
-        <div class="saved-note"><div class="note-date">2026.03.20</div>산리오 × 스타벅스 콜라보! 포차코 텀블러 꼭 사야지 ✨<button class="del-btn" onclick="this.closest('.saved-note').remove()">✕</button></div>
-        <div class="saved-note"><div class="note-date">2026.03.15</div>원피스 가챠 새 시리즈 나온대! 이번엔 예산 정해두고 도전 💪<button class="del-btn" onclick="this.closest('.saved-note').remove()">✕</button></div>
-      </div>
+      <div class="saved-notes" id="saved-notes"></div>
     </div>
   </div>
 </div>
@@ -276,28 +220,28 @@
 <div class="modal-backdrop" id="edit-modal">
   <div class="modal">
     <div class="modal-header">
-      <h3>✏️ 항목 수정</h3>
+      <h3>항목 수정</h3>
       <button class="modal-close" onclick="closeEditModal()">✕</button>
     </div>
     <div class="form-row" style="grid-template-columns:1fr 1fr;">
       <div class="form-group"><label>작품명</label><input id="e-work"/></div>
       <div class="form-group"><label>상품명</label><input id="e-title"/></div>
-      <div class="form-group"><label>카테고리</label>
-        <select id="e-cat">
-          <option value="gacha">가챠가챠</option>
-          <option value="prize">프라이즈</option>
-          <option value="goods">굿즈</option>
-          <option value="event">이벤트</option>
-        </select>
-      </div>
+      <divclass="form-group"><label>카테고리</label><select id="e-cat"><option value="gacha">가챠가챠</option><option value="prize">프라이즈</option><option value="goods">굿즈</option><option value="event">이벤트</option></select></div>
       <div class="form-group"><label>사전예약일</label><input type="date" id="e-preorder"/></div>
       <div class="form-group"><label>발매일</label><input type="date" id="e-date"/></div>
       <div class="form-group"><label>관련 링크</label><input id="e-link"/></div>
-      <div class="form-group" style="grid-column:span 2;"><label>이미지 URL</label><input id="e-img"/></div>
-      <div class="form-group"><label>가격 (¥ 엔화)</label><input type="number" id="e-price-jpy" oninput="autoKRWEdit()"/></div>
-      <div class="form-group"><label>가격 (₩ 원화)</label><input type="number" id="e-price-krw"/></div>
+      <div class="form-group"><label>이미지 URL</label><input id="e-img"/></div>
+      <div class="form-group"><label>가격</label>
+        <div style="display:flex;gap:6px;">
+          <select id="e-currency" style="width:70px;border-radius:12px;border:1px solid var(--border);padding:10px 8px;font-family:inherit;font-size:14px;background:#fff;outline:none;">
+            <option value="jpy">¥</option>
+            <option value="krw">₩</option>
+          </select>
+          <input type="number" id="e-price" style="flex:1;"/>
+        </div>
+      </div>
     </div>
-    <div style="display:flex;gap:10px;margin-top:4px;">
+    <div style="display:flex;gap:10px;margin-top:10px;">
       <button class="btn-primary" style="flex:1;" onclick="saveEdit()">저장</button>
       <button style="flex:1;border:1px solid var(--border);background:#fff;border-radius:12px;padding:11px;font-family:inherit;font-size:14px;cursor:pointer;" onclick="closeEditModal()">취소</button>
     </div>
@@ -310,328 +254,178 @@ const BADGE = {gacha:'badge-gacha',prize:'badge-prize',goods:'badge-goods',event
 const CHECKS = ['사전 예약','구매/응모 완료','수령 완료'];
 
 let items = [
-  {work:'산리오',title:'마이멜로디 하트 가챠 Vol.3',cat:'gacha',preorder:'2026-03-15',date:'2026-03-28',link:'https://bandai-candy.jp',img:'',priceJpy:500,priceKrw:4600,checks:[false,false,false]},
-  {work:'원피스',title:'조로 DXF 피규어',cat:'prize',preorder:'2026-03-20',date:'2026-04-05',link:'',img:'',priceJpy:2800,priceKrw:25760,checks:[true,false,false]},
-  {work:'귀멸의 칼날',title:'탄지로 & 네즈코 아크릴 스탠드',cat:'goods',preorder:'2026-03-25',date:'2026-04-15',link:'',img:'',priceJpy:1200,priceKrw:11040,checks:[false,false,false]},
-  {work:'포케몬',title:'포케몬 센터 봄 한정 굿즈',cat:'event',preorder:'2026-03-10',date:'2026-04-01',link:'https://pokemoncenter-online.com',img:'',priceJpy:3500,priceKrw:32200,checks:[true,true,false]},
+  {work:'산리오',title:'마이멜로디 하트 가챠 Vol.3',cat:'gacha',preorder:'2026-03-15',date:'2026-03-28',link:'https://bandai-candy.jp',img:'',priceCurrency:'jpy',priceRaw:500,checks:[false,false,false]},
+  {work:'원피스',title:'조로 DXF 피규어',cat:'prize',preorder:'2026-03-20',date:'2026-04-05',link:'',img:'',priceCurrency:'jpy',priceRaw:2800,checks:[true,false,false]},
+  {work:'귀멸의 칼날',title:'탄지로 & 네즈코 아크릴 스탠드',cat:'goods',preorder:'2026-03-25',date:'2026-04-15',link:'',img:'',priceCurrency:'jpy',priceRaw:1200,checks:[false,false,false]},
+  {work:'포케몬',title:'포케몬 센터 봄 한정 굿즈',cat:'event',preorder:'2026-03-10',date:'2026-04-01',link:'https://pokemoncenter-online.com',img:'',priceCurrency:'krw',priceRaw:32000,checks:[true,true,false]},
 ];
 
 let editIdx = null;
-let itemFilter = 'all';
-let pendingKRW = 0;
 let calY = new Date().getFullYear();
 let calM = new Date().getMonth();
+let itemFilter = 'all';
 
-// --- TAB ---
-function openTab(id) {
-  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+function openTab(id){
+  document.query_selectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.query_selectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  const key = id.replace('-panel','');
-  const btn = document.getElementById('tab-'+key);
-  if(btn) btn.classList.add('active');
+  const key=id.replace('-panel','');
+  const btn=document.getElementById('tab-'+key);
+  if(btn)btn.classList.add('active');
   if(id==='collection-panel') renderCollection();
 }
 
-// --- D-DAY ---
 function setFilter(f){
-  itemFilter = f;
+  itemFilter=f;
   ['all','ongoing','done'].forEach(k=>{
-    const el = document.getElementById('ft-'+k);
-    if(el) el.classList.toggle('active', k===f);
+    const el=document.getElementById('ft-'+k);
+    if(el) el.classList.toggle('active',k===f);
   });
   renderItems();
 }
-function dDay(dateStr) {
-  if(!dateStr) return '';
-  const today = new Date(); today.setHours(0,0,0,0);
-  const d = new Date(dateStr);
-  const diff = Math.ceil((d - today)/86400000);
-  return diff > 0 ? `D-${diff}` : diff === 0 ? 'D-DAY' : `+${Math.abs(diff)}일 전`;
+
+function dDay(str){
+  if(!str) return '';
+  const now=new Date(); now.setHours(0,0,0,0);
+  const target=new Date(str);
+  const diff=Math.ceil((target-now)/86400000);
+  return diff>0?`D-${diff}`:diff===0?'D-DAY':`+${Math.abs(diff)}일 전`;
 }
 
-// --- THUMB ---
-function thumbHtml(it, idx) {
-  if(it.img) {
-    return `<div class="item-thumb"><img src="${it.img}" alt="썸네일" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
-      <div class="item-thumb-placeholder" style="display:none;"><div class="initial">${it.work.substring(0,2)}</div><div class="hint">이미지 없음</div></div>
-      ${it.checks[2]?'<div class="item-done-badge">✓ 수령 완료</div>':''}
-      <div class="item-thumb-actions"><button class="thumb-action-btn" onclick="editItem(${idx})">✏️ 편집</button><button class="thumb-action-btn" onclick="setThumb(${idx})">🖼 이미지</button></div>
-    </div>`;
-  }
-  return `<div class="item-thumb">
-    <div class="item-thumb-placeholder"><div class="initial">${it.work.substring(0,2)}</div><div class="hint">이미지 없음</div></div>
-    ${it.checks[2]?'<div class="item-done-badge">✓ 수령 완료</div>':''}
-    <div class="item-thumb-actions"><button class="thumb-action-btn" onclick="editItem(${idx})">✏️ 편집</button><button class="thumb-action-btn" onclick="setThumb(${idx})">🖼 이미지</button></div>
-  </div>`;
+function thumbTemplate(it,idx){
+  const base = it.img ? `<img src="${it.img}" alt="썸네일">` : `<div class=\"thumb-empty\"><span>${it.work.substring(0,2)}</span>이미지 없음</div>`;
+  return `<div class=\"item-thumb\">${base}${it.checks[2]?'<div class=\"done-badge\">✓ COMPLETE</div>':''}<div class=\"thumb-actions\"><button class=\"thumb-btn\" onclick=\"editItem(${idx})\">✏️ 편집</button><button class=\"thumb-btn\" onclick=\"setThumb(${idx})\">🖼 이미지</button></div></div>`;
 }
 
-// --- RENDER ITEMS ---
-function renderItems() {
-  const grid = document.getElementById('items-grid');
-  if(!items.length){grid.innerHTML='<div class="empty-msg">등록된 항목이 없습니다.</div>';return;}
-  const today = new Date(); today.setHours(0,0,0,0);
-  let filtered = items;
-  if(itemFilter==='ongoing') filtered = items.filter(i=>!i.checks[2]);
-  else if(itemFilter==='done') filtered = items.filter(i=>i.checks[2]);
-  grid.innerHTML = filtered.map((it,idx) => {
-    const checks = CHECKS.map((lb,ci)=>`
-      <label class="check-item">
-        <input type="checkbox" ${it.checks[ci]?'checked':''} onchange="toggleCheck(${idx},${ci},this)">
-        <span class="${it.checks[ci]?'done':''}">${lb}</span>
-      </label>`).join('');
-    return `
-      <div class="item-card">
-        ${thumbHtml(it,idx)}
-        <div class="item-body">
-          <div class="item-meta">
-            <span class="item-badge ${BADGE[it.cat]}">${CAT[it.cat]}</span>
-            <div class="item-actions">
-              <button class="icon-btn" onclick="editItem(${idx})" title="편집">✏️</button>
-              <button class="icon-btn" onclick="deleteItem(${idx})" title="삭제" style="color:#ef4444;">✕</button>
-            </div>
-          </div>
-          <h3>${it.title}</h3>
-          <div class="item-work">📦 ${it.work}</div>
-          ${it.preorder?`<div class="date-row">🛒 사전예약&nbsp;<strong>${it.preorder}</strong>&nbsp;${dDay(it.preorder)}</div>`:''}
-          <div class="date-row">📅 발매일&nbsp;<strong>${it.date}</strong>&nbsp;<strong style="color:var(--pink);">${dDay(it.date)}</strong></div>
-          <div class="price-row">
-            ${it.priceJpy ? `<span class="price-jpy">¥${it.priceJpy.toLocaleString()}</span><span>→</span><span class="price-krw">₩${it.priceKrw?it.priceKrw.toLocaleString():'?'}</span>` : `<span class="price-na">가격 미입력</span>`}
-          </div>
-          ${it.link
-            ? `<a class="item-link" href="${it.link}" target="_blank">🔗 관련 링크</a>`
-            : `<span class="item-link" style="cursor:pointer;opacity:.55;" onclick="quickAddLink(${idx})">🔗 링크 추가하기</span>`
-          }
-          <div class="checklist">${checks}</div>
-        </div>
-      </div>`;
+function renderItems(){
+  const grid=document.getElementById('items-grid');
+  let list=items;
+  if(itemFilter==='ongoing') list=items.filter(i=>!i.checks[2]);
+  else if(itemFilter==='done') list=items.filter(i=>i.checks[2]);
+  if(!list.length){grid.innerHTML='<div class="empty-msg">등록된 발매 정보가 없습니다.</div>';return;}
+  grid.innerHTML=list.map((it,idx)=>{
+    const checks=CHECKS.map((lb,ci)=>`<label class=\"check-item\"><input type=\"checkbox\" ${it.checks[ci]?'checked':''} onchange=\"toggleCheck(${idx},${ci},this)\"><span class=\"${it.checks[ci]?'done':''}\">${lb}</span></label>`).join('');
+    return `<div class="item-card">${thumbTemplate(it,idx)}<div class="item-body"><div class="item-meta"><span class="item-badge ${BADGE[it.cat]}">${CAT[it.cat]}</span><div class="item-actions"><button class="icon-btn" onclick="editItem(${idx})">✏️</button><button class="icon-btn" onclick="deleteItem(${idx})" style="color:#ef4444">✕</button></div></div><h3>${it.title}</h3><div class="item-work">📦 ${it.work}</div>${it.preorder?`<div class="date-row">🛒 사전예약 · <strong>${it.preorder}</strong> ${dDay(it.preorder)}</div>`:''}<div class="date-row">📅 발매일 · <strong>${it.date}</strong> ${dDay(it.date)}</div><div class="price-row">${it.priceRaw?`${it.priceCurrency==='jpy'?'¥':'₩'}${it.priceRaw.toLocaleString()}`:'<span class="price-na">가격 미기재</span>'}</div>${it.link?`<a class="item-link" href="${it.link}" target="_blank">🔗 관련 링크</a>`:`<span class="item-link" style="cursor:pointer;opacity:.55;" onclick="quickAddLink(${idx})">🔗 링크 추가하기</span>`}<div class="checklist">${checks}</div></div></div>`;
   }).join('');
 }
 
-function toggleCheck(ri,ci,el){
-  items[ri].checks[ci]=el.checked;
-  renderItems();
-  let exchangeRate = 9.20;
+function toggleCheck(i,ci,el){items[i].checks[ci]=el.checked;renderItems();renderCollection();renderCalendar();}
+function deleteItem(idx){if(confirm('삭제할까요?')){items.splice(idx,1);renderItems();renderCollection();renderCalendar();}}
 
-async function refreshRate(){
-  try{
-    const res = await fetch('https://api.exchangerate-api.com/v4/latest/JPY');
-    const data = await res.json();
-    const r = data.rates?.KRW;
-    if(r){ exchangeRate = r; }
-  }catch{ /* fallback */ }
-  document.getElementById('rate-display').textContent = `1¥ = ₩${exchangeRate.toFixed(2)}`;
-}
-
-function autoKRW(){
-  const raw = parseFloat(document.getElementById('f-price-raw').value)||0;
-  const cur = document.getElementById('f-currency').value;
-  pendingKRW = raw ? (cur==='jpy' ? Math.round(raw * exchangeRate) : raw) : 0;
-  document.getElementById('krw-preview').textContent = pendingKRW ? `= ₩${pendingKRW.toLocaleString()}` : '';
-}
-
-function autoKRWEdit(){
-  const raw = parseFloat(document.getElementById('e-price-raw').value)||0;
-  const cur = document.getElementById('e-currency').value;
-  const krw = raw ? (cur==='jpy' ? Math.round(raw * exchangeRate) : raw) : 0;
-  document.getElementById('e-krw-preview').textContent = krw ? `= ₩${krw.toLocaleString()}` : '';
-}
-
-refreshRate();
-renderCalendar();
-}
-
-function deleteItem(idx){
-  if(!confirm('삭제할까요?')) return;
-  items.splice(idx,1);
-  renderItems();renderCalendar();
-}
-
-// --- ADD ---
 function addItem(){
   const work=document.getElementById('f-work').value.trim();
   const title=document.getElementById('f-title').value.trim();
   const date=document.getElementById('f-date').value;
   if(!work||!title||!date){alert('작품명, 상품명, 발매일을 입력해주세요!');return;}
-  const pJpy = parseInt(document.getElementById('f-price-jpy').value)||0;
-  const pKrw = parseInt(document.getElementById('f-price-krw').value)||0;
-  items.push({work,title,cat:document.getElementById('f-cat').value,preorder:document.getElementById('f-preorder').value,date,link:document.getElementById('f-link').value.trim(),img:document.getElementById('f-img').value.trim(),priceJpy:pJpy,priceKrw:pKrw,checks:[false,false,false]});
-  ['f-work','f-title','f-preorder','f-date','f-link','f-img','f-price-jpy','f-price-krw'].forEach(id=>document.getElementById(id).value='');
-  renderItems();renderCalendar();
+  items.push({
+    work,
+    title,
+    cat:document.getElementById('f-cat').value,
+    preorder:document.getElementById('f-preorder').value,
+    date,
+    link:document.getElementById('f-link').value.trim(),
+    img:document.getElementById('f-img').value.trim(),
+    priceCurrency:document.getElementById('f-currency').value,
+    priceRaw:parseFloat(document.getElementById('f-price').value)||0,
+    checks:[false,false,false]
+  });
+  ['f-work','f-title','f-preorder','f-date','f-link','f-img','f-price'].forEach(id=>document.getElementById(id).value='');
+  renderItems();renderCollection();renderCalendar();
 }
 
-// --- EDIT MODAL ---
 function editItem(idx){
-  editIdx = idx;
-  const it = items[idx];
-  document.getElementById('e-work').value = it.work;
-  document.getElementById('e-title').value = it.title;
-  document.getElementById('e-cat').value = it.cat;
-  document.getElementById('e-preorder').value = it.preorder||'';
-  document.getElementById('e-date').value = it.date;
-  document.getElementById('e-link').value = it.link||'';
-  document.getElementById('e-img').value = it.img||'';
-  document.getElementById('e-price-jpy').value = it.priceJpy||'';
-  document.getElementById('e-price-krw').value = it.priceKrw||'';
-  if(!it.priceKrw && it.priceJpy) autoKRWEdit();
+  editIdx=idx;
+  const it=items[idx];
+  document.getElementById('e-work').value=it.work;
+  document.getElementById('e-title').value=it.title;
+  document.getElementById('e-cat').value=it.cat;
+  document.getElementById('e-preorder').value=it.preorder||'';
+  document.getElementById('e-date').value=it.date;
+  document.getElementById('e-link').value=it.link||'';
+  document.getElementById('e-img').value=it.img||'';
+  document.getElementById('e-currency').value=it.priceCurrency||'jpy';
+  document.getElementById('e-price').value=it.priceRaw||'';
   document.getElementById('edit-modal').classList.add('open');
 }
-
-function saveEdit(){
-  if(editIdx===null) return;
-  items[editIdx].work = document.getElementById('e-work').value.trim();
-  items[editIdx].title = document.getElementById('e-title').value.trim();
-  items[editIdx].cat = document.getElementById('e-cat').value;
-  items[editIdx].preorder = document.getElementById('e-preorder').value;
-  items[editIdx].date = document.getElementById('e-date').value;
-  items[editIdx].link = document.getElementById('e-link').value.trim();
-  items[editIdx].img = document.getElementById('e-img').value.trim();
-  const eRaw = parseFloat(document.getElementById('e-price-raw').value)||0;
-  const eCur = document.getElementById('e-currency').value;
-  items[editIdx].priceJpy = eCur==='jpy' ? eRaw : 0;
-  items[editIdx].priceKrw = eRaw ? (eCur==='jpy' ? Math.round(eRaw*exchangeRate) : eRaw) : 0;
-  closeEditModal();
-  renderItems();renderCalendar();
-}
-
-function closeEditModal(){
-  document.getElementById('edit-modal').classList.remove('open');
-  editIdx = null;
-}
+function closeEditModal(){document.getElementById('edit-modal').classList.remove('open');editIdx=null;}
 document.getElementById('edit-modal').addEventListener('click',e=>{if(e.target===document.getElementById('edit-modal'))closeEditModal();});
-
-function quickAddLink(idx){
-  const url = prompt('관련 링크 URL을 입력하세요');
-  if(!url) return;
-  items[idx].link = url.trim();
-  renderItems();
+function saveEdit(){
+  if(editIdx===null)return;
+  items[editIdx]={
+    ...items[editIdx],
+    work:document.getElementById('e-work').value.trim(),
+    title:document.getElementById('e-title').value.trim(),
+    cat:document.getElementById('e-cat').value,
+    preorder:document.getElementById('e-preorder').value,
+    date:document.getElementById('e-date').value,
+    link:document.getElementById('e-link').value.trim(),
+    img:document.getElementById('e-img').value.trim(),
+    priceCurrency:document.getElementById('e-currency').value,
+    priceRaw:parseFloat(document.getElementById('e-price').value)||0
+  };
+  closeEditModal();renderItems();renderCollection();renderCalendar();
 }
+function setThumb(idx){const url=prompt('이미지 URL');if(url){items[idx].img=url;renderItems();renderCollection();}}
+function quickAddLink(idx){const url=prompt('관련 링크 입력');if(url){items[idx].link=url;renderItems();}}
 
-function setThumb(idx){
-  const url = prompt('이미지 URL을 입력하세요');
-  if(!url) return;
-  items[idx].img = url;
-  renderItems();
-}
-
-// --- CALENDAR ---
 function renderCalendar(){
-  const today = new Date();
-  document.getElementById('cal-title').textContent = `${calY}년 ${calM+1}월`;
-  const days = ['일','월','화','수','목','금','토'];
-  document.getElementById('cal-labels').innerHTML = days.map(d=>`<div class="cal-day-label">${d}</div>`).join('');
-  const first = new Date(calY,calM,1).getDay();
-  const total = new Date(calY,calM+1,0).getDate();
-  const map = {};
-  items.forEach(it=>{
-    const d=new Date(it.date);
-    if(d.getFullYear()===calY&&d.getMonth()===calM){
-      const k=d.getDate(); if(!map[k])map[k]=[];
-      map[k].push(it);
-    }
-  });
+  const today=new Date();document.getElementById('cal-title').textContent=`${calY}년 ${calM+1}월`;
+  document.getElementById('cal-labels').innerHTML=['일','월','화','수','목','금','토'].map(d=>`<div class="cal-day-label">${d}</div>`).join('');
+  const first=new Date(calY,calM,1).getDay(); const total=new Date(calY,calM+1,0).getDate(); const map={};
+  items.forEach(it=>{const d=new Date(it.date);if(d.getFullYear()===calY&&d.getMonth()===calM){const day=d.getDate();if(!map[day])map[day]=[];map[day].push(it);}});
   let html='';
   for(let i=0;i<first;i++) html+='<div class="cal-day empty"></div>';
   for(let d=1;d<=total;d++){
     const isToday=d===today.getDate()&&calM===today.getMonth()&&calY===today.getFullYear();
     html+=`<div class="cal-day ${isToday?'today':''} ${map[d]?'has-entry':''}" onclick="showDay(${d})">${d}${map[d]?'<div class="dot"></div>':''}</div>`;
   }
-  document.getElementById('cal-grid').innerHTML = html;
+  document.getElementById('cal-grid').innerHTML=html;
 }
+function changeMonth(delta){calM+=delta;if(calM<0){calM=11;calY--;}if(calM>11){calM=0;calY++;}renderCalendar();}
+function showDay(day){const list=items.filter(it=>{const d=new Date(it.date);return d.getFullYear()===calY&&d.getMonth()===calM&&d.getDate()===day;});const panel=document.getElementById('day-detail');if(!list.length){panel.style.display='none';return;}panel.style.display='block';document.getElementById('day-detail-title').textContent=`${calY}년 ${calM+1}월 ${day}일`;document.getElementById('day-detail-list').innerHTML=list.map(it=>`<div style="padding:10px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;"><span class="item-badge ${BADGE[it.cat]}">${CAT[it.cat]}</span><strong>${it.work}</strong> — ${it.title}</div>`).join('');}
 
-function changeMonth(d){calM+=d;if(calM<0){calM=11;calY--;}if(calM>11){calM=0;calY++;}renderCalendar();}
-
-function showDay(day){
-  const matches=items.filter(it=>{const d=new Date(it.date);return d.getFullYear()===calY&&d.getMonth()===calM&&d.getDate()===day;});
-  const el=document.getElementById('day-detail');
-  if(!matches.length){el.style.display='none';return;}
-  el.style.display='block';
-  document.getElementById('day-detail-title').textContent=`${calY}년 ${calM+1}월 ${day}일 발매`;
-  document.getElementById('day-detail-list').innerHTML=matches.map(it=>`
-    <div style="padding:10px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;">
-      <span class="item-badge ${BADGE[it.cat]}">${CAT[it.cat]}</span>
-      <strong>${it.work}</strong> — ${it.title}
-    </div>`).join('');
-}
-
-// --- COLLECTION ---
 function renderCollection(){
-  const finished = items.filter(it=>it.checks[2]);
-  const works = [...new Set(finished.map(i=>i.work))];
-  const cats = [...new Set(finished.map(i=>i.cat))];
-
-  // spending
-  const totalKrw = finished.reduce((s,i)=>s+(i.priceKrw||0),0);
-  const totalJpy = finished.reduce((s,i)=>s+(i.priceJpy||0),0);
-  const pricedCount = finished.filter(i=>i.priceKrw||i.priceJpy).length;
-  const unpricedCount = finished.length - pricedCount;
-  // stats
-  document.getElementById('col-stats').innerHTML = `
-    <div class="stat-box"><div class="val">${finished.length}</div><div class="lbl">총 수령</div><div class="stat-spending">${unpricedCount?`가격 미기재 ${unpricedCount}건 별도`:''}</div></div>
-    <div class="stat-box"><div class="val">${works.length}</div><div class="lbl">작품 수</div></div>
+  const done=items.filter(i=>i.checks[2]);
+  const works=[...new Set(done.map(i=>i.work))];
+  const cats=[...new Set(done.map(i=>i.cat))];
+  const totalJPY=done.filter(i=>i.priceCurrency==='jpy').reduce((s,i)=>s+(i.priceRaw||0),0);
+  const totalKRW=done.filter(i=>i.priceCurrency==='krw').reduce((s,i)=>s+(i.priceRaw||0),0);
+  document.getElementById('col-stats').innerHTML=`
+    <div class="stat-box"><div class="val">${done.length}</div><div class="lbl">총 수령</div></div>
+    <div class="stat-box"><div class="val">${works.length}</div><div class="lbl">작품</div></div>
     <div class="stat-box"><div class="val">${cats.length}</div><div class="lbl">카테고리</div></div>
-    <div class="stat-box"><div class="val" style="font-size:18px;">₩${totalKrw.toLocaleString()}</div><div class="lbl">총 지출 (원화)</div><div class="stat-spending">¥${totalJpy.toLocaleString()}</div></div>
-  `;
+    <div class="stat-box"><div class="val" style="font-size:18px;">₩${totalKRW.toLocaleString()}</div><div class="lbl">원화 지출</div><div class="lbl" style="margin-top:6px;">¥${totalJPY.toLocaleString()}</div></div>`;
 
-  // filter options
-  // period filter
-  const pEl = document.getElementById('col-filter-period');
-  const period = pEl ? pEl.value : 'all';
-  const now = new Date();
-  let periodFiltered = finished;
-  if(period==='month') periodFiltered = finished.filter(i=>{const d=new Date(i.date);return d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth();});
-  else if(period==='year') periodFiltered = finished.filter(i=>new Date(i.date).getFullYear()===now.getFullYear());
+  const period=document.getElementById('col-period').value;
+  const now=new Date();
+  let list=done;
+  if(period==='month') list=done.filter(i=>{const d=new Date(i.date);return d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth();});
+  else if(period==='year') list=done.filter(i=>new Date(i.date).getFullYear()===now.getFullYear());
 
-  const wEl = document.getElementById('col-filter-work');
-  const cEl = document.getElementById('col-filter-cat');
-  const wVal = wEl.value; const cVal = cEl.value;
-  wEl.innerHTML = `<option value="">전체 작품</option>` + works.map(w=>`<option value="${w}" ${wVal===w?'selected':''}>${w}</option>`).join('');
-  cEl.innerHTML = `<option value="">전체 카테고리</option>` + cats.map(c=>`<option value="${c}" ${cVal===c?'selected':''}>${CAT[c]}</option>`).join('');
+  const wSel=document.getElementById('col-work');
+  const cSel=document.getElementById('col-cat');
+  const wOptions=[...new Set(list.map(i=>i.work))];
+  const cOptions=[...new Set(list.map(i=>i.cat))];
+  wSel.innerHTML='<option value="">전체 작품</option>'+wOptions.map(w=>`<option value="${w}">${w}</option>`).join('');
+  cSel.innerHTML='<option value="">전체 카테고리</option>'+cOptions.map(c=>`<option value="${c}">${CAT[c]}</option>`).join('');
 
-  // filtered list
-  const wF = wEl.value; const cF = cEl.value;
-  let list = periodFiltered;
-  if(wF) list = list.filter(i=>i.work===wF);
-  if(cF) list = list.filter(i=>i.cat===cF);
+  const wF=wSel.value; const cF=cSel.value;
+  if(wF) list=list.filter(i=>i.work===wF);
+  if(cF) list=list.filter(i=>i.cat===cF);
 
-  // work spending breakdown
-  const workBreakdown = {};
-  list.forEach(i=>{ if(!workBreakdown[i.work]) workBreakdown[i.work]={krw:0,jpy:0,count:0}; workBreakdown[i.work].krw+=(i.priceKrw||0); workBreakdown[i.work].jpy+=(i.priceJpy||0); workBreakdown[i.work].count++; });
-  const breakdownHtml = Object.entries(workBreakdown).length ? `
-    <div style="margin-bottom:16px;">
-      <div class="section-header" style="margin-bottom:10px;">작품별 지출</div>
-      <div style="display:flex;flex-wrap:wrap;gap:8px;">
-        ${Object.entries(workBreakdown).map(([w,v])=>`<div style="background:var(--pink-light);border-radius:10px;padding:8px 14px;font-size:13px;"><strong>${w}</strong> ${v.count}건 &nbsp; ₩${v.krw.toLocaleString()} <span style="color:var(--muted)">¥${v.jpy.toLocaleString()}</span></div>`).join('')}
-      </div>
-    </div>` : '';
+  const breakdown={};
+  list.forEach(i=>{if(!breakdown[i.work]) breakdown[i.work]={jpy:0,krw:0,count:0}; if(i.priceCurrency==='jpy') breakdown[i.work].jpy+=i.priceRaw||0; else if(i.priceCurrency==='krw') breakdown[i.work].krw+=i.priceRaw||0; breakdown[i.work].count++;});
+  document.getElementById('col-breakdown').innerHTML = Object.keys(breakdown).length ? `<div style="display:flex;gap:8px;flex-wrap:wrap;">${Object.entries(breakdown).map(([w,v])=>`<div style="background:${var(--pink-light)};border-radius:10px;padding:8px 14px;font-size:13px;"><strong>${w}</strong> ${v.count}건 · ¥${v.jpy.toLocaleString()} / ₩${v.krw.toLocaleString()}</div>`).join('')}</div>` : '';
 
-  document.getElementById('col-list').innerHTML = (breakdownHtml + (list.length ? list.map(it=>`
-    <div class="collection-card">
-      <div class="col-thumb">${it.img?`<img src="${it.img}" alt="">` : `<div class="col-initial">${it.work.substring(0,2)}</div>`}</div>
-      <div class="col-info">
-        <h4>${it.title}</h4>
-        <div class="meta">📦 ${it.work} &nbsp;·&nbsp; 📅 ${it.date}</div>
-        ${it.priceKrw||it.priceJpy ? `<div style="font-size:13px;margin-top:4px;color:var(--pink);font-weight:600;">₩${it.priceKrw?it.priceKrw.toLocaleString():'?'} <span style="color:var(--muted);font-weight:400;">¥${it.priceJpy?it.priceJpy.toLocaleString():'?'}</span></div>` : '<div style="font-size:12px;color:var(--muted);margin-top:4px;">가격 미기재</div>'}
-        <div class="tags"><span class="item-badge ${BADGE[it.cat]}">${CAT[it.cat]}</span></div>
-      </div>
-    </div>`).join('') : '<div class="empty-msg">수령 완료한 항목이 없습니다.</div>'));
+  document.getElementById('col-list').innerHTML = list.length ? list.map(it=>`<div class="collection-card"><div class="col-thumb">${it.img?`<img src="${it.img}" alt="">`:`<div class="initial">${it.work.substring(0,2)}</div>`}</div><div class="col-info"><h4>${it.title}</h4><div class="meta">📦 ${it.work} · 📅 ${it.date}</div><div style="font-size:13px;color:var(--pink);margin-top:4px;">${it.priceRaw?`${it.priceCurrency==='jpy'?'¥':'₩'}${it.priceRaw.toLocaleString()}`:'가격 미기재'}</div></div></div>`).join('') : '<div class="empty-msg">수령 완료한 항목이 없습니다.</div>';
 }
 
-// --- DIARY ---
-function saveNote(){
-  const text = document.getElementById('note-input').value.trim();
-  if(!text) return;
-  const today = new Date();
-  const ds = `${today.getFullYear()}.${String(today.getMonth()+1).padStart(2,'0')}.${String(today.getDate()).padStart(2,'0')}`;
-  const div = document.createElement('div');
-  div.className = 'saved-note';
-  div.innerHTML = `<div class="note-date">${ds}</div>${text}<button class="del-btn" onclick="this.closest('.saved-note').remove()">✕</button>`;
-  document.getElementById('saved-notes').prepend(div);
-  document.getElementById('note-input').value = '';
-}
+function saveNote(){const text=document.getElementById('note-input').value.trim();if(!text)return;const today=new Date();const ds=`${today.getFullYear()}.${String(today.getMonth()+1).padStart(2,'0')}.${String(today.getDate()).padStart(2,'0')}`;const div=document.createElement('div');div.className='saved-note';div.innerHTML=`<div style="font-size:12px;color:${'var(--pink)'};font-weight:600;margin-bottom:5px;">${ds}</div>${text}<button class="icon-btn" style="position:absolute;top:8px;right:10px;color:${'var(--muted)'};" onclick="this.closest('.saved-note').remove()">✕</button>`;document.getElementById('saved-notes').prepend(div);document.getElementById('note-input').value='';}
 
+// INIT
 renderCalendar();
 renderItems();
+renderCollection();
 </script>
 <script src="assets/access-gate.js"></script>
 </body>
