@@ -3,135 +3,176 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>발매일기 · 굿즈 & 가챠 발매 트래커</title>
+  <title>발매일기 · 굿즈 & 가챠 트래커</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --pink: #e84393;
       --pink-light: #fce7f3;
-      --pink-mid: #f9a8d4;
-      --bg: #f8f9fa;
+      --bg: #f7f8fb;
       --card: #ffffff;
       --text: #1a1a2e;
       --muted: #6b7280;
-      --border: #e5e7eb;
+      --border: #e8eaf2;
       --radius: 20px;
     }
     *{box-sizing:border-box;margin:0;padding:0;}
     body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--bg);color:var(--text);}
 
-    nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:60px;}
+    /* NAV */
+    nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:60px;}
     .nav-brand{font-size:18px;font-weight:700;color:var(--pink);display:flex;align-items:center;gap:8px;}
     .nav-links{display:flex;gap:24px;}
-    .nav-links a{text-decoration:none;color:var(--muted);font-size:14px;font-weight:500;transition:color .2s;}
+    .nav-links a{text-decoration:none;color:var(--muted);font-size:14px;font-weight:500;}
     .nav-links a:hover{color:var(--pink);}
-    .nav-btn{background:var(--pink);color:#fff;border:none;border-radius:20px;padding:8px 20px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;}
+    .nav-btn{background:var(--pink);color:#fff;border:none;border-radius:20px;padding:8px 18px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;}
 
-    .hero{text-align:center;padding:56px 20px 36px;}
-    .hero h1{font-size:clamp(32px,5vw,52px);font-weight:700;letter-spacing:-1px;}
+    /* HERO */
+    .hero{text-align:center;padding:48px 20px 32px;}
+    .hero h1{font-size:clamp(30px,5vw,48px);font-weight:700;letter-spacing:-1px;}
     .hero h1 span{color:var(--pink);}
-    .hero p{color:var(--muted);margin-top:10px;font-size:16px;}
+    .hero p{color:var(--muted);margin-top:10px;font-size:15px;}
 
-    .container{width:min(1120px,95vw);margin:0 auto;padding:0 0 80px;}
+    /* WRAP */
+    .wrap{width:min(1100px,95vw);margin:0 auto;padding:0 0 80px;}
 
-    .tabs{display:flex;gap:8px;margin-bottom:24px;border-bottom:2px solid var(--border);}
-    .tab-btn{padding:10px 22px;border:none;background:none;font-family:inherit;font-size:15px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s;}
+    /* TABS */
+    .tabs{display:flex;gap:4px;margin-bottom:24px;border-bottom:2px solid var(--border);}
+    .tab-btn{padding:10px 20px;border:none;background:none;font-family:inherit;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s;}
     .tab-btn.active{color:var(--pink);border-bottom-color:var(--pink);}
     .tab-panel{display:none;}
     .tab-panel.active{display:block;}
 
-    .card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);padding:24px;box-shadow:0 2px 12px rgba(0,0,0,0.05);}
+    /* CARD BASE */
+    .card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);padding:24px;box-shadow:0 2px 12px rgba(0,0,0,.04);}
 
-    /* CALENDAR */
-    .cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
-    .cal-header h3{font-size:18px;font-weight:700;}
-    .cal-nav-btn{background:var(--pink-light);border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:16px;color:var(--pink);font-weight:700;}
-    .calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;}
-    .cal-day-label{text-align:center;font-size:12px;font-weight:600;color:var(--muted);padding:4px 0;}
-    .cal-day{aspect-ratio:1;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;font-size:13px;font-weight:500;border:1px solid var(--border);background:var(--card);transition:all .2s;position:relative;}
-    .cal-day:hover{border-color:var(--pink-mid);}
-    .cal-day.today{background:var(--pink);color:#fff;border-color:var(--pink);}
-    .cal-day.has-entry{border-color:var(--pink-mid);background:var(--pink-light);}
-    .cal-day .dot{width:5px;height:5px;border-radius:50%;background:var(--pink);position:absolute;bottom:4px;}
-    .cal-day.today .dot{background:#fff;}
-    .cal-day.empty{background:transparent;border-color:transparent;cursor:default;}
+    /* ITEM CARDS GRID */
+    .items-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:18px;}
 
-    /* ITEMS GRID */
-    .items-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;}
-    .item-card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);padding:20px;box-shadow:0 2px 12px rgba(0,0,0,0.06);transition:transform .2s,box-shadow .2s;}
-    .item-card:hover{transform:translateY(-4px);box-shadow:0 8px 24px rgba(232,67,147,0.12);}
-    .item-badge{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:4px 12px;font-size:12px;font-weight:700;margin-bottom:10px;}
+    /* ITEM CARD */
+    .item-card{background:var(--card);border-radius:18px;border:1px solid var(--border);overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.05);transition:transform .2s,box-shadow .2s;}
+    .item-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(232,67,147,.1);}
+
+    /* THUMB */
+    .item-thumb{width:100%;height:160px;position:relative;overflow:hidden;background:linear-gradient(135deg,#fce7f3,#ffe4f4);}
+    .item-thumb img{width:100%;height:100%;object-fit:cover;}
+    .item-thumb-placeholder{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;}
+    .item-thumb-placeholder .initial{font-size:34px;font-weight:800;color:rgba(232,67,147,.35);letter-spacing:-1px;}
+    .item-thumb-placeholder .hint{font-size:11px;color:rgba(232,67,147,.5);}
+    .item-thumb-actions{position:absolute;top:8px;right:8px;display:flex;gap:6px;opacity:0;transition:opacity .2s;}
+    .item-card:hover .item-thumb-actions{opacity:1;}
+    .thumb-action-btn{background:rgba(0,0,0,.5);color:#fff;border:none;border-radius:8px;padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;}
+    .item-done-badge{position:absolute;top:10px;left:10px;background:rgba(16,185,129,.9);color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;}
+
+    /* ITEM BODY */
+    .item-body{padding:16px;}
+    .item-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+    .item-badge{display:inline-flex;align-items:center;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;}
     .badge-gacha{background:#fce7f3;color:#e84393;}
     .badge-prize{background:#fef3c7;color:#d97706;}
     .badge-goods{background:#dbeafe;color:#2563eb;}
     .badge-event{background:#dcfce7;color:#16a34a;}
-    .item-card h3{font-size:17px;font-weight:700;margin-bottom:4px;}
-    .item-card .work{color:var(--muted);font-size:14px;margin-bottom:10px;}
-    .item-date{font-size:13px;color:var(--muted);}
-    .item-date strong{color:var(--pink);}
-    .item-link{display:inline-flex;align-items:center;gap:4px;margin-top:10px;font-size:13px;color:var(--pink);text-decoration:none;font-weight:600;}
+    .item-actions{display:flex;gap:6px;}
+    .icon-btn{background:var(--bg);border:none;border-radius:8px;width:28px;height:28px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;transition:background .15s;}
+    .icon-btn:hover{background:var(--pink-light);}
+    .item-body h3{font-size:16px;font-weight:700;margin-bottom:3px;line-height:1.3;}
+    .item-work{font-size:13px;color:var(--muted);margin-bottom:10px;}
+    .date-row{font-size:12px;color:var(--muted);margin-bottom:2px;display:flex;align-items:center;gap:6px;}
+    .date-row strong{color:var(--pink);}
+    .item-link{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--pink);text-decoration:none;font-weight:600;margin-top:6px;}
     .item-link:hover{text-decoration:underline;}
-    .checklist{margin-top:12px;display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--border);padding-top:12px;}
+    .checklist{margin-top:12px;padding-top:12px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:8px;}
     .check-item{display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;}
-    .check-item input[type=checkbox]{accent-color:var(--pink);width:16px;height:16px;cursor:pointer;}
+    .check-item input[type=checkbox]{accent-color:var(--pink);width:15px;height:15px;cursor:pointer;flex-shrink:0;}
     .check-item span.done{text-decoration:line-through;color:var(--muted);}
-    .del-card-btn{float:right;background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;margin-top:2px;}
-    .del-card-btn:hover{color:#ef4444;}
 
     /* FORM */
-    .add-form{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);padding:28px;margin-bottom:24px;}
-    .add-form h3{font-size:16px;font-weight:700;margin-bottom:20px;}
-    .form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:16px;}
-    .form-group{display:flex;flex-direction:column;gap:6px;}
-    .form-group label{font-size:13px;font-weight:600;color:var(--muted);}
-    .form-group input,.form-group select{padding:10px 14px;border-radius:12px;border:1px solid var(--border);font-family:inherit;font-size:14px;background:var(--bg);outline:none;transition:border .18s;}
+    .add-form{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);padding:24px;margin-bottom:20px;}
+    .add-form h3{font-size:16px;font-weight:700;margin-bottom:18px;}
+    .form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:14px;}
+    .form-group{display:flex;flex-direction:column;gap:5px;}
+    .form-group label{font-size:12px;font-weight:600;color:var(--muted);}
+    .form-group input,.form-group select{padding:10px 12px;border-radius:12px;border:1px solid var(--border);font-family:inherit;font-size:14px;background:var(--bg);outline:none;transition:border .15s;}
     .form-group input:focus,.form-group select:focus{border-color:var(--pink);}
-    .btn-primary{background:var(--pink);color:#fff;border:none;border-radius:14px;padding:12px 28px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;}
+    .btn-primary{background:var(--pink);color:#fff;border:none;border-radius:12px;padding:11px 24px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;}
+
+    /* MODAL */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(20,20,40,.5);z-index:200;display:none;align-items:center;justify-content:center;}
+    .modal-backdrop.open{display:flex;}
+    .modal{background:#fff;border-radius:24px;padding:28px;width:min(500px,92vw);max-height:90vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,.18);}
+    .modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+    .modal-header h3{font-size:17px;font-weight:700;}
+    .modal-close{background:none;border:none;font-size:22px;cursor:pointer;color:var(--muted);}
+
+    /* CALENDAR */
+    .cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+    .cal-header h3{font-size:17px;font-weight:700;}
+    .cal-nav-btn{background:var(--pink-light);border:none;border-radius:50%;width:30px;height:30px;cursor:pointer;font-size:15px;color:var(--pink);font-weight:700;}
+    .calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;}
+    .cal-day-label{text-align:center;font-size:12px;font-weight:600;color:var(--muted);padding:3px 0;}
+    .cal-day{aspect-ratio:1;border-radius:9px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;font-size:13px;font-weight:500;border:1px solid var(--border);background:var(--card);transition:all .2s;position:relative;}
+    .cal-day:hover{border-color:rgba(232,67,147,.4);}
+    .cal-day.today{background:var(--pink);color:#fff;border-color:var(--pink);}
+    .cal-day.has-entry{border-color:rgba(232,67,147,.4);background:var(--pink-light);}
+    .cal-day .dot{width:5px;height:5px;border-radius:50%;background:var(--pink);position:absolute;bottom:4px;}
+    .cal-day.today .dot{background:#fff;}
+    .cal-day.empty{background:transparent;border-color:transparent;cursor:default;}
+
+    /* COLLECTION */
+    .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:14px;margin-bottom:20px;}
+    .stat-box{background:#fff;border-radius:14px;border:1px solid var(--border);padding:16px 14px;text-align:center;}
+    .stat-box .val{font-size:28px;font-weight:700;color:var(--pink);}
+    .stat-box .lbl{font-size:12px;color:var(--muted);margin-top:2px;}
+    .filter-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px;}
+    .filter-select{padding:8px 12px;border-radius:10px;border:1px solid var(--border);background:#fff;font-family:inherit;font-size:13px;outline:none;}
+    .collection-card{background:#fff;border:1px solid var(--border);border-radius:14px;display:flex;gap:14px;padding:14px;margin-bottom:10px;}
+    .col-thumb{width:80px;height:60px;border-radius:10px;overflow:hidden;background:linear-gradient(135deg,#fce7f3,#ffe4f4);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .col-thumb img{width:100%;height:100%;object-fit:cover;}
+    .col-thumb .col-initial{font-size:20px;font-weight:800;color:rgba(232,67,147,.35);}
+    .col-info h4{font-size:15px;font-weight:700;margin-bottom:3px;}
+    .col-info .meta{font-size:12px;color:var(--muted);}
+    .col-info .tags{margin-top:5px;display:flex;gap:6px;flex-wrap:wrap;}
 
     /* DIARY */
-    .diary-card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);padding:28px;margin-bottom:20px;}
-    .diary-card h3{font-size:16px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
-    .diary-card h3 .tag{font-size:12px;background:var(--pink-light);color:var(--pink);padding:3px 10px;border-radius:999px;}
-    textarea.note-area{width:100%;min-height:120px;border:1px solid var(--border);border-radius:14px;padding:14px;font-family:inherit;font-size:14px;background:var(--bg);resize:vertical;outline:none;line-height:1.7;transition:border .18s;}
+    .diary-card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);padding:24px;margin-bottom:18px;}
+    .diary-card h3{font-size:16px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+    .diary-card h3 .tag{font-size:11px;background:var(--pink-light);color:var(--pink);padding:3px 9px;border-radius:20px;}
+    textarea.note-area{width:100%;min-height:110px;border:1px solid var(--border);border-radius:12px;padding:12px 14px;font-family:inherit;font-size:14px;background:var(--bg);resize:vertical;outline:none;line-height:1.7;transition:border .15s;}
     textarea.note-area:focus{border-color:var(--pink);}
-    .save-note-btn{margin-top:10px;background:var(--pink-light);color:var(--pink);border:none;border-radius:12px;padding:8px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;}
-    .saved-notes{display:flex;flex-direction:column;gap:12px;margin-top:16px;}
-    .saved-note{background:var(--pink-light);border-radius:14px;padding:14px 18px;font-size:14px;line-height:1.7;position:relative;}
-    .saved-note .note-date{font-size:12px;color:var(--pink);font-weight:600;margin-bottom:6px;}
-    .saved-note .del-btn{position:absolute;top:10px;right:12px;background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;}
+    .save-note-btn{margin-top:10px;background:var(--pink-light);color:var(--pink);border:none;border-radius:10px;padding:8px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;}
+    .saved-notes{display:flex;flex-direction:column;gap:10px;margin-top:14px;}
+    .saved-note{background:var(--pink-light);border-radius:12px;padding:13px 16px;font-size:14px;line-height:1.7;position:relative;}
+    .saved-note .note-date{font-size:12px;color:var(--pink);font-weight:600;margin-bottom:5px;}
+    .saved-note .del-btn{position:absolute;top:10px;right:12px;background:none;border:none;cursor:pointer;color:var(--muted);font-size:15px;}
 
-    .empty-msg{color:var(--muted);font-size:14px;padding:20px 0;text-align:center;}
-    .thumb-placeholder{background:var(--pink-light);border-radius:12px;height:90px;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--muted);margin-bottom:10px;}
-    .thumb-box{width:100%;height:160px;border-radius:14px;background:var(--pink-light);display:flex;align-items:center;justify-content:center;margin-bottom:14px;position:relative;overflow:hidden;border:1px dashed rgba(232,67,147,0.3);}
-    .thumb-box img{width:100%;height:100%;object-fit:cover;}
-    .thumb-actions{position:absolute;bottom:10px;right:10px;display:flex;gap:6px;}
-    .thumb-btn{background:rgba(0,0,0,0.45);color:#fff;border:none;border-radius:8px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;}
-    .thumb-btn:hover{background:rgba(0,0,0,0.6);}
-    .thumb-empty{font-size:13px;color:var(--muted);text-align:center;padding:0 20px;}
+    .empty-msg{color:var(--muted);font-size:14px;text-align:center;padding:20px 0;}
+    .section-header{font-size:14px;font-weight:600;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em;}
   </style>
 </head>
 <body>
+
 <nav>
   <div class="nav-brand">🎀 발매일기</div>
   <div class="nav-links">
-    <a href="#" onclick="switchTab('calendar-panel',document.querySelectorAll('.tab-btn')[0])">캘린더</a>
-    <a href="#" onclick="switchTab('items-panel',document.querySelectorAll('.tab-btn')[1])">발매 목록</a>
-    <a href="#" onclick="switchTab('diary-panel',document.querySelectorAll('.tab-btn')[2])">위시리스트</a>
+    <a href="#" onclick="openTab('calendar-panel')">캘린더</a>
+    <a href="#" onclick="openTab('items-panel')">발매 목록</a>
+    <a href="#" onclick="openTab('collection-panel')">내 컬렉션</a>
   </div>
-  <button class="nav-btn" onclick="switchTab('items-panel',document.querySelectorAll('.tab-btn')[1]);setTimeout(()=>document.getElementById('add-panel').scrollIntoView({behavior:'smooth'}),100)">+ 새 발매 등록</button>
+  <button class="nav-btn" onclick="openTab('items-panel');setTimeout(()=>document.getElementById('add-panel').scrollIntoView({behavior:'smooth'}),100)">+ 새 발매 등록</button>
 </nav>
 
 <div class="hero">
-  <h1>굿즈 & 가챠<br/><span>발매일기</span></h1>
-  <p>좋아하는 작품의 굿즈·가챠·이벤트 발매일을 한눈에 관리하세요.</p>
+  <h1>굿즈 & 가챠 <span>발매일기</span></h1>
+  <p>좋아하는 작품의 발매일을 관리하고, 수령 컬렉션으로 쌓아가세요.</p>
 </div>
 
-<div class="container">
+<div class="wrap">
   <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('calendar-panel',this)">📅 캘린더</button>
-    <button class="tab-btn" onclick="switchTab('items-panel',this)">🎁 발매 목록</button>
-    <button class="tab-btn" onclick="switchTab('diary-panel',this)">⭐ 위시리스트 & 메모</button>
+    <button class="tab-btn active" id="tab-calendar" onclick="openTab('calendar-panel')">📅 캘린더</button>
+    <button class="tab-btn" id="tab-items" onclick="openTab('items-panel')">🎁 발매 목록</button>
+    <button class="tab-btn" id="tab-collection" onclick="openTab('collection-panel')">📦 내 컬렉션</button>
+    <button class="tab-btn" id="tab-diary" onclick="openTab('diary-panel')">⭐ 메모</button>
   </div>
 
   <!-- CALENDAR -->
@@ -142,11 +183,11 @@
         <h3 id="cal-title"></h3>
         <button class="cal-nav-btn" onclick="changeMonth(1)">›</button>
       </div>
-      <div class="calendar-grid" id="cal-day-labels"></div>
-      <div class="calendar-grid" id="cal-grid" style="margin-top:8px;"></div>
+      <div class="calendar-grid" id="cal-labels"></div>
+      <div class="calendar-grid" id="cal-grid" style="margin-top:6px;"></div>
     </div>
-    <div id="day-detail" style="display:none;margin-top:16px;" class="card">
-      <h3 id="day-detail-title" style="font-size:16px;font-weight:700;margin-bottom:12px;"></h3>
+    <div id="day-detail" style="display:none;margin-top:14px;" class="card">
+      <h3 id="day-detail-title" style="font-size:15px;font-weight:700;margin-bottom:10px;"></h3>
       <div id="day-detail-list"></div>
     </div>
   </div>
@@ -154,239 +195,328 @@
   <!-- ITEMS -->
   <div id="items-panel" class="tab-panel">
     <div class="add-form" id="add-panel">
-      <h3>✏️ 새 발매 정보 등록</h3>
+      <h3>✏️ 새 발매 등록</h3>
       <div class="form-row">
-        <div class="form-group">
-          <label>작품명</label>
-          <input id="inp-work" placeholder="예: 산리오, 원피스, 귀멸의 칼날" />
-        </div>
-        <div class="form-group">
-          <label>상품명</label>
-          <input id="inp-title" placeholder="예: 하트 가챠 2탄, 조로 피규어" />
-        </div>
-        <div class="form-group">
-          <label>카테고리</label>
-          <select id="inp-cat">
+        <div class="form-group"><label>작품명</label><input id="f-work" placeholder="산리오, 원피스 ..."/></div>
+        <div class="form-group"><label>상품명</label><input id="f-title" placeholder="하트 가챠 Vol.3 ..."/></div>
+        <div class="form-group"><label>카테고리</label>
+          <select id="f-cat">
             <option value="gacha">가챠가챠</option>
             <option value="prize">프라이즈</option>
             <option value="goods">굿즈</option>
             <option value="event">이벤트</option>
           </select>
         </div>
-        <div class="form-group">
-          <label>사전 예약 시작일 (선택)</label>
-          <input type="date" id="inp-preorder" />
-        </div>
-        <div class="form-group">
-          <label>발매일</label>
-          <input type="date" id="inp-date" />
-        </div>
-        <div class="form-group">
-          <label>관련 링크 (선택)</label>
-          <input id="inp-link" placeholder="https://..." />
-        </div>
+        <div class="form-group"><label>사전예약일 (선택)</label><input type="date" id="f-preorder"/></div>
+        <div class="form-group"><label>발매일</label><input type="date" id="f-date"/></div>
+        <div class="form-group"><label>관련 링크 (선택)</label><input id="f-link" placeholder="https://..."/></div>
+        <div class="form-group"><label>이미지 URL (선택)</label><input id="f-img" placeholder="https://..."/></div>
       </div>
-      <button class="btn-primary" onclick="addItem()">+ 추가하기</button>
+      <button class="btn-primary" onclick="addItem()">추가하기</button>
     </div>
-    <div class="items-grid" id="items-grid">
-      <div class="empty-msg">등록된 발매 정보가 없습니다.</div>
+    <div class="items-grid" id="items-grid"></div>
+  </div>
+
+  <!-- COLLECTION -->
+  <div id="collection-panel" class="tab-panel">
+    <div class="stats-row" id="col-stats"></div>
+    <div class="card">
+      <div class="filter-row">
+        <span class="section-header" style="margin:0">필터</span>
+        <select class="filter-select" id="col-filter-work" onchange="renderCollection()"></select>
+        <select class="filter-select" id="col-filter-cat" onchange="renderCollection()"></select>
+      </div>
+      <div id="col-list"></div>
     </div>
   </div>
 
   <!-- DIARY -->
   <div id="diary-panel" class="tab-panel">
     <div class="diary-card">
-      <h3>⭐ 위시리스트 & 메모 <span class="tag">자유롭게 기록</span></h3>
-      <textarea class="note-area" id="note-input" placeholder="갖고 싶은 굿즈, 다음 발매 기대 포인트, 응모 결과 등 자유롭게 메모하세요..."></textarea>
-      <button class="save-note-btn" onclick="saveNote()">💾 저장하기</button>
+      <h3>⭐ 메모 & 위시리스트 <span class="tag">자유롭게</span></h3>
+      <textarea class="note-area" id="note-input" placeholder="갖고 싶은 굿즈, 응모 결과, 기대 포인트를 자유롭게 기록하세요..."></textarea>
+      <button class="save-note-btn" onclick="saveNote()">💾 저장</button>
     </div>
     <div class="diary-card">
       <h3>🗂️ 저장된 메모</h3>
-      <div class="saved-notes" id="saved-notes-list">
-        <div class="saved-note">
-          <div class="note-date">2026년 3월 20일</div>
-          산리오 × 스타벅스 콜라보 굿즈 발매! 포차코 텀블러 꼭 사야지... 이번엔 품절 되기 전에 빨리 가야 할 것 같아.
-          <button class="del-btn" onclick="this.closest('.saved-note').remove()">✕</button>
-        </div>
-        <div class="saved-note">
-          <div class="note-date">2026년 3월 15일</div>
-          원피스 가챠 새 시리즈 나온대! 조로 나올 확률이 낮다는데... 얼마 써야 나올지 😭 이번엔 예산 정해두고 도전!
-          <button class="del-btn" onclick="this.closest('.saved-note').remove()">✕</button>
-        </div>
+      <div class="saved-notes" id="saved-notes">
+        <div class="saved-note"><div class="note-date">2026.03.20</div>산리오 × 스타벅스 콜라보! 포차코 텀블러 꼭 사야지 ✨<button class="del-btn" onclick="this.closest('.saved-note').remove()">✕</button></div>
+        <div class="saved-note"><div class="note-date">2026.03.15</div>원피스 가챠 새 시리즈 나온대! 이번엔 예산 정해두고 도전 💪<button class="del-btn" onclick="this.closest('.saved-note').remove()">✕</button></div>
       </div>
     </div>
   </div>
 </div>
 
+<!-- EDIT MODAL -->
+<div class="modal-backdrop" id="edit-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>✏️ 항목 수정</h3>
+      <button class="modal-close" onclick="closeEditModal()">✕</button>
+    </div>
+    <div class="form-row" style="grid-template-columns:1fr 1fr;">
+      <div class="form-group"><label>작품명</label><input id="e-work"/></div>
+      <div class="form-group"><label>상품명</label><input id="e-title"/></div>
+      <div class="form-group"><label>카테고리</label>
+        <select id="e-cat">
+          <option value="gacha">가챠가챠</option>
+          <option value="prize">프라이즈</option>
+          <option value="goods">굿즈</option>
+          <option value="event">이벤트</option>
+        </select>
+      </div>
+      <div class="form-group"><label>사전예약일</label><input type="date" id="e-preorder"/></div>
+      <div class="form-group"><label>발매일</label><input type="date" id="e-date"/></div>
+      <div class="form-group"><label>관련 링크</label><input id="e-link"/></div>
+      <div class="form-group" style="grid-column:span 2;"><label>이미지 URL</label><input id="e-img"/></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:4px;">
+      <button class="btn-primary" style="flex:1;" onclick="saveEdit()">저장</button>
+      <button style="flex:1;border:1px solid var(--border);background:#fff;border-radius:12px;padding:11px;font-family:inherit;font-size:14px;cursor:pointer;" onclick="closeEditModal()">취소</button>
+    </div>
+  </div>
+</div>
+
 <script>
-const CAT_LABELS = {gacha:'가챠가챠',prize:'프라이즈',goods:'굿즈',event:'이벤트'};
-const CAT_CLASS = {gacha:'badge-gacha',prize:'badge-prize',goods:'badge-goods',event:'badge-event'};
-const CHECK_LABELS = ['사전 예약','구매/응모 완료','수령 완료'];
+const CAT = {gacha:'가챠가챠',prize:'프라이즈',goods:'굿즈',event:'이벤트'};
+const BADGE = {gacha:'badge-gacha',prize:'badge-prize',goods:'badge-goods',event:'badge-event'};
+const CHECKS = ['사전 예약','구매/응모 완료','수령 완료'];
 
 let items = [
-  {work:'산리오',title:'마이멜로디 하트 가챠 Vol.3',cat:'gacha',preorder:'2026-03-15',date:'2026-03-28',link:'https://bandai-candy.jp',checks:[false,false,false]},
-  {work:'원피스',title:'조로 DXF 피규어',cat:'prize',preorder:'2026-03-20',date:'2026-04-05',link:'',checks:[true,false,false]},
-  {work:'귀멸의 칼날',title:'탄지로 & 네즈코 아크릴 스탠드',cat:'goods',preorder:'2026-03-25',date:'2026-04-15',link:'',checks:[false,false,false]},
-  {work:'포케몬',title:'포케몬 센터 봄 한정 굿즈',cat:'event',preorder:'2026-03-10',date:'2026-04-01',link:'https://pokemoncenter-online.com',checks:[true,true,false]},
+  {work:'산리오',title:'마이멜로디 하트 가챠 Vol.3',cat:'gacha',preorder:'2026-03-15',date:'2026-03-28',link:'https://bandai-candy.jp',img:'',checks:[false,false,false]},
+  {work:'원피스',title:'조로 DXF 피규어',cat:'prize',preorder:'2026-03-20',date:'2026-04-05',link:'',img:'',checks:[true,false,false]},
+  {work:'귀멸의 칼날',title:'탄지로 & 네즈코 아크릴 스탠드',cat:'goods',preorder:'2026-03-25',date:'2026-04-15',link:'',img:'',checks:[false,false,false]},
+  {work:'포케몬',title:'포케몬 센터 봄 한정 굿즈',cat:'event',preorder:'2026-03-10',date:'2026-04-01',link:'https://pokemoncenter-online.com',img:'',checks:[true,true,false]},
 ];
 
-let calYear = new Date().getFullYear();
-let calMonth = new Date().getMonth();
+let editIdx = null;
+let calY = new Date().getFullYear();
+let calM = new Date().getMonth();
 
-function switchTab(panelId, btn) {
+// --- TAB ---
+function openTab(id) {
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById(panelId).classList.add('active');
-  btn.classList.add('active');
+  document.getElementById(id).classList.add('active');
+  const key = id.replace('-panel','');
+  const btn = document.getElementById('tab-'+key);
+  if(btn) btn.classList.add('active');
+  if(id==='collection-panel') renderCollection();
 }
 
-function renderCalendar() {
+// --- D-DAY ---
+function dDay(dateStr) {
+  if(!dateStr) return '';
+  const today = new Date(); today.setHours(0,0,0,0);
+  const d = new Date(dateStr);
+  const diff = Math.ceil((d - today)/86400000);
+  return diff > 0 ? `D-${diff}` : diff === 0 ? 'D-DAY' : `+${Math.abs(diff)}일 전`;
+}
+
+// --- THUMB ---
+function thumbHtml(it, idx) {
+  if(it.img) {
+    return `<div class="item-thumb"><img src="${it.img}" alt="썸네일" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+      <div class="item-thumb-placeholder" style="display:none;"><div class="initial">${it.work.substring(0,2)}</div><div class="hint">이미지 없음</div></div>
+      ${it.checks[2]?'<div class="item-done-badge">✓ 수령 완료</div>':''}
+      <div class="item-thumb-actions"><button class="thumb-action-btn" onclick="editItem(${idx})">✏️ 편집</button><button class="thumb-action-btn" onclick="setThumb(${idx})">🖼 이미지</button></div>
+    </div>`;
+  }
+  return `<div class="item-thumb">
+    <div class="item-thumb-placeholder"><div class="initial">${it.work.substring(0,2)}</div><div class="hint">이미지 없음</div></div>
+    ${it.checks[2]?'<div class="item-done-badge">✓ 수령 완료</div>':''}
+    <div class="item-thumb-actions"><button class="thumb-action-btn" onclick="editItem(${idx})">✏️ 편집</button><button class="thumb-action-btn" onclick="setThumb(${idx})">🖼 이미지</button></div>
+  </div>`;
+}
+
+// --- RENDER ITEMS ---
+function renderItems() {
+  const grid = document.getElementById('items-grid');
+  if(!items.length){grid.innerHTML='<div class="empty-msg">등록된 항목이 없습니다.</div>';return;}
+  const today = new Date(); today.setHours(0,0,0,0);
+  grid.innerHTML = items.map((it,idx) => {
+    const checks = CHECKS.map((lb,ci)=>`
+      <label class="check-item">
+        <input type="checkbox" ${it.checks[ci]?'checked':''} onchange="toggleCheck(${idx},${ci},this)">
+        <span class="${it.checks[ci]?'done':''}">${lb}</span>
+      </label>`).join('');
+    return `
+      <div class="item-card">
+        ${thumbHtml(it,idx)}
+        <div class="item-body">
+          <div class="item-meta">
+            <span class="item-badge ${BADGE[it.cat]}">${CAT[it.cat]}</span>
+            <div class="item-actions">
+              <button class="icon-btn" onclick="editItem(${idx})" title="편집">✏️</button>
+              <button class="icon-btn" onclick="deleteItem(${idx})" title="삭제" style="color:#ef4444;">✕</button>
+            </div>
+          </div>
+          <h3>${it.title}</h3>
+          <div class="item-work">📦 ${it.work}</div>
+          ${it.preorder?`<div class="date-row">🛒 사전예약&nbsp;<strong>${it.preorder}</strong>&nbsp;${dDay(it.preorder)}</div>`:''}
+          <div class="date-row">📅 발매일&nbsp;<strong>${it.date}</strong>&nbsp;<strong style="color:var(--pink);">${dDay(it.date)}</strong></div>
+          ${it.link?`<a class="item-link" href="${it.link}" target="_blank">🔗 관련 링크</a>`:''}
+          <div class="checklist">${checks}</div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function toggleCheck(ri,ci,el){
+  items[ri].checks[ci]=el.checked;
+  renderItems();
+  renderCalendar();
+}
+
+function deleteItem(idx){
+  if(!confirm('삭제할까요?')) return;
+  items.splice(idx,1);
+  renderItems();renderCalendar();
+}
+
+// --- ADD ---
+function addItem(){
+  const work=document.getElementById('f-work').value.trim();
+  const title=document.getElementById('f-title').value.trim();
+  const date=document.getElementById('f-date').value;
+  if(!work||!title||!date){alert('작품명, 상품명, 발매일을 입력해주세요!');return;}
+  items.push({work,title,cat:document.getElementById('f-cat').value,preorder:document.getElementById('f-preorder').value,date,link:document.getElementById('f-link').value.trim(),img:document.getElementById('f-img').value.trim(),checks:[false,false,false]});
+  ['f-work','f-title','f-preorder','f-date','f-link','f-img'].forEach(id=>document.getElementById(id).value='');
+  renderItems();renderCalendar();
+}
+
+// --- EDIT MODAL ---
+function editItem(idx){
+  editIdx = idx;
+  const it = items[idx];
+  document.getElementById('e-work').value = it.work;
+  document.getElementById('e-title').value = it.title;
+  document.getElementById('e-cat').value = it.cat;
+  document.getElementById('e-preorder').value = it.preorder||'';
+  document.getElementById('e-date').value = it.date;
+  document.getElementById('e-link').value = it.link||'';
+  document.getElementById('e-img').value = it.img||'';
+  document.getElementById('edit-modal').classList.add('open');
+}
+
+function saveEdit(){
+  if(editIdx===null) return;
+  items[editIdx].work = document.getElementById('e-work').value.trim();
+  items[editIdx].title = document.getElementById('e-title').value.trim();
+  items[editIdx].cat = document.getElementById('e-cat').value;
+  items[editIdx].preorder = document.getElementById('e-preorder').value;
+  items[editIdx].date = document.getElementById('e-date').value;
+  items[editIdx].link = document.getElementById('e-link').value.trim();
+  items[editIdx].img = document.getElementById('e-img').value.trim();
+  closeEditModal();
+  renderItems();renderCalendar();
+}
+
+function closeEditModal(){
+  document.getElementById('edit-modal').classList.remove('open');
+  editIdx = null;
+}
+document.getElementById('edit-modal').addEventListener('click',e=>{if(e.target===document.getElementById('edit-modal'))closeEditModal();});
+
+function setThumb(idx){
+  const url = prompt('이미지 URL을 입력하세요');
+  if(!url) return;
+  items[idx].img = url;
+  renderItems();
+}
+
+// --- CALENDAR ---
+function renderCalendar(){
   const today = new Date();
-  document.getElementById('cal-title').textContent = `${calYear}년 ${calMonth+1}월`;
+  document.getElementById('cal-title').textContent = `${calY}년 ${calM+1}월`;
   const days = ['일','월','화','수','목','금','토'];
-  document.getElementById('cal-day-labels').innerHTML = days.map(d=>`<div class="cal-day-label">${d}</div>`).join('');
-  const first = new Date(calYear,calMonth,1).getDay();
-  const total = new Date(calYear,calMonth+1,0).getDate();
-  const relMap = {};
+  document.getElementById('cal-labels').innerHTML = days.map(d=>`<div class="cal-day-label">${d}</div>`).join('');
+  const first = new Date(calY,calM,1).getDay();
+  const total = new Date(calY,calM+1,0).getDate();
+  const map = {};
   items.forEach(it=>{
     const d=new Date(it.date);
-    if(d.getFullYear()===calYear&&d.getMonth()===calMonth){
-      const k=d.getDate(); if(!relMap[k])relMap[k]=[];
-      relMap[k].push(it);
+    if(d.getFullYear()===calY&&d.getMonth()===calM){
+      const k=d.getDate(); if(!map[k])map[k]=[];
+      map[k].push(it);
     }
   });
   let html='';
   for(let i=0;i<first;i++) html+='<div class="cal-day empty"></div>';
   for(let d=1;d<=total;d++){
-    const isToday=d===today.getDate()&&calMonth===today.getMonth()&&calYear===today.getFullYear();
-    const has=!!relMap[d];
-    html+=`<div class="cal-day ${isToday?'today':''} ${has?'has-entry':''}" onclick="showDay(${d})">${d}${has?'<div class="dot"></div>':''}</div>`;
+    const isToday=d===today.getDate()&&calM===today.getMonth()&&calY===today.getFullYear();
+    html+=`<div class="cal-day ${isToday?'today':''} ${map[d]?'has-entry':''}" onclick="showDay(${d})">${d}${map[d]?'<div class="dot"></div>':''}</div>`;
   }
-  document.getElementById('cal-grid').innerHTML=html;
+  document.getElementById('cal-grid').innerHTML = html;
 }
 
-function changeMonth(d){calMonth+=d;if(calMonth<0){calMonth=11;calYear--;}if(calMonth>11){calMonth=0;calYear++;}renderCalendar();}
+function changeMonth(d){calM+=d;if(calM<0){calM=11;calY--;}if(calM>11){calM=0;calY++;}renderCalendar();}
 
 function showDay(day){
-  const matches=items.filter(it=>{const d=new Date(it.date);return d.getFullYear()===calYear&&d.getMonth()===calMonth&&d.getDate()===day;});
+  const matches=items.filter(it=>{const d=new Date(it.date);return d.getFullYear()===calY&&d.getMonth()===calM&&d.getDate()===day;});
   const el=document.getElementById('day-detail');
   if(!matches.length){el.style.display='none';return;}
   el.style.display='block';
-  document.getElementById('day-detail-title').textContent=`${calYear}년 ${calMonth+1}월 ${day}일 발매`;
+  document.getElementById('day-detail-title').textContent=`${calY}년 ${calM+1}월 ${day}일 발매`;
   document.getElementById('day-detail-list').innerHTML=matches.map(it=>`
     <div style="padding:10px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;">
-      <span class="item-badge ${CAT_CLASS[it.cat]}">${CAT_LABELS[it.cat]}</span>
+      <span class="item-badge ${BADGE[it.cat]}">${CAT[it.cat]}</span>
       <strong>${it.work}</strong> — ${it.title}
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
-function formatD(dateStr){
-  if(!dateStr) return '';
-  const today=new Date(); today.setHours(0,0,0,0);
-  const target=new Date(dateStr);
-  const diff=Math.ceil((target-today)/86400000);
-  return diff>0?`D-${diff}`:diff===0?'D-DAY':`+${Math.abs(diff)}일 전`;
-}
+// --- COLLECTION ---
+function renderCollection(){
+  const finished = items.filter(it=>it.checks[2]);
+  const works = [...new Set(finished.map(i=>i.work))];
+  const cats = [...new Set(finished.map(i=>i.cat))];
 
-function renderItems(){
-  const grid=document.getElementById('items-grid');
-  if(!items.length){grid.innerHTML='<div class="empty-msg">등록된 발매 정보가 없습니다.</div>';return;}
-  const today=new Date();today.setHours(0,0,0,0);
-  grid.innerHTML=items.map((it,idx)=>{
-    const dLabel=formatD(it.date);
-    const checks=CHECK_LABELS.map((lb,ci)=>`
-      <label class="check-item">
-        <input type="checkbox" ${it.checks[ci]?'checked':''} onchange="toggleCheck(${idx},${ci},this)">
-        <span class="${it.checks[ci]?'done':''}">${lb}</span>
-      </label>
-    `).join('');
-    const linkHtml=it.link?`<a class="item-link" href="${it.link}" target="_blank">🔗 관련 링크</a>`:'';
-    const thumbHtml=it.thumb?`<img src="${it.thumb}" alt="썸네일" style="width:100%;height:140px;object-fit:cover;border-radius:12px;margin-bottom:10px;">`:
-      it.link?`<div class="thumb-placeholder" data-link="${it.link}" data-idx="${idx}">🔍 썸네일 로드 중...</div>`:'';
-    return `
-      <div class="item-card">
-        ${thumbHtml}
-        <div>
-          <span class="item-badge ${CAT_CLASS[it.cat]}">${CAT_LABELS[it.cat]}</span>
-          <button class="del-card-btn" onclick="deleteItem(${idx})">✕</button>
-        </div>
-        <h3>${it.title}</h3>
-        <div class="work">📦 ${it.work}</div>
-        ${it.preorder?`<div class="item-date">🛒 사전예약: ${it.preorder} &nbsp; <strong>${formatD(it.preorder)}</strong></div>`:''}
-        <div class="item-date">📅 발매일: ${it.date} &nbsp; <strong>${dLabel}</strong></div>
-        ${linkHtml}
-        <div class="checklist">${checks}</div>
+  // stats
+  document.getElementById('col-stats').innerHTML = `
+    <div class="stat-box"><div class="val">${finished.length}</div><div class="lbl">총 수령</div></div>
+    <div class="stat-box"><div class="val">${works.length}</div><div class="lbl">작품 수</div></div>
+    <div class="stat-box"><div class="val">${cats.length}</div><div class="lbl">카테고리</div></div>
+  `;
+
+  // filter options
+  const wEl = document.getElementById('col-filter-work');
+  const cEl = document.getElementById('col-filter-cat');
+  const wVal = wEl.value; const cVal = cEl.value;
+  wEl.innerHTML = `<option value="">전체 작품</option>` + works.map(w=>`<option value="${w}" ${wVal===w?'selected':''}>${w}</option>`).join('');
+  cEl.innerHTML = `<option value="">전체 카테고리</option>` + cats.map(c=>`<option value="${c}" ${cVal===c?'selected':''}>${CAT[c]}</option>`).join('');
+
+  // filtered list
+  const wF = wEl.value; const cF = cEl.value;
+  let list = finished;
+  if(wF) list = list.filter(i=>i.work===wF);
+  if(cF) list = list.filter(i=>i.cat===cF);
+
+  document.getElementById('col-list').innerHTML = list.length ? list.map(it=>`
+    <div class="collection-card">
+      <div class="col-thumb">${it.img?`<img src="${it.img}" alt="">` : `<div class="col-initial">${it.work.substring(0,2)}</div>`}</div>
+      <div class="col-info">
+        <h4>${it.title}</h4>
+        <div class="meta">📦 ${it.work} &nbsp;·&nbsp; 📅 ${it.date}</div>
+        <div class="tags"><span class="item-badge ${BADGE[it.cat]}">${CAT[it.cat]}</span></div>
       </div>
-    `;
-  }).join('');
+    </div>`).join('') : '<div class="empty-msg">수령 완료한 항목이 없습니다.</div>';
 }
 
-async function fetchThumb(idx, link){
-  if(!link) return null;
-  const res = await fetch(`https://api.microlink.io?url=${encodeURIComponent(link)}`);
-  const data = await res.json();
-  return data.data?.image?.url || data.data?.screenshot?.url || null;
-}
-
-async function loadThumbnails(){
-  for(let i=0;i<items.length;i++){
-    if(items[i].thumb || !items[i].link) continue;
-    try{
-      const img = await fetchThumb(i, items[i].link);
-      if(img){ items[i].thumb = img; renderItems(); break; }
-    }catch{}
-  }
-}
-
-function toggleCheck(ri,ci,el){items[ri].checks[ci]=el.checked;renderItems();}
-function deleteItem(idx){items.splice(idx,1);renderItems();renderCalendar();}
-function setThumb(idx){
-  const url = prompt('이미지 URL을 입력하세요 (직접 업로드는 추후 지원 예정)');
-  if(!url) return;
-  items[idx].thumb = url;
-  renderItems();
-}
-
-async function refreshThumb(idx){
-  if(!items[idx].link){alert('관련 링크가 없어 자동 추출이 어려워요.');return;}
-  try{
-    const img = await fetchThumb(idx, items[idx].link);
-    if(img){ items[idx].thumb = img; renderItems(); }
-    else alert('이미지를 찾을 수 없었습니다.');
-  }catch{alert('이미지 로드 실패');}
-}
-
-
-function addItem(){
-  const work=document.getElementById('inp-work').value.trim();
-  const title=document.getElementById('inp-title').value.trim();
-  const cat=document.getElementById('inp-cat').value;
-  const date=document.getElementById('inp-date').value;
-  const link=document.getElementById('inp-link').value.trim();
-  if(!work||!title||!date){alert('작품명, 상품명, 발매일을 입력해주세요!');return;}
-  items.push({work,title,cat,date,link,checks:[false,false,false]});
-  renderItems();renderCalendar();
-  setTimeout(loadThumbnails,300);
-  ['inp-work','inp-title','inp-date','inp-link'].forEach(id=>document.getElementById(id).value='');
-}
-
+// --- DIARY ---
 function saveNote(){
-  const text=document.getElementById('note-input').value.trim();
-  if(!text)return;
-  const today=new Date();
-  const ds=`${today.getFullYear()}년 ${today.getMonth()+1}월 ${today.getDate()}일`;
-  const list=document.getElementById('saved-notes-list');
-  const div=document.createElement('div');
-  div.className='saved-note';
-  div.innerHTML=`<div class="note-date">${ds}</div>${text}<button class="del-btn" onclick="this.closest('.saved-note').remove()">✕</button>`;
-  list.prepend(div);
-  document.getElementById('note-input').value='';
+  const text = document.getElementById('note-input').value.trim();
+  if(!text) return;
+  const today = new Date();
+  const ds = `${today.getFullYear()}.${String(today.getMonth()+1).padStart(2,'0')}.${String(today.getDate()).padStart(2,'0')}`;
+  const div = document.createElement('div');
+  div.className = 'saved-note';
+  div.innerHTML = `<div class="note-date">${ds}</div>${text}<button class="del-btn" onclick="this.closest('.saved-note').remove()">✕</button>`;
+  document.getElementById('saved-notes').prepend(div);
+  document.getElementById('note-input').value = '';
 }
 
 renderCalendar();
 renderItems();
-setTimeout(loadThumbnails, 300);
 </script>
 <script src="assets/access-gate.js"></script>
 </body>
