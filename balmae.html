@@ -148,6 +148,12 @@
 
     .empty-msg{color:var(--muted);font-size:14px;text-align:center;padding:20px 0;}
     .section-header{font-size:14px;font-weight:600;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em;}
+    .price-row{display:flex;align-items:center;gap:8px;margin-top:4px;font-size:13px;}
+    .price-jpy{color:var(--muted);}
+    .price-krw{font-weight:700;color:var(--pink);}
+    .price-na{color:var(--muted);opacity:.5;font-size:12px;}
+    .stat-spending{font-size:11px;color:var(--muted);margin-top:2px;}
+
   </style>
 </head>
 <body>
@@ -211,6 +217,12 @@
         <div class="form-group"><label>발매일</label><input type="date" id="f-date"/></div>
         <div class="form-group"><label>관련 링크 (선택)</label><input id="f-link" placeholder="https://..."/></div>
         <div class="form-group"><label>이미지 URL (선택)</label><input id="f-img" placeholder="https://..."/></div>
+        <div class="form-group"><label>가격 (엔화 ¥)</label><input type="number" id="f-price-jpy" placeholder="예: 500" oninput="autoKRW()"/></div>
+        <div class="form-group"><label>가격 (원화 ₩ 자동계산)</label><input type="number" id="f-price-krw" placeholder="자동 입력"/></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;font-size:13px;color:var(--muted);">
+        적용 환율: <strong id="rate-display">로드 중...</strong>
+        <button type="button" style="background:var(--pink-light);color:var(--pink);border:none;border-radius:8px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;" onclick="refreshRate()">🔄 환율 갱신</button>
       </div>
       <button class="btn-primary" onclick="addItem()">추가하기</button>
     </div>
@@ -223,6 +235,11 @@
     <div class="card">
       <div class="filter-row">
         <span class="section-header" style="margin:0">필터</span>
+        <select class="filter-select" id="col-filter-period" onchange="renderCollection()">
+          <option value="all">전체 기간</option>
+          <option value="month">이번 달</option>
+          <option value="year">올해</option>
+        </select>
         <select class="filter-select" id="col-filter-work" onchange="renderCollection()"></select>
         <select class="filter-select" id="col-filter-cat" onchange="renderCollection()"></select>
       </div>
@@ -269,6 +286,8 @@
       <div class="form-group"><label>발매일</label><input type="date" id="e-date"/></div>
       <div class="form-group"><label>관련 링크</label><input id="e-link"/></div>
       <div class="form-group" style="grid-column:span 2;"><label>이미지 URL</label><input id="e-img"/></div>
+      <div class="form-group"><label>가격 (¥ 엔화)</label><input type="number" id="e-price-jpy" oninput="autoKRWEdit()"/></div>
+      <div class="form-group"><label>가격 (₩ 원화)</label><input type="number" id="e-price-krw"/></div>
     </div>
     <div style="display:flex;gap:10px;margin-top:4px;">
       <button class="btn-primary" style="flex:1;" onclick="saveEdit()">저장</button>
@@ -283,10 +302,10 @@ const BADGE = {gacha:'badge-gacha',prize:'badge-prize',goods:'badge-goods',event
 const CHECKS = ['사전 예약','구매/응모 완료','수령 완료'];
 
 let items = [
-  {work:'산리오',title:'마이멜로디 하트 가챠 Vol.3',cat:'gacha',preorder:'2026-03-15',date:'2026-03-28',link:'https://bandai-candy.jp',img:'',checks:[false,false,false]},
-  {work:'원피스',title:'조로 DXF 피규어',cat:'prize',preorder:'2026-03-20',date:'2026-04-05',link:'',img:'',checks:[true,false,false]},
-  {work:'귀멸의 칼날',title:'탄지로 & 네즈코 아크릴 스탠드',cat:'goods',preorder:'2026-03-25',date:'2026-04-15',link:'',img:'',checks:[false,false,false]},
-  {work:'포케몬',title:'포케몬 센터 봄 한정 굿즈',cat:'event',preorder:'2026-03-10',date:'2026-04-01',link:'https://pokemoncenter-online.com',img:'',checks:[true,true,false]},
+  {work:'산리오',title:'마이멜로디 하트 가챠 Vol.3',cat:'gacha',preorder:'2026-03-15',date:'2026-03-28',link:'https://bandai-candy.jp',img:'',priceJpy:500,priceKrw:4600,checks:[false,false,false]},
+  {work:'원피스',title:'조로 DXF 피규어',cat:'prize',preorder:'2026-03-20',date:'2026-04-05',link:'',img:'',priceJpy:2800,priceKrw:25760,checks:[true,false,false]},
+  {work:'귀멸의 칼날',title:'탄지로 & 네즈코 아크릴 스탠드',cat:'goods',preorder:'2026-03-25',date:'2026-04-15',link:'',img:'',priceJpy:1200,priceKrw:11040,checks:[false,false,false]},
+  {work:'포케몬',title:'포케몬 센터 봄 한정 굿즈',cat:'event',preorder:'2026-03-10',date:'2026-04-01',link:'https://pokemoncenter-online.com',img:'',priceJpy:3500,priceKrw:32200,checks:[true,true,false]},
 ];
 
 let editIdx = null;
@@ -355,6 +374,9 @@ function renderItems() {
           <div class="item-work">📦 ${it.work}</div>
           ${it.preorder?`<div class="date-row">🛒 사전예약&nbsp;<strong>${it.preorder}</strong>&nbsp;${dDay(it.preorder)}</div>`:''}
           <div class="date-row">📅 발매일&nbsp;<strong>${it.date}</strong>&nbsp;<strong style="color:var(--pink);">${dDay(it.date)}</strong></div>
+          <div class="price-row">
+            ${it.priceJpy ? `<span class="price-jpy">¥${it.priceJpy.toLocaleString()}</span><span>→</span><span class="price-krw">₩${it.priceKrw?it.priceKrw.toLocaleString():'?'}</span>` : `<span class="price-na">가격 미입력</span>`}
+          </div>
           ${it.link
             ? `<a class="item-link" href="${it.link}" target="_blank">🔗 관련 링크</a>`
             : `<span class="item-link" style="cursor:pointer;opacity:.55;" onclick="quickAddLink(${idx})">🔗 링크 추가하기</span>`
@@ -368,7 +390,30 @@ function renderItems() {
 function toggleCheck(ri,ci,el){
   items[ri].checks[ci]=el.checked;
   renderItems();
-  renderCalendar();
+  let exchangeRate = 9.20;
+
+async function refreshRate(){
+  try{
+    const res = await fetch('https://api.exchangerate-api.com/v4/latest/JPY');
+    const data = await res.json();
+    const r = data.rates?.KRW;
+    if(r){ exchangeRate = r; }
+  }catch{ /* fallback */ }
+  document.getElementById('rate-display').textContent = `1¥ = ₩${exchangeRate.toFixed(2)}`;
+}
+
+function autoKRW(){
+  const jpy = parseInt(document.getElementById('f-price-jpy').value)||0;
+  if(jpy) document.getElementById('f-price-krw').value = Math.round(jpy * exchangeRate);
+}
+
+function autoKRWEdit(){
+  const jpy = parseInt(document.getElementById('e-price-jpy').value)||0;
+  if(jpy) document.getElementById('e-price-krw').value = Math.round(jpy * exchangeRate);
+}
+
+refreshRate();
+renderCalendar();
 }
 
 function deleteItem(idx){
@@ -383,8 +428,10 @@ function addItem(){
   const title=document.getElementById('f-title').value.trim();
   const date=document.getElementById('f-date').value;
   if(!work||!title||!date){alert('작품명, 상품명, 발매일을 입력해주세요!');return;}
-  items.push({work,title,cat:document.getElementById('f-cat').value,preorder:document.getElementById('f-preorder').value,date,link:document.getElementById('f-link').value.trim(),img:document.getElementById('f-img').value.trim(),checks:[false,false,false]});
-  ['f-work','f-title','f-preorder','f-date','f-link','f-img'].forEach(id=>document.getElementById(id).value='');
+  const pJpy = parseInt(document.getElementById('f-price-jpy').value)||0;
+  const pKrw = parseInt(document.getElementById('f-price-krw').value)||0;
+  items.push({work,title,cat:document.getElementById('f-cat').value,preorder:document.getElementById('f-preorder').value,date,link:document.getElementById('f-link').value.trim(),img:document.getElementById('f-img').value.trim(),priceJpy:pJpy,priceKrw:pKrw,checks:[false,false,false]});
+  ['f-work','f-title','f-preorder','f-date','f-link','f-img','f-price-jpy','f-price-krw'].forEach(id=>document.getElementById(id).value='');
   renderItems();renderCalendar();
 }
 
@@ -399,6 +446,8 @@ function editItem(idx){
   document.getElementById('e-date').value = it.date;
   document.getElementById('e-link').value = it.link||'';
   document.getElementById('e-img').value = it.img||'';
+  document.getElementById('e-price-jpy').value = it.priceJpy||'';
+  document.getElementById('e-price-krw').value = it.priceKrw||'';
   document.getElementById('edit-modal').classList.add('open');
 }
 
@@ -411,6 +460,8 @@ function saveEdit(){
   items[editIdx].date = document.getElementById('e-date').value;
   items[editIdx].link = document.getElementById('e-link').value.trim();
   items[editIdx].img = document.getElementById('e-img').value.trim();
+  items[editIdx].priceJpy = parseInt(document.getElementById('e-price-jpy').value)||0;
+  items[editIdx].priceKrw = parseInt(document.getElementById('e-price-krw').value)||0;
   closeEditModal();
   renderItems();renderCalendar();
 }
@@ -481,14 +532,28 @@ function renderCollection(){
   const works = [...new Set(finished.map(i=>i.work))];
   const cats = [...new Set(finished.map(i=>i.cat))];
 
+  // spending
+  const totalKrw = finished.reduce((s,i)=>s+(i.priceKrw||0),0);
+  const totalJpy = finished.reduce((s,i)=>s+(i.priceJpy||0),0);
+  const pricedCount = finished.filter(i=>i.priceKrw||i.priceJpy).length;
+  const unpricedCount = finished.length - pricedCount;
   // stats
   document.getElementById('col-stats').innerHTML = `
-    <div class="stat-box"><div class="val">${finished.length}</div><div class="lbl">총 수령</div></div>
+    <div class="stat-box"><div class="val">${finished.length}</div><div class="lbl">총 수령</div><div class="stat-spending">${unpricedCount?`가격 미기재 ${unpricedCount}건 별도`:''}</div></div>
     <div class="stat-box"><div class="val">${works.length}</div><div class="lbl">작품 수</div></div>
     <div class="stat-box"><div class="val">${cats.length}</div><div class="lbl">카테고리</div></div>
+    <div class="stat-box"><div class="val" style="font-size:18px;">₩${totalKrw.toLocaleString()}</div><div class="lbl">총 지출 (원화)</div><div class="stat-spending">¥${totalJpy.toLocaleString()}</div></div>
   `;
 
   // filter options
+  // period filter
+  const pEl = document.getElementById('col-filter-period');
+  const period = pEl ? pEl.value : 'all';
+  const now = new Date();
+  let periodFiltered = finished;
+  if(period==='month') periodFiltered = finished.filter(i=>{const d=new Date(i.date);return d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth();});
+  else if(period==='year') periodFiltered = finished.filter(i=>new Date(i.date).getFullYear()===now.getFullYear());
+
   const wEl = document.getElementById('col-filter-work');
   const cEl = document.getElementById('col-filter-cat');
   const wVal = wEl.value; const cVal = cEl.value;
@@ -497,19 +562,31 @@ function renderCollection(){
 
   // filtered list
   const wF = wEl.value; const cF = cEl.value;
-  let list = finished;
+  let list = periodFiltered;
   if(wF) list = list.filter(i=>i.work===wF);
   if(cF) list = list.filter(i=>i.cat===cF);
 
-  document.getElementById('col-list').innerHTML = list.length ? list.map(it=>`
+  // work spending breakdown
+  const workBreakdown = {};
+  list.forEach(i=>{ if(!workBreakdown[i.work]) workBreakdown[i.work]={krw:0,jpy:0,count:0}; workBreakdown[i.work].krw+=(i.priceKrw||0); workBreakdown[i.work].jpy+=(i.priceJpy||0); workBreakdown[i.work].count++; });
+  const breakdownHtml = Object.entries(workBreakdown).length ? `
+    <div style="margin-bottom:16px;">
+      <div class="section-header" style="margin-bottom:10px;">작품별 지출</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;">
+        ${Object.entries(workBreakdown).map(([w,v])=>`<div style="background:var(--pink-light);border-radius:10px;padding:8px 14px;font-size:13px;"><strong>${w}</strong> ${v.count}건 &nbsp; ₩${v.krw.toLocaleString()} <span style="color:var(--muted)">¥${v.jpy.toLocaleString()}</span></div>`).join('')}
+      </div>
+    </div>` : '';
+
+  document.getElementById('col-list').innerHTML = (breakdownHtml + (list.length ? list.map(it=>`
     <div class="collection-card">
       <div class="col-thumb">${it.img?`<img src="${it.img}" alt="">` : `<div class="col-initial">${it.work.substring(0,2)}</div>`}</div>
       <div class="col-info">
         <h4>${it.title}</h4>
         <div class="meta">📦 ${it.work} &nbsp;·&nbsp; 📅 ${it.date}</div>
+        ${it.priceKrw||it.priceJpy ? `<div style="font-size:13px;margin-top:4px;color:var(--pink);font-weight:600;">₩${it.priceKrw?it.priceKrw.toLocaleString():'?'} <span style="color:var(--muted);font-weight:400;">¥${it.priceJpy?it.priceJpy.toLocaleString():'?'}</span></div>` : '<div style="font-size:12px;color:var(--muted);margin-top:4px;">가격 미기재</div>'}
         <div class="tags"><span class="item-badge ${BADGE[it.cat]}">${CAT[it.cat]}</span></div>
       </div>
-    </div>`).join('') : '<div class="empty-msg">수령 완료한 항목이 없습니다.</div>';
+    </div>`).join('') : '<div class="empty-msg">수령 완료한 항목이 없습니다.</div>'));
 }
 
 // --- DIARY ---
