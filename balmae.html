@@ -5,244 +5,360 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>발매일기 · 기다림을 기록하는 다이어리</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=SUIT:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #f9f7ff;
+      --pink: #e84393;
+      --pink-light: #fce7f3;
+      --pink-mid: #f9a8d4;
+      --bg: #f8f9fa;
       --card: #ffffff;
-      --lavender: #c4b5fd;
-      --deep: #433266;
-      --muted: #867da0;
-      --line: #e9e1ff;
-      --accent: #f6d7ff;
+      --text: #1a1a2e;
+      --muted: #6b7280;
+      --border: #e5e7eb;
     }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: 'SUIT','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
-      background: var(--bg);
-      color: var(--deep);
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif; background: var(--bg); color: var(--text); }
+
+    /* NAV */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,0.92); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 40px; height: 60px;
     }
-    .container {
-      width: min(1080px, 92vw);
-      margin: 0 auto;
-      padding: 48px 0 80px;
+    .nav-brand { font-size: 18px; font-weight: 700; color: var(--pink); display: flex; align-items: center; gap: 8px; }
+    .nav-links { display: flex; gap: 24px; }
+    .nav-links a { text-decoration: none; color: var(--muted); font-size: 14px; font-weight: 500; transition: color .2s; }
+    .nav-links a:hover { color: var(--pink); }
+    .nav-btn { background: var(--pink); color: #fff; border: none; border-radius: 20px; padding: 8px 20px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; }
+
+    /* HERO */
+    .hero { text-align: center; padding: 60px 20px 40px; }
+    .hero h1 { font-size: clamp(36px, 6vw, 60px); font-weight: 700; letter-spacing: -1px; }
+    .hero h1 span { color: var(--pink); }
+    .hero p { color: var(--muted); margin-top: 12px; font-size: 17px; }
+
+    /* MAIN LAYOUT */
+    .container { width: min(1120px, 95vw); margin: 0 auto; padding: 0 0 80px; }
+
+    /* TABS */
+    .tabs { display: flex; gap: 8px; margin-bottom: 24px; border-bottom: 2px solid var(--border); padding-bottom: 0; }
+    .tab-btn { padding: 10px 22px; border: none; background: none; font-family: inherit; font-size: 15px; font-weight: 600; color: var(--muted); cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all .2s; }
+    .tab-btn.active { color: var(--pink); border-bottom-color: var(--pink); }
+
+    /* CALENDAR */
+    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
+    .cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .cal-header h3 { font-size: 18px; font-weight: 700; }
+    .cal-nav-btn { background: var(--pink-light); border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; font-size: 16px; color: var(--pink); font-weight: 700; }
+    .cal-day-label { text-align: center; font-size: 12px; font-weight: 600; color: var(--muted); padding: 4px 0; }
+    .cal-day {
+      aspect-ratio: 1; border-radius: 12px; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; cursor: pointer; font-size: 13px;
+      font-weight: 500; border: 1px solid var(--border); background: var(--card);
+      transition: all .2s; position: relative;
     }
-    header {
-      text-align: center;
-      margin-bottom: 36px;
+    .cal-day:hover { border-color: var(--pink-mid); }
+    .cal-day.today { background: var(--pink); color: #fff; border-color: var(--pink); }
+    .cal-day.has-entry { border-color: var(--pink-mid); background: var(--pink-light); }
+    .cal-day .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--pink); position: absolute; bottom: 6px; }
+    .cal-day.today .dot { background: #fff; }
+    .cal-day.empty { background: transparent; border-color: transparent; cursor: default; }
+
+    /* RELEASE CARDS */
+    .releases-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+    .release-card {
+      background: var(--card); border-radius: 20px; border: 1px solid var(--border);
+      padding: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); transition: transform .2s, box-shadow .2s;
     }
-    header h1 {
-      font-size: clamp(32px, 6vw, 58px);
-      margin: 12px 0;
+    .release-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(232,67,147,0.12); }
+    .release-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--pink-light); color: var(--pink); border-radius: 999px; padding: 4px 12px; font-size: 12px; font-weight: 600; margin-bottom: 12px; }
+    .release-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+    .release-card .artist { color: var(--muted); font-size: 14px; margin-bottom: 12px; }
+    .release-date { font-size: 13px; color: var(--muted); }
+    .release-date strong { color: var(--pink); }
+    .checklist { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+    .check-item { display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; }
+    .check-item input[type=checkbox] { accent-color: var(--pink); width: 16px; height: 16px; cursor: pointer; }
+    .check-item span.done { text-decoration: line-through; color: var(--muted); }
+
+    /* ADD FORM */
+    .add-form { background: var(--card); border-radius: 20px; border: 1px solid var(--border); padding: 28px; margin-bottom: 24px; }
+    .add-form h3 { font-size: 16px; font-weight: 700; margin-bottom: 20px; }
+    .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 16px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group label { font-size: 13px; font-weight: 600; color: var(--muted); }
+    .form-group input, .form-group select, .form-group textarea {
+      padding: 10px 14px; border-radius: 12px; border: 1px solid var(--border);
+      font-family: inherit; font-size: 14px; background: var(--bg); outline: none;
+      transition: border-color .2s;
     }
-    header p {
-      color: var(--muted);
-      margin: 0;
+    .form-group input:focus, .form-group select:focus { border-color: var(--pink); }
+    .btn-primary { background: var(--pink); color: #fff; border: none; border-radius: 14px; padding: 12px 28px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit; }
+
+    /* DIARY / NOTES */
+    .diary-card { background: var(--card); border-radius: 20px; border: 1px solid var(--border); padding: 28px; margin-bottom: 20px; }
+    .diary-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .diary-card h3 span.tag { font-size: 12px; background: var(--pink-light); color: var(--pink); padding: 3px 10px; border-radius: 999px; font-weight: 600; }
+    textarea.note-area {
+      width: 100%; min-height: 120px; border: 1px solid var(--border); border-radius: 14px;
+      padding: 14px; font-family: inherit; font-size: 14px; background: var(--bg);
+      resize: vertical; outline: none; transition: border-color .2s; line-height: 1.7;
     }
-    .diary-card {
-      background: var(--card);
-      border-radius: 28px;
-      padding: 32px;
-      border: 1px solid var(--line);
-      box-shadow: 0 20px 45px rgba(67,50,102,0.08);
-      margin-bottom: 28px;
-    }
-    .section-title {
-      font-size: 22px;
-      font-weight: 600;
-      margin-bottom: 16px;
-    }
-    .works-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 18px;
-    }
-    .work-card {
-      background: #fff;
-      border-radius: 20px;
-      padding: 18px;
-      border: 1px solid var(--line);
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .work-card h3 {
-      margin: 0;
-      font-size: 20px;
-    }
-    .tag {
-      display: inline-flex;
-      padding: 4px 10px;
-      background: var(--accent);
-      border-radius: 999px;
-      font-size: 12px;
-      color: var(--deep);
-    }
-    form {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 18px;
-      align-items: end;
-    }
-    label {
-      display: flex;
-      flex-direction: column;
-      font-size: 14px;
-      color: var(--muted);
-    }
-    input, textarea, select {
-      margin-top: 6px;
-      padding: 12px;
-      border-radius: 16px;
-      border: 1px solid var(--line);
-      font-family: inherit;
-      font-size: 15px;
-      background: #fff;
-    }
-    textarea { resize: vertical; min-height: 60px; }
-    button {
-      border: none;
-      padding: 14px;
-      border-radius: 18px;
-      background: var(--lavender);
-      color: #fff;
-      font-weight: 600;
-      cursor: pointer;
-      transition: opacity .2s;
-    }
-    button:hover { opacity: .9; }
-    .timeline {
-      margin-top: 18px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-    .goods-card {
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 14px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-    .goods-card strong { font-size: 16px; }
-    .goods-card small { color: var(--muted); }
-    .alarm-btn {
-      border-radius: 12px;
-      padding: 8px 14px;
-      background: #fff;
-      border: 1px dashed var(--lavender);
-      color: var(--lavender);
-      cursor: pointer;
-    }
-    .alarm-btn.active {
-      background: var(--lavender);
-      color: #fff;
-      border-color: transparent;
-    }
+    textarea.note-area:focus { border-color: var(--pink); }
+    .save-note-btn { margin-top: 10px; background: var(--pink-light); color: var(--pink); border: none; border-radius: 12px; padding: 8px 20px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; }
+    .saved-notes { display: flex; flex-direction: column; gap: 12px; margin-top: 16px; }
+    .saved-note { background: var(--pink-light); border-radius: 14px; padding: 14px 18px; font-size: 14px; line-height: 1.7; position: relative; }
+    .saved-note .note-date { font-size: 12px; color: var(--pink); font-weight: 600; margin-bottom: 6px; }
+    .saved-note .del-btn { position: absolute; top: 10px; right: 12px; background: none; border: none; cursor: pointer; color: var(--muted); font-size: 16px; }
+
+    /* PANEL TAB CONTENT */
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <div class="tag">발매일기 · 기다림 기록장</div>
-      <h1>기다림을 기록하고, 놓치지 않는 다이어리</h1>
-      <p>앨범 · 굿즈 · 협업 발매일을 감성적으로 저장하고, 원하는 순간에 알림을 받아요.</p>
-    </header>
+<nav>
+  <div class="nav-brand">📓 발매일기</div>
+  <div class="nav-links">
+    <a href="#calendar">캘린더</a>
+    <a href="#releases">기록</a>
+    <a href="#diary">회고</a>
+  </div>
+  <button class="nav-btn" onclick="document.getElementById('add-panel').scrollIntoView({behavior:'smooth'})">+ 새 기록</button>
+</nav>
 
-    <section class="diary-card">
-      <div class="section-title">1. 작품 등록하기</div>
-      <form id="workForm">
-        <label>작품 이름<input id="workName" placeholder="예: Lunar Echo" required></label>
-        <label>타입<select id="workType"><option>앨범</option><option>굿즈</option><option>협업</option></select></label>
-        <label style="grid-column: span 2; min-width: 100%;">기대 메모<textarea id="workNote" placeholder="기다리는 이유를 남겨보세요"></textarea></label>
-        <button type="submit">기다림 시작</button>
-      </form>
-      <div id="worksList" class="works-grid" style="margin-top:20px;"></div>
-    </section>
+<div class="hero">
+  <h1>기다림을 <span>기록</span>하는 다이어리</h1>
+  <p>좋아하는 아티스트의 발매일을 캘린더로 관리하고, 감상을 남겨보세요.</p>
+</div>
 
-    <section class="diary-card">
-      <div class="section-title">2. 굿즈 타임라인 & 알림</div>
-      <div id="timeline"></div>
-    </section>
+<div class="container">
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('calendar-panel', this)">📅 캘린더</button>
+    <button class="tab-btn" onclick="switchTab('releases-panel', this)">🎵 릴리즈</button>
+    <button class="tab-btn" onclick="switchTab('diary-panel', this)">📝 회고 노트</button>
   </div>
 
-  <script>
-    const works = [
-      { name: 'Lunar Echo', type: '앨범', note: '밤하늘 콘셉트라 꼭 LP로 듣고 싶어!', goods: [
-        { title: '한정판 포토북', preorder: '2026-04-05', release: '2026-04-18', alarm: false },
-        { title: '별빛 아크릴 키링', preorder: '2026-04-12', release: '2026-04-28', alarm: true }
-      ]},
-      { name: 'Aurora Bloom', type: '굿즈', note: '봄 시즌 포스터 + 라이트 스틱', goods: [
-        { title: '라이트 스틱 Ver.2', preorder: '2026-05-01', release: '2026-05-20', alarm: false }
-      ]}
-    ];
+  <!-- CALENDAR PANEL -->
+  <div id="calendar-panel" class="tab-panel active">
+    <div class="diary-card">
+      <div class="cal-header">
+        <button class="cal-nav-btn" onclick="changeMonth(-1)">‹</button>
+        <h3 id="cal-title"></h3>
+        <button class="cal-nav-btn" onclick="changeMonth(1)">›</button>
+      </div>
+      <div class="calendar-grid" id="cal-day-labels"></div>
+      <div class="calendar-grid" id="cal-grid" style="margin-top:8px;"></div>
+    </div>
+    <div id="day-detail" style="display:none;" class="diary-card">
+      <h3 id="day-detail-title"></h3>
+      <div id="day-detail-list"></div>
+    </div>
+  </div>
 
-    const worksList = document.getElementById('worksList');
-    const timeline = document.getElementById('timeline');
-
-    function renderWorks() {
-      worksList.innerHTML = works.map(work => `
-        <div class="work-card">
-          <div><span class="tag">${work.type}</span></div>
-          <h3>${work.name}</h3>
-          <p>${work.note || '기대 메모가 아직 없어요.'}</p>
-          <small>굿즈 ${work.goods.length}개</small>
+  <!-- RELEASES PANEL -->
+  <div id="releases-panel" class="tab-panel">
+    <!-- ADD FORM -->
+    <div class="add-form" id="add-panel">
+      <h3>✏️ 새 발매 기록 추가</h3>
+      <div class="form-row">
+        <div class="form-group">
+          <label>아티스트</label>
+          <input type="text" id="inp-artist" placeholder="예: BTS, aespa..." />
         </div>
-      `).join('');
-    }
-
-    function renderTimeline() {
-      timeline.innerHTML = works.map(work => `
-        <div class="timeline">
-          <h3>${work.name}</h3>
-          ${work.goods.map((item, idx) => `
-            <div class="goods-card">
-              <div>
-                <strong>${item.title}</strong>
-                <small>사전예약 ${item.preorder} · 발매 ${item.release}</small>
-              </div>
-              <button class="alarm-btn ${item.alarm ? 'active' : ''}" data-work="${work.name}" data-index="${idx}">
-                ${item.alarm ? '알림 취소' : '알림 켜기'}
-              </button>
-            </div>
-          `).join('')}
+        <div class="form-group">
+          <label>앨범 / 곡명</label>
+          <input type="text" id="inp-title" placeholder="예: Butter, Drama" />
         </div>
-      `).join('');
+        <div class="form-group">
+          <label>발매일</label>
+          <input type="date" id="inp-date" />
+        </div>
+        <div class="form-group">
+          <label>장르</label>
+          <select id="inp-genre">
+            <option>K-POP</option><option>팝</option><option>R&B</option><option>힙합</option><option>인디</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="addRelease()">+ 추가하기</button>
+    </div>
+    <div class="releases-grid" id="releases-grid"></div>
+  </div>
+
+  <!-- DIARY PANEL -->
+  <div id="diary-panel" class="tab-panel">
+    <div class="diary-card">
+      <h3>📝 새 회고 쓰기 <span class="tag">오늘의 감상</span></h3>
+      <textarea class="note-area" id="note-input" placeholder="좋아하는 음악을 들으며 느낀 감상을 자유롭게 기록해보세요..."></textarea>
+      <button class="save-note-btn" onclick="saveNote()">💾 저장하기</button>
+    </div>
+    <div class="diary-card">
+      <h3>🗂️ 저장된 회고</h3>
+      <div class="saved-notes" id="saved-notes-list">
+        <div class="saved-note">
+          <div class="note-date">2026년 3월 20일</div>
+          새 앨범 발매 당일, 밤 12시에 스트리밍 켰다. 첫 트랙부터 눈물이 날 뻔... 타이틀곡 멜로디가 계속 귀에 맴돈다.
+        </div>
+        <div class="saved-note">
+          <div class="note-date">2026년 3월 15일</div>
+          티저 영상 3개 다 봤다. 컨셉이 이번엔 완전 다른데 더 기대된다. 발매일까지 열흘 남았다는 게 믿기지 않아.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ---- State ----
+let releases = [
+  { artist: 'aespa', title: 'Supernova Repack', date: '2026-03-28', genre: 'K-POP', checks: [false, false, false] },
+  { artist: 'NewJeans', title: 'How Sweet', date: '2026-04-05', genre: 'K-POP', checks: [true, false, false] },
+  { artist: 'BTS Jimin', title: 'MUSE', date: '2026-04-18', genre: 'K-POP', checks: [false, false, false] },
+  { artist: 'IVE', title: 'I\'ve Mine', date: '2026-03-31', genre: 'K-POP', checks: [true, true, false] },
+];
+const checkLabels = ['선주문 완료', '뮤직비디오 감상', '앨범 리뷰 작성'];
+
+let currentDate = new Date();
+let calYear = currentDate.getFullYear();
+let calMonth = currentDate.getMonth();
+
+// ---- TABS ----
+function switchTab(panelId, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(panelId).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ---- CALENDAR ----
+function renderCalendar() {
+  const title = document.getElementById('cal-title');
+  const labels = document.getElementById('cal-day-labels');
+  const grid = document.getElementById('cal-grid');
+  const days = ['일','월','화','수','목','금','토'];
+  title.textContent = `${calYear}년 ${calMonth+1}월`;
+  labels.innerHTML = days.map(d => `<div class="cal-day-label">${d}</div>`).join('');
+
+  const first = new Date(calYear, calMonth, 1).getDay();
+  const total = new Date(calYear, calMonth+1, 0).getDate();
+  const today = new Date();
+
+  const releaseDates = {};
+  releases.forEach(r => {
+    const d = new Date(r.date);
+    if (d.getFullYear() === calYear && d.getMonth() === calMonth) {
+      const day = d.getDate();
+      if (!releaseDates[day]) releaseDates[day] = [];
+      releaseDates[day].push(r);
     }
+  });
 
-    document.getElementById('workForm').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const name = workName.value.trim();
-      const type = workType.value;
-      const note = workNote.value.trim();
-      if (!name) return;
-      works.push({ name, type, note, goods: [] });
-      workName.value = '';
-      workNote.value = '';
-      renderWorks();
-      renderTimeline();
-    });
+  let html = '';
+  for (let i = 0; i < first; i++) html += '<div class="cal-day empty"></div>';
+  for (let d = 1; d <= total; d++) {
+    const isToday = d === today.getDate() && calMonth === today.getMonth() && calYear === today.getFullYear();
+    const hasEntry = !!releaseDates[d];
+    html += `<div class="cal-day ${isToday?'today':''} ${hasEntry?'has-entry':''}" onclick="showDayDetail(${d})">
+      ${d}
+      ${hasEntry ? '<div class="dot"></div>' : ''}
+    </div>`;
+  }
+  grid.innerHTML = html;
+}
 
-    timeline.addEventListener('click', (e) => {
-      if (e.target.classList.contains('alarm-btn')) {
-        const workName = e.target.dataset.work;
-        const idx = Number(e.target.dataset.index);
-        const work = works.find(w => w.name === workName);
-        if (work && work.goods[idx]) {
-          work.goods[idx].alarm = !work.goods[idx].alarm;
-          renderTimeline();
-        }
-      }
-    });
+function changeMonth(delta) {
+  calMonth += delta;
+  if (calMonth < 0) { calMonth = 11; calYear--; }
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  renderCalendar();
+}
 
-    renderWorks();
-    renderTimeline();
-  </script>
-  <script src="assets/access-gate.js"></script>
+function showDayDetail(day) {
+  const matches = releases.filter(r => {
+    const d = new Date(r.date);
+    return d.getFullYear() === calYear && d.getMonth() === calMonth && d.getDate() === day;
+  });
+  const detail = document.getElementById('day-detail');
+  const title = document.getElementById('day-detail-title');
+  const list = document.getElementById('day-detail-list');
+  if (matches.length === 0) { detail.style.display='none'; return; }
+  detail.style.display = 'block';
+  title.textContent = `${calYear}년 ${calMonth+1}월 ${day}일 발매`;
+  list.innerHTML = matches.map(r => `
+    <div style="padding:10px 0;border-bottom:1px solid var(--border);">
+      <strong>${r.artist}</strong> — ${r.title}
+      <span style="margin-left:10px;font-size:12px;background:var(--pink-light);color:var(--pink);padding:2px 8px;border-radius:999px;">${r.genre}</span>
+    </div>
+  `).join('');
+}
+
+// ---- RELEASES ----
+function renderReleases() {
+  const grid = document.getElementById('releases-grid');
+  const today = new Date(); today.setHours(0,0,0,0);
+  grid.innerHTML = releases.map((r, idx) => {
+    const rel = new Date(r.date);
+    const diff = Math.ceil((rel - today) / 86400000);
+    const daysLabel = diff > 0 ? `D-${diff}` : diff === 0 ? 'D-DAY' : `D+${Math.abs(diff)}`;
+    const checks = checkLabels.map((label, ci) => `
+      <label class="check-item">
+        <input type="checkbox" ${r.checks[ci]?'checked':''} onchange="toggleCheck(${idx},${ci},this)">
+        <span class="${r.checks[ci]?'done':''}">${label}</span>
+      </label>
+    `).join('');
+    return `
+      <div class="release-card">
+        <div class="release-badge">🎵 ${r.genre}</div>
+        <h3>${r.title}</h3>
+        <div class="artist">${r.artist}</div>
+        <div class="release-date">📅 ${r.date} &nbsp; <strong>${daysLabel}</strong></div>
+        <div class="checklist">${checks}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function toggleCheck(ri, ci, el) {
+  releases[ri].checks[ci] = el.checked;
+  renderReleases();
+}
+
+function addRelease() {
+  const artist = document.getElementById('inp-artist').value.trim();
+  const title = document.getElementById('inp-title').value.trim();
+  const date = document.getElementById('inp-date').value;
+  const genre = document.getElementById('inp-genre').value;
+  if (!artist || !title || !date) { alert('아티스트, 제목, 날짜를 입력해주세요!'); return; }
+  releases.push({ artist, title, date, genre, checks: [false, false, false] });
+  renderReleases(); renderCalendar();
+  document.getElementById('inp-artist').value = '';
+  document.getElementById('inp-title').value = '';
+  document.getElementById('inp-date').value = '';
+}
+
+// ---- NOTES ----
+function saveNote() {
+  const text = document.getElementById('note-input').value.trim();
+  if (!text) return;
+  const today = new Date();
+  const dateStr = `${today.getFullYear()}년 ${today.getMonth()+1}월 ${today.getDate()}일`;
+  const list = document.getElementById('saved-notes-list');
+  const div = document.createElement('div');
+  div.className = 'saved-note';
+  div.innerHTML = `<div class="note-date">${dateStr}</div>${text}<button class="del-btn" onclick="this.closest('.saved-note').remove()">✕</button>`;
+  list.prepend(div);
+  document.getElementById('note-input').value = '';
+}
+
+// ---- INIT ----
+renderCalendar();
+renderReleases();
+</script>
+<script src="assets/access-gate.js"></script>
 </body>
 </html>
