@@ -361,6 +361,7 @@ function renderRegistered() {
         <div class="check-btn ${checked[key(t)]?'done':''}" onclick="doCheck('${m.name}','${t}')">
           ${checked[key(t)] ? '✓' : ''}
         </div>
+        <div class="check-btn" style="border-color:#ef4444;font-size:10px;color:#ef4444;" onclick="removeTime('${m.name}','${t}')">✕</div>
       </div>
     `).join('');
     const lastLog = m.history?.[0];
@@ -371,9 +372,16 @@ function renderRegistered() {
             <div class="med-name">${m.name}</div>
             <div class="med-desc">${m.desc}</div>
           </div>
-          <div class="impact-badge ${m.level==='warn'?'warn':''}">${m.impact}</div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+            <div class="impact-badge ${m.level==='warn'?'warn':''}">${m.impact}</div>
+            <button class="share-btn" style="color:#ef4444;background:rgba(239,68,68,0.08);" onclick="deleteMed('${m.name}')">삭제</button>
+          </div>
         </div>
         <div class="times-row">${timesHtml}</div>
+        <div style="display:flex;gap:8px;align-items:center;margin-top:4px;">
+          <input class="input" id="add-time-${m.name.replace(/[^a-zA-Z0-9가-힣]/g,'')}" type="time" style="width:120px;padding:6px 10px;font-size:13px;border-radius:8px;">
+          <button class="share-btn" onclick="addTime('${m.name}')">시간 추가</button>
+        </div>
         <div class="history-row">마지막 복용: ${lastLog ? lastLog.loggedAt : '아직 없음'}</div>
         <div class="share-row">
           <button class="share-btn" onclick="copyLink('${m.name}')">링크 복사</button>
@@ -421,6 +429,25 @@ function doCheck(name, time) {
   render();
 }
 
+function deleteMed(name) {
+  const idx = myMeds.findIndex(m=>m.name===name);
+  if(idx>=0) { myMeds.splice(idx,1); toast(`${name} 삭제됨`); render(); }
+}
+
+function removeTime(name, time) {
+  const m = myMeds.find(m=>m.name===name);
+  if(m) { m.times = m.times.filter(t=>t!==time); delete checked[name+'_'+time]; render(); }
+}
+
+function addTime(name) {
+  const key = 'add-time-'+name.replace(/[^a-zA-Z0-9가-힣]/g,'');
+  const input = document.getElementById(key);
+  if(input && input.value) {
+    const m = myMeds.find(m=>m.name===name);
+    if(m && !m.times.includes(input.value)) { m.times.push(input.value); input.value=''; render(); toast(`시간 추가됨`,'success'); }
+  }
+}
+
 function copyLink(name) {
   navigator.clipboard?.writeText(`https://bctfsh-usagi.github.io/demo/#${encodeURIComponent(name)}`).then(()=>toast('링크가 복사되었습니다.')).catch(()=>toast('복사 실패'));
 }
@@ -438,7 +465,8 @@ function addMed(name, time, dose) {
     else toast(`${name} 이미 등록된 약입니다.`);
   } else {
     const entry = {...base};
-    if(time && !entry.times.includes(time)) entry.times = [time,...entry.times];
+    // 사용자가 직접 시간을 입력했으면 그 시간만 사용
+    if(time) entry.times = [time];
     if(dose) entry.dose = dose;
     entry.history = [];
     myMeds.push(entry);
