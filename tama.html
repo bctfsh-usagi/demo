@@ -5,170 +5,283 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Pastel Tamagotchi · 라일락 토끼</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=SUIT:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #fef6ff;
-      --screen: #f8f1ff;
-      --border: #d6c5ff;
-      --pixel1: #ff9dc7;
-      --pixel2: #c89bff;
-      --pixel3: #ffd27f;
-      --text: #4a3d6c;
-      --button: #c0b0ff;
-      --button-dark: #a392f9;
-      --danger: #ff8fb6;
+      --pink: #ff6b9d;
+      --pink-light: #ffe4f0;
+      --pink-mid: #ffb3d1;
+      --bg: #fff5f8;
+      --card: #ffffff;
+      --text: #3d1f2e;
+      --muted: #9ca3af;
+      --border: #fcd7e8;
     }
-    * { box-sizing: border-box; }
-    body { margin:0; background:var(--bg); color:var(--text); font-family:'SUIT','Apple SD Gothic Neo','Malgun Gothic',sans-serif; display:flex; justify-content:center; align-items:center; min-height:100vh; padding:20px; }
-    .console { width:min(440px,92vw); background:var(--screen); border:6px solid var(--border); border-radius:32px; padding:26px; box-shadow:0 22px 50px rgba(74,61,108,0.15); }
-    h1 { font-family:'Press Start 2P',cursive; font-size:18px; text-align:center; margin:0 0 6px; }
-    .meta { text-align:center; font-size:13px; color:var(--text); margin-bottom:18px; }
-    .hud { display:flex; justify-content:space-between; margin-bottom:16px; font-size:14px; }
-    .hud span { background:#fff; border-radius:18px; padding:6px 12px; border:1px solid var(--border); }
-    .pixel-pet { width:200px; height:200px; margin:0 auto 18px; image-rendering:pixelated; background:#fff; border:1px solid var(--border); border-radius:24px; display:block; object-fit:contain; }
-    .pixel-pet div { width:100%; padding-top:100%; background:transparent; border-radius:4px; }
-    .p1 { background: var(--pixel1); }
-    .p2 { background: var(--pixel2); }
-    .p3 { background: var(--pixel3); }
-    .status { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px; font-size:14px; }
-    .status-label { font-size:12px; color:var(--text); margin-bottom:4px; display:flex; justify-content:space-between; }
-    .bar { background:#fff; border:1px solid var(--border); border-radius:12px; height:12px; overflow:hidden; }
-    .bar-fill { height:100%; background:linear-gradient(90deg,var(--button),var(--button-dark)); transition:width .3s ease; }
-    .actions { display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:12px; }
-    button { border:none; padding:12px; border-radius:18px; background:var(--button); color:var(--text); font-weight:600; cursor:pointer; transition:transform .1s, opacity .2s; }
-    button:active { transform:translateY(2px); }
-    button:disabled { opacity:.4; cursor:not-allowed; }
-    .log { margin-top:18px; background:#fff; border-radius:16px; border:1px dashed var(--border); padding:14px; font-size:13px; min-height:70px; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,0.92); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 40px; height: 60px;
+    }
+    .nav-brand { font-size: 18px; font-weight: 700; color: var(--pink); }
+    .nav-links { display: flex; gap: 24px; }
+    .nav-links a { text-decoration: none; color: var(--muted); font-size: 14px; font-weight: 500; transition: color .2s; }
+    .nav-links a:hover { color: var(--pink); }
+
+    .hero { text-align: center; padding: 48px 20px 24px; }
+    .hero h1 { font-size: clamp(30px, 5vw, 52px); font-weight: 700; }
+    .hero h1 span { color: var(--pink); }
+    .hero p { color: var(--muted); margin-top: 10px; font-size: 16px; }
+
+    .main-layout {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 28px;
+      width: min(1000px, 95vw);
+      margin: 0 auto 80px;
+    }
+    @media (max-width: 700px) { .main-layout { grid-template-columns: 1fr; } }
+
+    .card {
+      background: var(--card); border-radius: 24px; border: 1px solid var(--border);
+      padding: 28px; box-shadow: 0 4px 20px rgba(255,107,157,0.08);
+    }
+    .card h3 { font-size: 15px; font-weight: 700; margin-bottom: 18px; color: var(--muted); letter-spacing: .5px; text-transform: uppercase; }
+
+    /* PET DISPLAY */
+    .pet-display {
+      text-align: center;
+    }
+    .pet-stage {
+      width: 200px; height: 200px; margin: 0 auto 16px;
+      background: var(--pink-light); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 80px; position: relative; transition: all .4s;
+      border: 3px solid var(--pink-mid);
+    }
+    .pet-stage.happy { background: #fff0f7; animation: bounce .5s ease infinite alternate; }
+    .pet-stage.tired { background: #f0f0f0; }
+    .pet-stage.hungry { background: #fff8e0; }
+    @keyframes bounce { 0% { transform: translateY(0); } 100% { transform: translateY(-8px); } }
+    .pet-name { font-family: 'Press Start 2P', cursive; font-size: 14px; color: var(--pink); margin-bottom: 4px; }
+    .pet-mood { font-size: 14px; color: var(--muted); margin-bottom: 16px; }
+    .level-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--pink-light); color: var(--pink); border-radius: 999px; padding: 6px 16px; font-size: 13px; font-weight: 700; }
+
+    /* STATUS BARS */
+    .status-list { display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px; }
+    .status-item label { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+    .status-item label span { color: var(--muted); font-weight: 400; }
+    .bar { background: var(--pink-light); border-radius: 999px; height: 10px; overflow: hidden; }
+    .bar-fill { height: 100%; background: linear-gradient(90deg, var(--pink-mid), var(--pink)); border-radius: 999px; transition: width .5s ease; }
+
+    /* SLIDERS */
+    .slider-list { display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px; }
+    .slider-item label { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+    .slider-item label span { color: var(--pink); font-weight: 700; }
+    input[type=range] {
+      -webkit-appearance: none; width: 100%; height: 6px;
+      border-radius: 999px; background: var(--pink-light); outline: none;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none; width: 20px; height: 20px;
+      border-radius: 50%; background: var(--pink); cursor: pointer;
+      box-shadow: 0 2px 6px rgba(255,107,157,0.4);
+    }
+
+    /* ACTIONS */
+    .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .action-btn {
+      padding: 12px; border-radius: 16px; border: 2px solid var(--border);
+      background: var(--card); font-family: inherit; font-size: 14px; font-weight: 600;
+      color: var(--text); cursor: pointer; transition: all .2s; display: flex;
+      flex-direction: column; align-items: center; gap: 4px;
+    }
+    .action-btn:hover { border-color: var(--pink); background: var(--pink-light); }
+    .action-btn span.icon { font-size: 24px; }
+    .btn-apply {
+      width: 100%; padding: 14px; background: var(--pink); color: #fff; border: none;
+      border-radius: 16px; font-family: inherit; font-size: 15px; font-weight: 700;
+      cursor: pointer; transition: opacity .2s;
+    }
+    .btn-apply:hover { opacity: .88; }
+
+    /* LOG */
+    .log-area {
+      background: var(--pink-light); border-radius: 16px; padding: 16px;
+      font-size: 13px; line-height: 1.8; min-height: 100px; color: var(--text);
+    }
+    .log-line { padding: 4px 0; border-bottom: 1px solid var(--pink-mid); }
+    .log-line:last-child { border-bottom: none; }
+    .log-time { color: var(--muted); font-size: 11px; margin-right: 8px; }
+
+    /* SUMMARY */
+    .summary-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+    .summary-item { background: var(--pink-light); border-radius: 14px; padding: 14px; text-align: center; }
+    .summary-item .val { font-size: 22px; font-weight: 700; color: var(--pink); }
+    .summary-item .lbl { font-size: 12px; color: var(--muted); margin-top: 4px; }
   </style>
 </head>
 <body>
-  <div class="console">
-    <h1>Pastel Tamagotchi</h1>
-    <div class="meta">라일락 토끼와 함께하는 다정한 하루</div>
-    <div class="hud">
-      <span id="level">Lv.1</span>
-      <span id="exp">EXP 0 / 80</span>
-      <span id="stars">⭐ 20</span>
+<nav>
+  <div class="nav-brand">🐰 Pastel Tamagotchi</div>
+  <div class="nav-links">
+    <a href="#">홈</a>
+    <a href="#">내 캐릭터</a>
+    <a href="#">랭킹</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <h1>Pastel <span>Tamagotchi</span></h1>
+  <p>슬라이더로 오늘의 상태를 입력하고, 나만의 캐릭터를 키워보세요 🌸</p>
+</div>
+
+<div class="main-layout">
+  <!-- LEFT: PET -->
+  <div>
+    <div class="card pet-display" style="margin-bottom:24px;">
+      <h3>나의 캐릭터</h3>
+      <div class="pet-stage" id="pet-stage">🐰</div>
+      <div class="pet-name">Lilac</div>
+      <div class="pet-mood" id="pet-mood">기분이 보통이에요</div>
+      <div class="level-badge">⭐ Lv.7 · 친밀도 320</div>
     </div>
-    <img class="pixel-pet" id="petImage" alt="라일락 토끼" />
-    <div class="status">
-      <div>
-        <div class="status-label">배고픔 <span id="stat-hunger">70</span></div>
-        <div class="bar"><div class="bar-fill" id="hunger"></div></div>
+
+    <div class="card">
+      <h3>현재 상태</h3>
+      <div class="status-list">
+        <div class="status-item">
+          <label>배고픔 <span id="hunger-val">65%</span></label>
+          <div class="bar"><div class="bar-fill" id="bar-hunger" style="width:65%"></div></div>
+        </div>
+        <div class="status-item">
+          <label>행복도 <span id="happy-val">72%</span></label>
+          <div class="bar"><div class="bar-fill" id="bar-happy" style="width:72%"></div></div>
+        </div>
+        <div class="status-item">
+          <label>에너지 <span id="energy-val">50%</span></label>
+          <div class="bar"><div class="bar-fill" id="bar-energy" style="width:50%"></div></div>
+        </div>
+        <div class="status-item">
+          <label>청결도 <span id="clean-val">80%</span></label>
+          <div class="bar"><div class="bar-fill" id="bar-clean" style="width:80%"></div></div>
+        </div>
       </div>
-      <div>
-        <div class="status-label">기분 <span id="stat-mood">80</span></div>
-        <div class="bar"><div class="bar-fill" id="mood"></div></div>
-      </div>
-      <div>
-        <div class="status-label">에너지 <span id="stat-energy">75</span></div>
-        <div class="bar"><div class="bar-fill" id="energy"></div></div>
-      </div>
-      <div>
-        <div class="status-label">청결 <span id="stat-clean">85</span></div>
-        <div class="bar"><div class="bar-fill" id="clean"></div></div>
+
+      <div class="action-grid">
+        <button class="action-btn" onclick="doAction('feed')"><span class="icon">🍎</span>밥 주기</button>
+        <button class="action-btn" onclick="doAction('play')"><span class="icon">🎾</span>놀아주기</button>
+        <button class="action-btn" onclick="doAction('sleep')"><span class="icon">😴</span>재우기</button>
+        <button class="action-btn" onclick="doAction('bath')"><span class="icon">🛁</span>목욕</button>
       </div>
     </div>
-    <div class="actions">
-      <button data-action="feed">간식 주기 (-2⭐ +10 EXP)</button>
-      <button data-action="play">놀아주기 (-3⭐ +12 EXP)</button>
-      <button data-action="rest">낮잠 (-1⭐ +8 EXP)</button>
-      <button data-action="clean">세수시키기 (-2⭐ +10 EXP)</button>
-    </div>
-    <div class="log" id="log">라일락 토끼가 당신을 기다리고 있어요.</div>
   </div>
 
-  <script>
-    const petImage = document.getElementById('petImage');
-    const logBox = document.getElementById('log');
-    const levelEl = document.getElementById('level');
-    const expEl = document.getElementById('exp');
-    const starEl = document.getElementById('stars');
-    const statText = {
-      hunger: document.getElementById('stat-hunger'),
-      mood: document.getElementById('stat-mood'),
-      energy: document.getElementById('stat-energy'),
-      clean: document.getElementById('stat-clean')
-    };
-    const fillEls = {
-      hunger: document.getElementById('hunger'),
-      mood: document.getElementById('mood'),
-      energy: document.getElementById('energy'),
-      clean: document.getElementById('clean')
-    };
+  <!-- RIGHT: INPUT + LOG -->
+  <div>
+    <div class="card" style="margin-bottom:24px;">
+      <h3>오늘의 상태 입력</h3>
+      <div class="slider-list">
+        <div class="slider-item">
+          <label>오늘 밥을 잘 먹었나요? <span id="s-eat-val">5</span></label>
+          <input type="range" min="0" max="10" value="5" id="s-eat" oninput="document.getElementById('s-eat-val').textContent=this.value">
+        </div>
+        <div class="slider-item">
+          <label>오늘 기분은? <span id="s-mood-val">5</span></label>
+          <input type="range" min="0" max="10" value="5" id="s-mood" oninput="document.getElementById('s-mood-val').textContent=this.value">
+        </div>
+        <div class="slider-item">
+          <label>수면 품질은? <span id="s-sleep-val">5</span></label>
+          <input type="range" min="0" max="10" value="5" id="s-sleep" oninput="document.getElementById('s-sleep-val').textContent=this.value">
+        </div>
+        <div class="slider-item">
+          <label>운동 / 활동량은? <span id="s-act-val">5</span></label>
+          <input type="range" min="0" max="10" value="5" id="s-act" oninput="document.getElementById('s-act-val').textContent=this.value">
+        </div>
+      </div>
+      <button class="btn-apply" onclick="applyStatus()">✨ 적용하기</button>
+    </div>
 
-    
-    function renderPet(level = 1) {
-      petImage.src = levelImages[level] || levelImages[1];
-    }
+    <div class="card" style="margin-bottom:24px;">
+      <h3>오늘의 요약</h3>
+      <div class="summary-grid">
+        <div class="summary-item"><div class="val" id="sum-score">68</div><div class="lbl">종합 점수</div></div>
+        <div class="summary-item"><div class="val" id="sum-streak">5</div><div class="lbl">연속 케어</div></div>
+        <div class="summary-item"><div class="val" id="sum-actions">3</div><div class="lbl">오늘 액션</div></div>
+      </div>
+    </div>
 
-    const state = {
-      stats: { hunger:70, mood:80, energy:75, clean:85 },
-      level: 1,
-      exp: 0,
-      stars: 20
-    };
+    <div class="card">
+      <h3>활동 로그</h3>
+      <div class="log-area" id="log-area">
+        <div class="log-line"><span class="log-time">08:32</span>라일락이 기지개를 켰어요 🌅</div>
+        <div class="log-line"><span class="log-time">09:15</span>당근 스무디를 마셨어요 🥕</div>
+        <div class="log-line"><span class="log-time">11:00</span>공원 산책 30분 완료! 🌿</div>
+      </div>
+    </div>
+  </div>
+</div>
 
-    const cost = { feed: {star:2, exp:10}, play: {star:3, exp:12}, rest: {star:1, exp:8}, clean: {star:2, exp:10} };
+<script>
+let stats = { hunger: 65, happy: 72, energy: 50, clean: 80 };
+let actionCount = 3;
 
-    function updateBars() {
-      Object.keys(state.stats).forEach(key => {
-        const value = Math.max(0, Math.min(100, state.stats[key]));
-        state.stats[key] = value;
-        fillEls[key].style.width = value + '%';
-        statText[key].textContent = value;
-      });
-      levelEl.textContent = `Lv.${state.level}`;
-      expEl.textContent = `EXP ${state.exp} / ${(state.level*60)+20}`;
-      starEl.textContent = `⭐ ${state.stars}`;
-      const mood = Object.values(state.stats).reduce((a,b)=>a+b,0)/4;
-      logBox.textContent = mood > 75 ? '토끼가 콧노래를 부르며 행복해해요.' : mood > 45 ? '조금 심심한가봐요. 함께 놀아줄까요?' : '위험! 지금 바로 돌봐줘야 할 것 같아요!';
-      document.querySelectorAll('.actions button').forEach(btn => {
-        const action = btn.dataset.action;
-        const need = cost[action].star;
-        btn.disabled = state.stars < need;
-      });
-    }
+function updateBars() {
+  ['hunger','happy','energy','clean'].forEach(k => {
+    const v = Math.max(0, Math.min(100, stats[k]));
+    document.getElementById(`bar-${k}`).style.width = v + '%';
+    document.getElementById(`${k}-val`).textContent = v + '%';
+  });
+  const avg = (stats.hunger + stats.happy + stats.energy + stats.clean) / 4;
+  const stage = document.getElementById('pet-stage');
+  const mood = document.getElementById('pet-mood');
+  if (avg >= 70) { stage.className = 'pet-stage happy'; mood.textContent = '정말 행복해요! 🎉'; stage.textContent = '🐰'; }
+  else if (avg >= 40) { stage.className = 'pet-stage'; mood.textContent = '기분이 보통이에요'; stage.textContent = '🐰'; }
+  else { stage.className = 'pet-stage tired'; mood.textContent = '좀 지쳐있어요... 😔'; stage.textContent = '😴'; }
+  document.getElementById('sum-score').textContent = Math.round(avg);
+}
 
-    function gainExp(amount) {
-      state.exp += amount;
-      const threshold = (state.level*60) + 20;
-      if (state.exp >= threshold) {
-        state.exp -= threshold;
-        state.level = Math.min(3, state.level + 1);
-        renderPet(state.level);
-        logBox.textContent = `레벨 업! 라일락 토끼가 새로운 빛을 얻었어요. (Lv.${state.level})`;
-      }
-    }
+function doAction(type) {
+  const now = new Date();
+  const time = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  const msgs = { feed: '맛있는 밥을 먹었어요! 🍎', play: '신나게 놀았어요! 🎾', sleep: '푹 잘 잤어요! 😴', bath: '깨끗이 씻었어요! 🛁' };
+  const deltas = { feed: {hunger:15}, play: {happy:15,energy:-10}, sleep: {energy:25}, bath: {clean:20} };
+  Object.entries(deltas[type]).forEach(([k,v]) => stats[k] = Math.min(100, stats[k]+v));
+  updateBars();
+  actionCount++;
+  document.getElementById('sum-actions').textContent = actionCount;
+  const log = document.getElementById('log-area');
+  const div = document.createElement('div');
+  div.className = 'log-line';
+  div.innerHTML = `<span class="log-time">${time}</span>${msgs[type]}`;
+  log.prepend(div);
+}
 
-    document.querySelectorAll('.actions button').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const { action } = btn.dataset;
-        if (state.stars < cost[action].star) return;
-        state.stars -= cost[action].star;
-        if (action === 'feed') { state.stats.hunger += 18; state.stats.clean -= 5; }
-        if (action === 'play') { state.stats.mood += 16; state.stats.energy -= 8; }
-        if (action === 'rest') { state.stats.energy += 20; state.stats.mood += 5; }
-        if (action === 'clean') { state.stats.clean += 22; state.stats.mood += 6; }
-        gainExp(cost[action].exp);
-        updateBars();
-      });
-    });
+function applyStatus() {
+  const eat = parseInt(document.getElementById('s-eat').value);
+  const mood = parseInt(document.getElementById('s-mood').value);
+  const sleep = parseInt(document.getElementById('s-sleep').value);
+  const act = parseInt(document.getElementById('s-act').value);
+  stats.hunger = eat * 10;
+  stats.happy = mood * 10;
+  stats.energy = sleep * 10;
+  stats.clean = Math.min(100, (act * 6) + 40);
+  updateBars();
+  const now = new Date();
+  const time = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  const log = document.getElementById('log-area');
+  const div = document.createElement('div');
+  div.className = 'log-line';
+  div.innerHTML = `<span class="log-time">${time}</span>오늘의 상태 입력이 완료됐어요! ✨`;
+  log.prepend(div);
+}
 
-    setInterval(() => {
-      state.stats.hunger -= 2;
-      state.stats.mood -= 1;
-      state.stats.energy -= 1;
-      state.stats.clean -= 1;
-      state.stars += 1;
-      updateBars();
-    }, 3500);
-
-    renderPet(state.level);
-    updateBars();
-  </script>
-  <script src="assets/access-gate.js"></script>
+updateBars();
+</script>
+<script src="assets/access-gate.js"></script>
 </body>
 </html>
