@@ -102,6 +102,7 @@
     .saved-note .del-btn{position:absolute;top:10px;right:12px;background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;}
 
     .empty-msg{color:var(--muted);font-size:14px;padding:20px 0;text-align:center;}
+    .thumb-placeholder{background:var(--pink-light);border-radius:12px;height:90px;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--muted);margin-bottom:10px;}
   </style>
 </head>
 <body>
@@ -285,8 +286,11 @@ function renderItems(){
       </label>
     `).join('');
     const linkHtml=it.link?`<a class="item-link" href="${it.link}" target="_blank">🔗 관련 링크</a>`:'';
+    const thumbHtml=it.thumb?`<img src="${it.thumb}" alt="썸네일" style="width:100%;height:140px;object-fit:cover;border-radius:12px;margin-bottom:10px;">`:
+      it.link?`<div class="thumb-placeholder" data-link="${it.link}" data-idx="${idx}">🔍 썸네일 로드 중...</div>`:'';
     return `
       <div class="item-card">
+        ${thumbHtml}
         <div>
           <span class="item-badge ${CAT_CLASS[it.cat]}">${CAT_LABELS[it.cat]}</span>
           <button class="del-card-btn" onclick="deleteItem(${idx})">✕</button>
@@ -301,6 +305,25 @@ function renderItems(){
   }).join('');
 }
 
+function loadThumbnails(){
+  document.querySelectorAll('.thumb-placeholder').forEach(async el=>{
+    const link=el.dataset.link;
+    const idx=parseInt(el.dataset.idx);
+    if(!link)return;
+    try{
+      const res=await fetch(`https://api.microlink.io?url=${encodeURIComponent(link)}`);
+      const data=await res.json();
+      const img=data.data?.image?.url||data.data?.screenshot?.url;
+      if(img){
+        items[idx].thumb=img;
+        el.outerHTML=`<img src="${img}" alt="썸네일" style="width:100%;height:140px;object-fit:cover;border-radius:12px;margin-bottom:10px;">`;
+      } else {
+        el.style.display='none';
+      }
+    }catch{el.style.display='none';}
+  });
+}
+
 function toggleCheck(ri,ci,el){items[ri].checks[ci]=el.checked;renderItems();}
 function deleteItem(idx){items.splice(idx,1);renderItems();renderCalendar();}
 
@@ -313,6 +336,7 @@ function addItem(){
   if(!work||!title||!date){alert('작품명, 상품명, 발매일을 입력해주세요!');return;}
   items.push({work,title,cat,date,link,checks:[false,false,false]});
   renderItems();renderCalendar();
+  setTimeout(loadThumbnails,300);
   ['inp-work','inp-title','inp-date','inp-link'].forEach(id=>document.getElementById(id).value='');
 }
 
@@ -331,6 +355,7 @@ function saveNote(){
 
 renderCalendar();
 renderItems();
+setTimeout(loadThumbnails, 300);
 </script>
 <script src="assets/access-gate.js"></script>
 </body>
