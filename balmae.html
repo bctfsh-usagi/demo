@@ -168,6 +168,10 @@
           </select>
         </div>
         <div class="form-group">
+          <label>사전 예약 시작일 (선택)</label>
+          <input type="date" id="inp-preorder" />
+        </div>
+        <div class="form-group">
           <label>발매일</label>
           <input type="date" id="inp-date" />
         </div>
@@ -211,13 +215,13 @@
 <script>
 const CAT_LABELS = {gacha:'가챠가챠',prize:'프라이즈',goods:'굿즈',event:'이벤트'};
 const CAT_CLASS = {gacha:'badge-gacha',prize:'badge-prize',goods:'badge-goods',event:'badge-event'};
-const CHECK_LABELS = ['발매 확인','구매/응모 완료','수령 완료'];
+const CHECK_LABELS = ['사전 예약','구매/응모 완료','수령 완료'];
 
 let items = [
-  {work:'산리오',title:'마이멜로디 하트 가챠 Vol.3',cat:'gacha',date:'2026-03-28',link:'https://bandai-candy.jp',checks:[false,false,false]},
-  {work:'원피스',title:'조로 DXF 피규어',cat:'prize',date:'2026-04-05',link:'',checks:[true,false,false]},
-  {work:'귀멸의 칼날',title:'탄지로 & 네즈코 아크릴 스탠드',cat:'goods',date:'2026-04-15',link:'',checks:[false,false,false]},
-  {work:'포케몬',title:'포케몬 센터 봄 한정 굿즈',cat:'event',date:'2026-04-01',link:'https://pokemoncenter-online.com',checks:[true,true,false]},
+  {work:'산리오',title:'마이멜로디 하트 가챠 Vol.3',cat:'gacha',preorder:'2026-03-15',date:'2026-03-28',link:'https://bandai-candy.jp',checks:[false,false,false]},
+  {work:'원피스',title:'조로 DXF 피규어',cat:'prize',preorder:'2026-03-20',date:'2026-04-05',link:'',checks:[true,false,false]},
+  {work:'귀멸의 칼날',title:'탄지로 & 네즈코 아크릴 스탠드',cat:'goods',preorder:'2026-03-25',date:'2026-04-15',link:'',checks:[false,false,false]},
+  {work:'포케몬',title:'포케몬 센터 봄 한정 굿즈',cat:'event',preorder:'2026-03-10',date:'2026-04-01',link:'https://pokemoncenter-online.com',checks:[true,true,false]},
 ];
 
 let calYear = new Date().getFullYear();
@@ -271,14 +275,20 @@ function showDay(day){
   `).join('');
 }
 
+function formatD(dateStr){
+  if(!dateStr) return '';
+  const today=new Date(); today.setHours(0,0,0,0);
+  const target=new Date(dateStr);
+  const diff=Math.ceil((target-today)/86400000);
+  return diff>0?`D-${diff}`:diff===0?'D-DAY':`+${Math.abs(diff)}일 전`;
+}
+
 function renderItems(){
   const grid=document.getElementById('items-grid');
   if(!items.length){grid.innerHTML='<div class="empty-msg">등록된 발매 정보가 없습니다.</div>';return;}
   const today=new Date();today.setHours(0,0,0,0);
   grid.innerHTML=items.map((it,idx)=>{
-    const rel=new Date(it.date);
-    const diff=Math.ceil((rel-today)/86400000);
-    const dLabel=diff>0?`D-${diff}`:diff===0?'D-DAY':`+${Math.abs(diff)}일 전`;
+    const dLabel=formatD(it.date);
     const checks=CHECK_LABELS.map((lb,ci)=>`
       <label class="check-item">
         <input type="checkbox" ${it.checks[ci]?'checked':''} onchange="toggleCheck(${idx},${ci},this)">
@@ -297,7 +307,8 @@ function renderItems(){
         </div>
         <h3>${it.title}</h3>
         <div class="work">📦 ${it.work}</div>
-        <div class="item-date">📅 ${it.date} &nbsp; <strong>${dLabel}</strong></div>
+        ${it.preorder?`<div class="item-date">🛒 사전예약: ${it.preorder} &nbsp; <strong>${formatD(it.preorder)}</strong></div>`:''}
+        <div class="item-date">📅 발매일: ${it.date} &nbsp; <strong>${dLabel}</strong></div>
         ${linkHtml}
         <div class="checklist">${checks}</div>
       </div>
