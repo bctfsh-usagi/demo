@@ -270,14 +270,27 @@
 <div class="toast-area" id="toastArea"></div>
 
 <script>
-const catalog = [
-  { name:'혈압약', desc:'혈압 조절', info:'아침/저녁 1일 2회', times:['08:00','20:00'], dose:'1정', impact:'매일 복용 필수', level:'warn' },
-  { name:'오메가3', desc:'혈중지질 개선 · 심혈관 보호', info:'점심 1일 1회', times:['12:00'], dose:'2캡슐', impact:'꾸준히 섭취', level:'ok' },
-  { name:'위장약', desc:'식후 위장 보호', info:'식후 30분 · 1일 3회', times:['09:00','13:00','19:00'], dose:'1포', impact:'식사 후 복용', level:'ok' },
-  { name:'철분제', desc:'빈혈 예방 · 피로 개선', info:'공복 1일 1회', times:['07:30'], dose:'1정', impact:'공복 복용', level:'warn' },
-  { name:'아로나민', desc:'비타민B 복합제 · 피로 회복', info:'식후 1일 2회', times:['08:30','19:30'], dose:'1정', impact:'식사와 함께', level:'ok' },
-  { name:'칼슘제', desc:'골다공증 예방', info:'저녁 1일 1회', times:['21:00'], dose:'1정', impact:'꾸준히 섭취', level:'ok' },
-];
+const API_BASE = 'http://localhost:5001';
+let catalog = [];
+
+async function loadCatalog(q='') {
+  try {
+    const res = await fetch(`${API_BASE}/api/drugs/search?q=${encodeURIComponent(q)}`);
+    const data = await res.json();
+    catalog = data.results || [];
+    return catalog;
+  } catch(e) {
+    console.warn('API unavailable, using fallback');
+    catalog = [
+      { name:'혈압약', desc:'혈압 조절', category:'처방약', times:['08:00','20:00'], dose:'1정', info:'아침·저녁', impact:'매일 필수', warn:true },
+      { name:'오메가3', desc:'혈중지질 개선', category:'건강기능식품', times:['12:00'], dose:'2캡슐', info:'식후', impact:'꾸준히', warn:false },
+      { name:'비타민D', desc:'뼈 건강·면역력', category:'비타민/미네랄', times:['09:00'], dose:'1정', info:'식후', impact:'뼈/면역', warn:false },
+      { name:'마그네슘', desc:'근육·신경 기능', category:'비타민/미네랄', times:['21:00'], dose:'1정', info:'취침 전', impact:'수면', warn:false },
+      { name:'철분제', desc:'빈혈 예방', category:'처방약', times:['07:30'], dose:'1정', info:'공복', impact:'공복 복용', warn:true },
+    ];
+    return catalog;
+  }
+}
 
 const myMeds = [];
 const checked = {};
@@ -439,20 +452,21 @@ function selectMed(name) {
 
 searchInput.addEventListener('input', () => {
   clearTimeout(searchTimer);
-  searchTimer = setTimeout(()=>{
-    const q = searchInput.value.trim().toLowerCase();
+  searchTimer = setTimeout(async ()=>{
+    const q = searchInput.value.trim();
     if(!q) { searchResults.innerHTML=''; return; }
-    const res = catalog.filter(c=>c.name.toLowerCase().includes(q)||c.desc.toLowerCase().includes(q));
-    searchResults.innerHTML = res.length ? res.map(c=>`
+    searchResults.innerHTML = '<div class="empty-msg">검색 중...</div>';
+    const results = await loadCatalog(q);
+    searchResults.innerHTML = results.length ? results.map(c=>`
       <div class="result-item" onclick="selectMed('${c.name}')">
         <div>
-          <div class="r-name">${c.name}</div>
+          <div class="r-name">${c.name} <small style="font-weight:400;color:var(--muted)">${c.category}</small></div>
           <div class="r-desc">${c.desc}</div>
         </div>
         <div class="r-tag">${c.times[0]}</div>
       </div>
     `).join('') : '<div class="empty-msg">검색 결과가 없습니다.</div>';
-  }, 200);
+  }, 250);
 });
 
 document.getElementById('addBtn').addEventListener('click', ()=>{
@@ -486,8 +500,10 @@ document.getElementById('reportModal').addEventListener('click', e=>{
   if(e.target===document.getElementById('reportModal')) document.getElementById('reportModal').classList.remove('open');
 });
 
-renderQuickChips();
-render();
+loadCatalog('').then(drugs => {
+  renderQuickChips();
+  render();
+});
 setInterval(renderAlerts, 30000);
 </script>
 <script src="assets/access-gate.js"></script>
