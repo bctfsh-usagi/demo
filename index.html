@@ -3,279 +3,493 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>YakSok · 복약 루틴 프로토타입</title>
+  <title>YakSok · 복약 루틴 매니저</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    :root { --bg: #f5f7fc; --card: #ffffff; --primary: #4c5bf7; --primary-dark: #1f2340; --accent: #5dd6ff; --muted: #6b7280; --border: #e5e8f2; --pill: #f0f2ff; }
-    * { box-sizing: border-box; }
-    body { margin: 0; font-family: 'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif; background: var(--bg); color: var(--primary-dark); }
-    .container { width: min(1120px, 94vw); margin: 0 auto; padding: 40px 0 80px; }
-    header { padding: 40px 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 28px; align-items: center; }
-    h1 { font-size: clamp(34px, 5vw, 52px); margin: 12px 0 16px; color: var(--primary-dark); }
-    .subtitle { font-size: 18px; color: var(--muted); line-height: 1.6; }
-    .badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(76,91,247,0.12); color: var(--primary); font-weight: 600; padding: 8px 16px; border-radius: 999px; font-size: 14px; }
-    .hero-card { background: radial-gradient(circle at top right, rgba(76,91,247,0.3), rgba(17,20,43,0.95)); color: #fff; border-radius: 26px; padding: 28px; min-height: 280px; box-shadow: 0 20px 45px rgba(21,26,60,0.38); }
-    .hero-card h2 { margin: 0 0 10px; font-size: 24px; }
-    .hero-card ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
-    .hero-card li { display: flex; justify-content: space-between; background: rgba(255,255,255,0.08); padding: 12px 16px; border-radius: 16px; }
-    section { margin-top: 48px; }
-    .section-title { font-size: 22px; font-weight: 700; margin-bottom: 14px; }
-    .card { background: var(--card); border-radius: 24px; padding: 24px; border: 1px solid var(--border); box-shadow: 0 20px 40px rgba(20,35,70,0.08); }
-    .card h3 { margin: 0 0 8px; }
-    .card p { margin: 0; color: var(--muted); }
-    .search-area { display: grid; grid-template-columns: 1.4fr 1fr; gap: 24px; }
-    @media(max-width:800px){ .search-area { grid-template-columns:1fr; } header { grid-template-columns:1fr; } }
-    label { font-size: 14px; color: var(--muted); }
-    input, select { width: 100%; padding: 12px; margin-top: 6px; border-radius: 14px; border: 1px solid var(--border); font-size: 15px; font-family: inherit; background: #fff; }
-    button { border: none; padding: 12px 18px; border-radius: 14px; background: var(--primary); color: #fff; font-weight: 600; cursor: pointer; transition: opacity .2s; }
-    button:hover { opacity: .92; }
-    .suggestions { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 10px; }
-    .suggestion-chip { padding: 8px 14px; border-radius: 999px; background: var(--pill); border: 1px solid var(--border); cursor: pointer; font-size: 14px; transition: background .2s; }
-    .suggestion-chip:hover { background: rgba(76,91,247,0.08); }
-    .meds-list { margin-top: 28px; display: grid; grid-template-columns: repeat(auto-fit,minmax(260px,1fr)); gap: 18px; }
-    .med-card { border-radius: 20px; padding: 20px; border: 1px solid var(--border); background: #fff; display: flex; flex-direction: column; gap: 10px; }
-    .schedule-row { display: flex; justify-content: space-between; align-items: center; background: var(--pill); padding: 8px 12px; border-radius: 12px; }
-    .history { margin-top: 10px; padding: 12px; border-radius: 14px; background: #fdfdfd; font-size: 13px; color: var(--muted); border: 1px dashed var(--border); }
-    .alert-board { display: grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap: 14px; margin-top: 18px; }
-    .alert-card { background: #fff; border-radius: 18px; padding: 16px; border: 1px solid var(--border); display: flex; flex-direction: column; gap: 4px; }
-    .alert-card small { color: var(--muted); }
-    .ad-banner { margin-top: 16px; padding: 18px; border-radius: 20px; background: linear-gradient(120deg,#ffe6f1,#e0e7ff); border: 1px solid rgba(76,91,247,0.2); display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:16px; }
-    .ad-banner div { max-width: 520px; }
-    .ad-banner h3 { margin:0 0 8px; font-size:20px; }
-    .ad-banner p { margin:0; color:var(--primary-dark); }
-    .ad-banner button { background:#ff4d6d; }
+    :root {
+      --bg: #f6f8fc;
+      --card: #ffffff;
+      --primary: #4c5bf7;
+      --primary-dark: #1f2340;
+      --muted: #6b7280;
+      --border: #e8eaf2;
+      --pill: #eff1ff;
+      --green: #10b981;
+      --red: #ef4444;
+      --yellow: #f59e0b;
+      --radius: 20px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--bg);color:var(--primary-dark);}
+
+    /* NAV */
+    nav{background:#fff;border-bottom:1px solid var(--border);padding:0 32px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+    .nav-logo{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:700;color:var(--primary);}
+    .nav-logo svg{width:28px;height:28px;}
+    .nav-menu{display:flex;gap:24px;}
+    .nav-menu a{font-size:14px;color:var(--muted);text-decoration:none;font-weight:500;}
+    .nav-menu a:hover{color:var(--primary);}
+    .nav-actions{display:flex;gap:10px;align-items:center;}
+    .btn{border:none;cursor:pointer;font-family:inherit;font-weight:600;border-radius:12px;transition:all .18s;}
+    .btn-ghost{background:transparent;color:var(--muted);padding:8px 14px;font-size:14px;}
+    .btn-primary{background:var(--primary);color:#fff;padding:9px 18px;font-size:14px;}
+    .btn-primary:hover{opacity:.9;}
+    .btn-sm{padding:6px 12px;font-size:13px;border-radius:10px;}
+
+    /* LAYOUT */
+    .wrap{width:min(1100px,94vw);margin:0 auto;padding:32px 0 80px;}
+
+    /* HERO */
+    .hero{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:28px;}
+    @media(max-width:780px){.hero{grid-template-columns:1fr;}}
+    .hero-left{display:flex;flex-direction:column;justify-content:center;gap:14px;}
+    .hero-left .tag{display:inline-flex;align-items:center;gap:6px;background:rgba(76,91,247,.1);color:var(--primary);font-size:13px;font-weight:600;padding:5px 12px;border-radius:99px;width:fit-content;}
+    .hero-left h1{font-size:clamp(28px,4vw,44px);font-weight:700;line-height:1.25;letter-spacing:-.02em;}
+    .hero-left h1 span{color:var(--primary);}
+    .hero-left p{font-size:16px;color:var(--muted);line-height:1.7;}
+    .hero-stats{display:flex;gap:16px;flex-wrap:wrap;}
+    .stat-pill{background:#fff;border:1px solid var(--border);border-radius:14px;padding:12px 18px;display:flex;flex-direction:column;gap:2px;}
+    .stat-pill .val{font-size:22px;font-weight:700;color:var(--primary);}
+    .stat-pill .lbl{font-size:12px;color:var(--muted);}
+
+    /* TODAY CARD */
+    .today-card{background:linear-gradient(140deg,#1f2340 0%,#2c3060 100%);border-radius:var(--radius);padding:28px;color:#fff;}
+    .today-card h3{font-size:16px;font-weight:600;opacity:.6;margin-bottom:16px;}
+    .today-items{display:flex;flex-direction:column;gap:10px;}
+    .today-item{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.08);border-radius:12px;padding:11px 14px;}
+    .today-item .item-name{font-size:14px;font-weight:500;}
+    .today-item .item-val{font-size:15px;font-weight:700;color:#a5b4fc;}
+    .today-progress{margin-top:16px;}
+    .progress-bar{background:rgba(255,255,255,.15);border-radius:99px;height:6px;overflow:hidden;margin-top:8px;}
+    .progress-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#a5b4fc,#6c63ff);transition:width .4s;}
+    .progress-label{font-size:12px;opacity:.55;margin-top:6px;}
+
+    /* SEARCH SECTION */
+    .section-title{font-size:18px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+    .section-title .badge{font-size:12px;background:var(--pill);color:var(--primary);padding:3px 10px;border-radius:99px;font-weight:600;}
+    .search-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:20px;}
+    @media(max-width:700px){.search-grid{grid-template-columns:1fr;}}
+    .card{background:var(--card);border-radius:var(--radius);padding:24px;border:1px solid var(--border);box-shadow:0 4px 24px rgba(20,35,70,.06);}
+    .form-group{margin-bottom:14px;}
+    .form-group label{font-size:13px;color:var(--muted);font-weight:500;display:block;margin-bottom:6px;}
+    .input{width:100%;padding:11px 14px;border-radius:12px;border:1.5px solid var(--border);font-size:15px;font-family:inherit;background:#fff;transition:border .18s;}
+    .input:focus{outline:none;border-color:var(--primary);}
+    .search-results{margin-top:12px;display:flex;flex-direction:column;gap:8px;max-height:240px;overflow-y:auto;}
+    .result-item{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:12px;background:#fafafa;border:1px solid var(--border);cursor:pointer;transition:background .15s;}
+    .result-item:hover{background:var(--pill);}
+    .result-item .r-name{font-size:14px;font-weight:600;color:var(--primary-dark);}
+    .result-item .r-desc{font-size:12px;color:var(--muted);margin-top:2px;}
+    .result-item .r-tag{font-size:11px;background:rgba(76,91,247,.08);color:var(--primary);padding:3px 8px;border-radius:6px;white-space:nowrap;}
+    .chip-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+    .chip{padding:7px 13px;border-radius:99px;background:var(--pill);border:1px solid rgba(76,91,247,.15);cursor:pointer;font-size:13px;font-weight:500;color:var(--primary);transition:background .15s;}
+    .chip:hover{background:rgba(76,91,247,.12);}
+    .empty-msg{font-size:14px;color:var(--muted);padding:16px 0;text-align:center;}
+
+    /* MED CARDS */
+    .meds-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:16px;}
+    .med-card{background:#fff;border-radius:16px;border:1px solid var(--border);padding:18px;display:flex;flex-direction:column;gap:12px;transition:box-shadow .2s;}
+    .med-card:hover{box-shadow:0 8px 28px rgba(76,91,247,.1);}
+    .med-card-top{display:flex;align-items:flex-start;justify-content:space-between;}
+    .med-name{font-size:16px;font-weight:700;}
+    .med-desc{font-size:13px;color:var(--muted);margin-top:2px;}
+    .impact-badge{font-size:11px;padding:3px 9px;border-radius:8px;font-weight:600;background:rgba(16,185,129,.1);color:var(--green);}
+    .impact-badge.warn{background:rgba(245,158,11,.1);color:var(--yellow);}
+    .times-row{display:flex;flex-wrap:wrap;gap:6px;}
+    .time-chip{padding:5px 10px;border-radius:8px;background:var(--pill);font-size:13px;font-weight:600;color:var(--primary);display:flex;align-items:center;gap:6px;}
+    .check-btn{width:18px;height:18px;border-radius:5px;border:1.5px solid var(--primary);cursor:pointer;display:flex;align-items:center;justify-content:center;background:#fff;transition:all .15s;}
+    .check-btn.done{background:var(--green);border-color:var(--green);color:#fff;}
+    .share-row{display:flex;gap:8px;border-top:1px solid var(--border);padding-top:10px;}
+    .share-btn{flex:1;background:var(--pill);color:var(--primary);font-size:12px;font-weight:600;border:none;border-radius:9px;padding:7px 10px;cursor:pointer;font-family:inherit;}
+    .share-btn:hover{background:rgba(76,91,247,.12);}
+    .history-row{font-size:12px;color:var(--muted);background:#fafafa;border-radius:10px;padding:8px 10px;border:1px dashed var(--border);}
+
+    /* ALERTS */
+    .alert-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:14px;}
+    .alert-card{background:#fff;border-radius:14px;padding:14px 16px;border:1px solid var(--border);display:flex;flex-direction:column;gap:4px;}
+    .alert-card .alert-time{font-size:20px;font-weight:700;color:var(--primary-dark);}
+    .alert-card .alert-name{font-size:13px;font-weight:600;color:var(--primary-dark);}
+    .alert-card .alert-eta{font-size:12px;color:var(--muted);}
+    .alert-card.urgent{border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.03);}
+    .alert-card.urgent .alert-time{color:var(--red);}
+
+    /* SPONSOR */
+    .sponsor-card{background:linear-gradient(120deg,#fff8f0,#fffbe0);border:1px solid rgba(245,158,11,.2);border-radius:var(--radius);padding:20px 24px;display:flex;flex-wrap:wrap;align-items:center;gap:20px;justify-content:space-between;margin-top:20px;}
+    .sponsor-badge{font-size:11px;font-weight:700;letter-spacing:.05em;color:var(--yellow);background:rgba(245,158,11,.12);padding:3px 10px;border-radius:6px;width:fit-content;margin-bottom:6px;}
+    .sponsor-title{font-size:18px;font-weight:700;color:var(--primary-dark);}
+    .sponsor-desc{font-size:14px;color:var(--muted);margin-top:4px;}
+    .sponsor-cta{background:var(--yellow);color:#fff;border:none;border-radius:12px;padding:10px 20px;font-weight:700;cursor:pointer;font-family:inherit;font-size:14px;white-space:nowrap;}
+
+    /* MODAL */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(10,12,30,.5);z-index:200;display:none;align-items:center;justify-content:center;}
+    .modal-backdrop.open{display:flex;}
+    .modal{background:#fff;border-radius:24px;padding:28px;width:min(420px,90vw);box-shadow:0 24px 60px rgba(0,0,0,.18);}
+    .modal h3{font-size:18px;font-weight:700;margin-bottom:16px;}
+    .modal .close-btn{float:right;background:none;border:none;font-size:22px;cursor:pointer;color:var(--muted);margin-top:-4px;}
+
+    /* TOAST */
+    .toast-area{position:fixed;bottom:28px;right:28px;display:flex;flex-direction:column;gap:10px;z-index:300;}
+    .toast{background:var(--primary-dark);color:#fff;border-radius:14px;padding:12px 18px;font-size:14px;font-weight:500;box-shadow:0 8px 28px rgba(0,0,0,.18);animation:slideUp .25s ease;}
+    .toast.success{background:var(--green);}
+    @keyframes slideUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+
+    /* SECTION SPACING */
+    section{margin-top:28px;}
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="logo-wrap">
-      <svg width="220" height="90" viewBox="0 0 600 220" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="capsule-blue" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="#7AC2FF"/>
-            <stop offset="100%" stop-color="#4C5BF7"/>
-          </linearGradient>
-          <linearGradient id="capsule-pink" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="#FF9EBB"/>
-            <stop offset="100%" stop-color="#FF4D6D"/>
-          </linearGradient>
-          <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#1F2340" flood-opacity="0.2"/>
-          </filter>
-        </defs>
-        <g transform="translate(30,50) rotate(-12)" filter="url(#shadow)">
-          <rect x="0" y="0" width="120" height="40" rx="20" fill="url(#capsule-blue)"/>
-          <rect x="70" y="8" width="120" height="40" rx="20" fill="url(#capsule-pink)"/>
-        </g>
-        <text x="220" y="90" font-family="'Pretendard','Noto Sans KR',sans-serif" font-size="52" font-weight="700" fill="#1F2340">Yak<tspan fill="#4C5BF7">Sok</tspan></text>
-        <text x="222" y="118" font-family="'Pretendard','Noto Sans KR',sans-serif" font-size="18" fill="#6B7280">약 + 약속 · 복용시간을 지켜주는 가장 간단한 방법</text>
-      </svg>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <svg viewBox="0 0 28 28" fill="none">
+      <rect width="28" height="28" rx="8" fill="#4c5bf7"/>
+      <rect x="5" y="11" width="18" height="6" rx="3" fill="white" opacity=".9"/>
+      <rect x="12" y="5" width="4" height="18" rx="2" fill="white" opacity=".5"/>
+    </svg>
+    YakSok
+  </div>
+  <div class="nav-menu">
+    <a href="#search">약 등록</a>
+    <a href="#check">복용 체크</a>
+    <a href="#alerts">알림</a>
+  </div>
+  <div class="nav-actions">
+    <button class="btn btn-ghost btn-sm">가족 공유</button>
+    <button class="btn btn-primary btn-sm" id="reportBtn">리포트 보기</button>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="wrap">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-left">
+      <div class="tag">복약 루틴 매니저</div>
+      <h1>약속을 지키는<br/>가장 간단한 방법,<br/><span>YakSok</span></h1>
+      <p>약 등록 3분 · 멀티채널 알림 · 가족·약사와 공유까지<br/>복약 루틴을 자동으로 완성합니다.</p>
+      <div class="hero-stats">
+        <div class="stat-pill"><div class="val" id="totalMeds">0</div><div class="lbl">등록된 약</div></div>
+        <div class="stat-pill"><div class="val" id="completedCount">0</div><div class="lbl">오늘 완료</div></div>
+        <div class="stat-pill"><div class="val" id="nextAlert">—</div><div class="lbl">다음 알림</div></div>
+      </div>
     </div>
-
-    <header>
-      <div>
-        <div class="badge">YakSok · 복약 도우미 프로토타입</div>
-        <h1>등록부터 알림·체크까지<br/>한 번에 끝내는 복약 루틴</h1>
-        <p class="subtitle">복용 중인 약을 검색해 등록하고, 복용 시간에 맞춰 알림을 받고, 실제로 먹은 시간을 기록하세요.</p>
+    <div class="today-card">
+      <h3>오늘의 복약 현황</h3>
+      <div class="today-items" id="todayItems">
+        <div class="today-item"><span class="item-name">등록된 약 없음</span><span class="item-val">—</span></div>
       </div>
-      <div class="hero-card">
-        <h2>오늘 요약</h2>
-        <ul>
-          <li><span>등록된 약</span><strong id="totalMeds">0</strong></li>
-          <li><span>완료한 YakSok</span><strong id="completedCount">0</strong></li>
-          <li><span>다가오는 알림</span><strong id="nextAlert">—</strong></li>
-        </ul>
-      </div>
-    </header>
-
-    <section class="card">
-      <div class="section-title">1. 약/영양제를 검색해 등록하세요</div>
-      <div class="search-area">
-        <div>
-          <label for="searchInput">약 이름 검색</label>
-          <input id="searchInput" placeholder="예: 아로나민, 오메가3" />
-          <div class="suggestions" id="suggestions"></div>
+      <div class="today-progress">
+        <div style="display:flex;justify-content:space-between;font-size:13px;opacity:.6;">
+          <span>오늘 완료율</span><span id="progressLabel">0%</span>
         </div>
-        <div>
-          <label for="customTime">복용 시간 추가</label>
-          <input id="customTime" type="time" />
-          <label for="customDose">복용량/메모</label>
-          <input id="customDose" placeholder="예: 1정, 식후" />
-          <button style="margin-top:10px; width:100%;" id="addBtn">YakSok에 등록</button>
-        </div>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+        <div class="progress-label" id="progressText">아직 복용 기록이 없습니다.</div>
       </div>
-      <div class="meds-list" id="medsList"></div>
-    </section>
-
-    <section class="card">
-      <div class="section-title">2. 등록한 약 정보 확인 & 복용 체크</div>
-      <p style="color:var(--muted); margin:-6px 0 18px;">각 카드를 눌러 복용 시간을 체크하면 아래 히스토리에 저장돼요.</p>
-      <div class="meds-list" id="registeredList"></div>
-    </section>
-
-    <section class="card">
-      <div class="section-title">3. 알림 & 일정 시뮬레이터</div>
-      <p style="color:var(--muted); margin:-6px 0 18px;">등록된 시간을 기준으로 다음 알림이 자동으로 생성됩니다.</p>
-      <div class="alert-board" id="alertBoard"></div>
-    </section>
-
-    <section class="card">
-      <div class="section-title">YakSok 추천 스폰서</div>
-      <div class="ad-banner">
-        <div>
-          <h3>건강한 루틴을 위한 액션 플랜</h3>
-          <p>YakSok과 함께 복약 리마인더를 완벽하게 지키고 싶다면, 맞춤 영양제 구독 서비스를 체험해 보세요. 첫 달 30% 할인!</p>
-        </div>
-        <button>프로모션 열기</button>
-      </div>
-    </section>
+    </div>
   </div>
 
-  <script>
-    const catalog = [
-      { name: '혈압약', description: '혈압 조절 1일 2회', info: '08:00 / 20:00', defaultTimes: ['08:00', '20:00'], dose: '1정' },
-      { name: '오메가3', description: '혈중지질 개선', info: '12:00', defaultTimes: ['12:00'], dose: '2캡슐' },
-      { name: '위장약', description: '식후 위장 보호', info: '식후 30분', defaultTimes: ['13:00'], dose: '1포' },
-      { name: '철분제', description: '빈혈 예방', info: '공복 복용', defaultTimes: ['07:30'], dose: '1정' }
-    ];
-    const myMeds = [];
-    const logs = [];
-    const suggestions = document.getElementById('suggestions');
-    const medsList = document.getElementById('medsList');
-    const registeredList = document.getElementById('registeredList');
-    const alertBoard = document.getElementById('alertBoard');
-    const totalMeds = document.getElementById('totalMeds');
-    const completedCount = document.getElementById('completedCount');
-    const nextAlert = document.getElementById('nextAlert');
+  <!-- SEARCH -->
+  <section id="search">
+    <div class="section-title">약 검색 & 등록 <span class="badge">Step 1</span></div>
+    <div class="search-grid">
+      <div class="card">
+        <div class="form-group">
+          <label>약 이름 검색</label>
+          <input class="input" id="searchInput" placeholder="예: 아로나민, 오메가3, 혈압약..." />
+        </div>
+        <div id="searchResults" class="search-results"></div>
+        <div style="margin-top:12px;font-size:13px;color:var(--muted);">자주 찾는 약</div>
+        <div class="chip-row" id="quickChips"></div>
+      </div>
+      <div class="card">
+        <div class="form-group">
+          <label>복용 시간</label>
+          <input class="input" id="customTime" type="time" />
+        </div>
+        <div class="form-group">
+          <label>복용량 / 메모</label>
+          <input class="input" id="customDose" placeholder="예: 1정, 식후, 2캡슐" />
+        </div>
+        <div class="form-group">
+          <label>선택된 약</label>
+          <input class="input" id="selectedName" placeholder="위에서 검색하거나 이름을 입력하세요" />
+        </div>
+        <button class="btn btn-primary" style="width:100%;padding:13px;" id="addBtn">YakSok에 등록</button>
+      </div>
+    </div>
+  </section>
 
-    function renderCatalog(filter = '') {
-      const trimmed = filter.trim().toLowerCase();
-      const data = catalog.filter(item => item.name.toLowerCase().includes(trimmed));
-      suggestions.innerHTML = data.map(item => `<span class="suggestion-chip" data-name="${item.name}">${item.name}</span>`).join('');
-    }
+  <!-- CHECK -->
+  <section id="check">
+    <div class="section-title">복용 체크 <span class="badge">Step 2</span></div>
+    <div class="card">
+      <div class="meds-grid" id="registeredList">
+        <div class="empty-msg">등록된 약이 없습니다. 위에서 약을 검색해 등록해보세요.</div>
+      </div>
+    </div>
+  </section>
 
-    function addMed(name, time, dose) {
-      if (!name) return;
-      const base = catalog.find(item => item.name === name) || { description: '사용자 정의 약', info: dose || '사용자 입력', defaultTimes: time ? [time] : [], dose: dose || '1정' };
-      const exists = myMeds.find(item => item.name === name);
-      if (!exists) {
-        myMeds.push({ name, description: base.description, info: base.info, times: base.defaultTimes.length ? [...base.defaultTimes] : (time ? [time] : []), dose: base.dose, history: [] });
-      } else if (time) {
-        exists.times.push(time);
-      }
-      renderMeds();
-    }
+  <!-- ALERTS -->
+  <section id="alerts">
+    <div class="section-title">알림 일정 <span class="badge">Step 3</span></div>
+    <div class="card">
+      <p style="font-size:14px;color:var(--muted);margin-bottom:14px;">등록된 복용 시간을 기반으로 다음 알림이 자동 생성됩니다.</p>
+      <div class="alert-grid" id="alertBoard">
+        <div class="empty-msg">약을 등록하면 알림이 표시됩니다.</div>
+      </div>
+    </div>
+    <!-- SPONSOR -->
+    <div class="sponsor-card">
+      <div>
+        <div class="sponsor-badge">SPONSORED</div>
+        <div class="sponsor-title">맞춤 영양제 구독 서비스</div>
+        <div class="sponsor-desc">YakSok 사용자 전용 · 첫 달 30% 할인 · 무료 약사 상담 포함</div>
+      </div>
+      <button class="sponsor-cta">프로모션 보기</button>
+    </div>
+  </section>
 
-    function logIntake(medName, time) {
-      const entry = { medName, time, loggedAt: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) };
-      logs.push(entry);
-      const med = myMeds.find(m => m.name === medName);
-      if (med) {
-        med.history.unshift(entry);
-        completedCount.textContent = logs.length;
-      }
-      renderMeds();
-      renderAlerts();
-    }
+</div>
 
-    function renderMeds() {
-      totalMeds.textContent = myMeds.length;
-      medsList.innerHTML = myMeds.length ? '' : '<p style="color:var(--muted);">검색 후 "YakSok에 등록"을 눌러보세요.</p>';
-      registeredList.innerHTML = '';
-      myMeds.forEach(med => {
-        const timesHtml = med.times.map(t => `<span class="suggestion-chip" style="background:#eef2ff; border:none;">${t}</span>`).join('');
-        const medCard = document.createElement('div');
-        medCard.className = 'med-card';
-        medCard.innerHTML = `
+<!-- REPORT MODAL -->
+<div class="modal-backdrop" id="reportModal">
+  <div class="modal">
+    <button class="close-btn" id="closeModal">×</button>
+    <h3>복약 리포트 미리보기</h3>
+    <div id="reportContent" style="font-size:14px;color:var(--muted);line-height:1.7;margin-top:8px;"></div>
+    <div style="margin-top:20px;display:flex;gap:10px;">
+      <button class="btn btn-primary" style="flex:1;" onclick="alert('PDF 다운로드 기능은 준비 중입니다.')">PDF 저장</button>
+      <button class="btn btn-ghost" style="flex:1;" onclick="alert('가족 공유 기능은 준비 중입니다.')">가족 공유</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-area" id="toastArea"></div>
+
+<script>
+const catalog = [
+  { name:'혈압약', desc:'혈압 조절', info:'아침/저녁 1일 2회', times:['08:00','20:00'], dose:'1정', impact:'매일 복용 필수', level:'warn' },
+  { name:'오메가3', desc:'혈중지질 개선 · 심혈관 보호', info:'점심 1일 1회', times:['12:00'], dose:'2캡슐', impact:'꾸준히 섭취', level:'ok' },
+  { name:'위장약', desc:'식후 위장 보호', info:'식후 30분 · 1일 3회', times:['09:00','13:00','19:00'], dose:'1포', impact:'식사 후 복용', level:'ok' },
+  { name:'철분제', desc:'빈혈 예방 · 피로 개선', info:'공복 1일 1회', times:['07:30'], dose:'1정', impact:'공복 복용', level:'warn' },
+  { name:'아로나민', desc:'비타민B 복합제 · 피로 회복', info:'식후 1일 2회', times:['08:30','19:30'], dose:'1정', impact:'식사와 함께', level:'ok' },
+  { name:'칼슘제', desc:'골다공증 예방', info:'저녁 1일 1회', times:['21:00'], dose:'1정', impact:'꾸준히 섭취', level:'ok' },
+];
+
+const myMeds = [];
+const checked = {};
+
+function toast(msg, type='') {
+  const area = document.getElementById('toastArea');
+  const el = document.createElement('div');
+  el.className = `toast${type ? ' '+type : ''}`;
+  el.textContent = msg;
+  area.appendChild(el);
+  setTimeout(() => el.remove(), 2500);
+}
+
+function render() {
+  renderHero();
+  renderRegistered();
+  renderAlerts();
+}
+
+function renderHero() {
+  const total = myMeds.length;
+  const allTimes = myMeds.flatMap(m => m.times.map(t => m.name+'_'+t));
+  const done = allTimes.filter(k => checked[k]).length;
+  const pct = total ? Math.round(done/allTimes.length*100)||0 : 0;
+
+  document.getElementById('totalMeds').textContent = total;
+  document.getElementById('completedCount').textContent = done;
+  document.getElementById('progressFill').style.width = pct+'%';
+  document.getElementById('progressLabel').textContent = pct+'%';
+  document.getElementById('progressText').textContent = pct===100 ? '오늘 모든 약을 복용했어요! 🎉' : `${done}/${allTimes.length} 회 완료`;
+
+  const items = document.getElementById('todayItems');
+  items.innerHTML = myMeds.length ? myMeds.map(m=>`
+    <div class="today-item">
+      <span class="item-name">${m.name}</span>
+      <span class="item-val">${m.times.join(' / ')}</span>
+    </div>
+  `).join('') : '<div class="today-item"><span class="item-name">등록된 약 없음</span><span class="item-val">—</span></div>';
+}
+
+function renderRegistered() {
+  const el = document.getElementById('registeredList');
+  if (!myMeds.length) { el.innerHTML = '<div class="empty-msg">등록된 약이 없습니다.</div>'; return; }
+  el.innerHTML = myMeds.map(m => {
+    const key = t => m.name+'_'+t;
+    const timesHtml = m.times.map(t => `
+      <div class="time-chip">
+        ${t}
+        <div class="check-btn ${checked[key(t)]?'done':''}" onclick="doCheck('${m.name}','${t}')">
+          ${checked[key(t)] ? '✓' : ''}
+        </div>
+      </div>
+    `).join('');
+    const lastLog = m.history?.[0];
+    return `
+      <div class="med-card">
+        <div class="med-card-top">
           <div>
-            <h3>${med.name}</h3>
-            <p>${med.description}</p>
-            <small style=\"color:var(--muted);\">기본 정보: ${med.info}</small>
+            <div class="med-name">${m.name}</div>
+            <div class="med-desc">${m.desc}</div>
           </div>
-          <div>${timesHtml || '<small style="color:var(--muted);">시간을 추가해주세요.</small>'}</div>
-        `;
-        medsList.appendChild(medCard);
+          <div class="impact-badge ${m.level==='warn'?'warn':''}">${m.impact}</div>
+        </div>
+        <div class="times-row">${timesHtml}</div>
+        <div class="history-row">마지막 복용: ${lastLog ? lastLog.loggedAt : '아직 없음'}</div>
+        <div class="share-row">
+          <button class="share-btn" onclick="copyLink('${m.name}')">링크 복사</button>
+          <button class="share-btn" onclick="bookmarkMed('${m.name}')">북마크</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
 
-        const regCard = document.createElement('div');
-        regCard.className = 'med-card';
-        regCard.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <div>
-              <h3>${med.name}</h3>
-              <p>${med.dose} · ${med.info}</p>
-            </div>
-            <button data-add-time="${med.name}">시간 추가</button>
-          </div>
-          <div class="schedule"></div>
-          <div class="history">최근 기록: ${med.history[0] ? `${med.history[0].time} · ${med.history[0].loggedAt}` : '아직 없음'}</div>
-        `;
-        const scheduleArea = regCard.querySelector('.schedule');
-        med.times.forEach(t => {
-          const row = document.createElement('div');
-          row.className = 'schedule-row';
-          row.innerHTML = `<span>${t}</span><button data-log="${med.name}" data-time="${t}">복용</button>`;
-          scheduleArea.appendChild(row);
-        });
-        registeredList.appendChild(regCard);
-      });
-    }
+function renderAlerts() {
+  const board = document.getElementById('alertBoard');
+  const now = new Date();
+  const events = [];
+  myMeds.forEach(m => m.times.forEach(t => {
+    const [h,min] = t.split(':').map(Number);
+    const dt = new Date(); dt.setHours(h,min,0,0);
+    if(dt<now) dt.setDate(dt.getDate()+1);
+    events.push({name:m.name, time:t, ms:dt-now});
+  }));
+  events.sort((a,b)=>a.ms-b.ms);
+  const next = events[0];
+  document.getElementById('nextAlert').textContent = next ? next.time : '—';
+  board.innerHTML = events.slice(0,6).map(ev=>{
+    const mins = Math.round(ev.ms/60000);
+    const label = mins<1?'곧 알림':mins<60?`${mins}분 후`:Math.round(mins/60)+'시간 후';
+    const urgent = mins<30;
+    return `<div class="alert-card${urgent?' urgent':''}">
+      <div class="alert-time">${ev.time}</div>
+      <div class="alert-name">${ev.name}</div>
+      <div class="alert-eta">${label}</div>
+    </div>`;
+  }).join('') || '<div class="empty-msg">알림이 없습니다.</div>';
+}
 
-    function renderAlerts() {
-      const events = [];
-      const now = new Date();
-      myMeds.forEach(med => {
-        med.times.forEach(time => {
-          const [h, min] = time.split(':').map(Number);
-          const eventTime = new Date();
-          eventTime.setHours(h, min, 0, 0);
-          if (eventTime < now) eventTime.setDate(eventTime.getDate() + 1);
-          events.push({ med: med.name, time, ms: eventTime - now });
-        });
-      });
-      events.sort((a,b) => a.ms - b.ms);
-      nextAlert.textContent = events[0] ? events[0].time : '—';
-      alertBoard.innerHTML = events.slice(0,4).map(ev => {
-        const minutes = Math.round(ev.ms / 60000);
-        const label = minutes < 1 ? '곧 울림' : `${minutes}분 후 알림`;
-        return `<div class="alert-card"><strong>${ev.time}</strong><span>${ev.med}</span><small>${label}</small></div>`;
-      }).join('') || '<p style="color:var(--muted);">알림을 생성하려면 약을 등록하세요.</p>';
-    }
+function doCheck(name, time) {
+  const k = name+'_'+time;
+  checked[k] = !checked[k];
+  const med = myMeds.find(m=>m.name===name);
+  if(med && checked[k]) {
+    if(!med.history) med.history=[];
+    med.history.unshift({loggedAt: new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})});
+    toast(`${name} 복용 완료! ✓`, 'success');
+  }
+  render();
+}
 
-    suggestions.addEventListener('click', (e) => {
-      if (e.target.matches('.suggestion-chip')) {
-        document.getElementById('searchInput').value = e.target.dataset.name;
-      }
-    });
+function copyLink(name) {
+  navigator.clipboard?.writeText(`https://bctfsh-usagi.github.io/demo/#${encodeURIComponent(name)}`).then(()=>toast('링크가 복사되었습니다.')).catch(()=>toast('복사 실패'));
+}
 
-    document.getElementById('addBtn').addEventListener('click', () => {
-      const name = document.getElementById('searchInput').value.trim();
-      const time = document.getElementById('customTime').value;
-      const dose = document.getElementById('customDose').value.trim();
-      addMed(name, time, dose);
-      document.getElementById('customTime').value = '';
-      document.getElementById('customDose').value = '';
-      renderAlerts();
-    });
+function bookmarkMed(name) {
+  toast(`${name} 북마크에 추가했습니다.`);
+}
 
-    registeredList.addEventListener('click', (e) => {
-      if (e.target.dataset.log) {
-        logIntake(e.target.dataset.log, e.target.dataset.time);
-      }
-      if (e.target.dataset.addTime) {
-        const newTime = prompt('추가할 시간을 HH:MM 형태로 입력하세요');
-        if (newTime) addMed(e.target.dataset.addTime, newTime);
-        renderAlerts();
-      }
-    });
+function addMed(name, time, dose) {
+  if(!name.trim()) { toast('약 이름을 입력해주세요.'); return; }
+  const base = catalog.find(c=>c.name===name) || { name, desc:'사용자 등록 약', info:dose||'직접 입력', times:time?[time]:[], dose:dose||'', impact:'복용 확인', level:'ok' };
+  const ex = myMeds.find(m=>m.name===name);
+  if(ex) {
+    if(time && !ex.times.includes(time)) { ex.times.push(time); toast(`${name} 시간 추가됨`); }
+    else toast(`${name} 이미 등록된 약입니다.`);
+  } else {
+    const entry = {...base};
+    if(time && !entry.times.includes(time)) entry.times = [time,...entry.times];
+    if(dose) entry.dose = dose;
+    entry.history = [];
+    myMeds.push(entry);
+    toast(`${name} 등록 완료!`, 'success');
+  }
+  render();
+}
 
-    document.getElementById('searchInput').addEventListener('input', (e) => renderCatalog(e.target.value));
+// SEARCH
+const searchInput = document.getElementById('searchInput');
+const searchResults = document.getElementById('searchResults');
+const selectedName = document.getElementById('selectedName');
+let searchTimer;
 
-    renderCatalog();
-    renderMeds();
-    renderAlerts();
-  </script>
-  <script src="assets/access-gate.js"></script>
+function renderQuickChips() {
+  const chips = document.getElementById('quickChips');
+  chips.innerHTML = catalog.slice(0,6).map(c=>`<div class="chip" onclick="selectMed('${c.name}')">${c.name}</div>`).join('');
+}
+
+function selectMed(name) {
+  selectedName.value = name;
+  searchInput.value = name;
+  searchResults.innerHTML = '';
+  const base = catalog.find(c=>c.name===name);
+  if(base && !document.getElementById('customTime').value) {
+    document.getElementById('customTime').value = base.times[0]||'';
+    document.getElementById('customDose').value = base.dose||'';
+  }
+}
+
+searchInput.addEventListener('input', () => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(()=>{
+    const q = searchInput.value.trim().toLowerCase();
+    if(!q) { searchResults.innerHTML=''; return; }
+    const res = catalog.filter(c=>c.name.toLowerCase().includes(q)||c.desc.toLowerCase().includes(q));
+    searchResults.innerHTML = res.length ? res.map(c=>`
+      <div class="result-item" onclick="selectMed('${c.name}')">
+        <div>
+          <div class="r-name">${c.name}</div>
+          <div class="r-desc">${c.desc}</div>
+        </div>
+        <div class="r-tag">${c.times[0]}</div>
+      </div>
+    `).join('') : '<div class="empty-msg">검색 결과가 없습니다.</div>';
+  }, 200);
+});
+
+document.getElementById('addBtn').addEventListener('click', ()=>{
+  const name = selectedName.value || searchInput.value;
+  const time = document.getElementById('customTime').value;
+  const dose = document.getElementById('customDose').value;
+  addMed(name, time, dose);
+  selectedName.value=''; searchInput.value=''; document.getElementById('customTime').value=''; document.getElementById('customDose').value='';
+  searchResults.innerHTML='';
+});
+
+// REPORT MODAL
+document.getElementById('reportBtn').addEventListener('click', ()=>{
+  const modal = document.getElementById('reportModal');
+  const total = myMeds.length;
+  const allT = myMeds.flatMap(m=>m.times.map(t=>m.name+'_'+t));
+  const done = allT.filter(k=>checked[k]).length;
+  document.getElementById('reportContent').innerHTML = total ? `
+    <p><strong>오늘 날짜:</strong> ${new Date().toLocaleDateString('ko-KR')}</p>
+    <p><strong>등록된 약:</strong> ${myMeds.map(m=>m.name).join(', ')}</p>
+    <p><strong>오늘 완료:</strong> ${done} / ${allT.length} 회</p>
+    <hr style="margin:12px 0;border:none;border-top:1px solid var(--border);">
+    ${myMeds.map(m=>`<p><strong>${m.name}</strong> · ${m.times.join(', ')} · ${m.dose}</p>`).join('')}
+  ` : '<p>등록된 약이 없습니다. 약을 먼저 등록해주세요.</p>';
+  modal.classList.add('open');
+});
+document.getElementById('closeModal').addEventListener('click', ()=>{
+  document.getElementById('reportModal').classList.remove('open');
+});
+document.getElementById('reportModal').addEventListener('click', e=>{
+  if(e.target===document.getElementById('reportModal')) document.getElementById('reportModal').classList.remove('open');
+});
+
+renderQuickChips();
+render();
+setInterval(renderAlerts, 30000);
+</script>
+<script src="assets/access-gate.js"></script>
 </body>
 </html>
