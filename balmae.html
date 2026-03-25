@@ -355,7 +355,10 @@ function renderItems() {
           <div class="item-work">📦 ${it.work}</div>
           ${it.preorder?`<div class="date-row">🛒 사전예약&nbsp;<strong>${it.preorder}</strong>&nbsp;${dDay(it.preorder)}</div>`:''}
           <div class="date-row">📅 발매일&nbsp;<strong>${it.date}</strong>&nbsp;<strong style="color:var(--pink);">${dDay(it.date)}</strong></div>
-          ${it.link?`<a class="item-link" href="${it.link}" target="_blank">🔗 관련 링크</a>`:''}
+          ${it.link
+            ? `<a class="item-link" href="${it.link}" target="_blank">🔗 관련 링크</a>`
+            : `<span class="item-link" style="cursor:pointer;opacity:.55;" onclick="quickAddLink(${idx})">🔗 링크 추가하기</span>`
+          }
           <div class="checklist">${checks}</div>
         </div>
       </div>`;
@@ -417,6 +420,13 @@ function closeEditModal(){
   editIdx = null;
 }
 document.getElementById('edit-modal').addEventListener('click',e=>{if(e.target===document.getElementById('edit-modal'))closeEditModal();});
+
+function quickAddLink(idx){
+  const url = prompt('관련 링크 URL을 입력하세요');
+  if(!url) return;
+  items[idx].link = url.trim();
+  renderItems();
+}
 
 function setThumb(idx){
   const url = prompt('이미지 URL을 입력하세요');
