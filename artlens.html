@@ -849,9 +849,8 @@
       reader.readAsDataURL(file);
     }
 
-    // ── API endpoint (same origin when served via server.js) ──
-    const API_BASE = window.location.port === '3131' || window.location.hostname !== 'localhost'
-      ? '' : 'http://localhost:3131';
+    // ── API endpoint ──
+    const API_BASE = 'https://ethical-hearing-moment-ellis.trycloudflare.com';
 
     // ── Analysis ──
     const loadingTexts = [
@@ -882,12 +881,14 @@
         // Build FormData from current file or blob URL
         const formData = new FormData();
         if (currentFile) {
-          formData.append('image', currentFile instanceof Blob ? currentFile : currentFile);
+          const fname = currentFile.name || 'photo.jpg';
+          const ftype = (['image/jpeg','image/png','image/gif','image/webp'].includes(currentFile.type))
+            ? currentFile.type : 'image/jpeg';
+          formData.append('image', currentFile, fname);
         } else {
-          // Fallback: fetch blob from data URL
           const resp = await fetch(previewSrc);
           const blob = await resp.blob();
-          formData.append('image', blob, 'photo.jpg');
+          formData.append('image', new Blob([blob], {type: 'image/jpeg'}), 'photo.jpg');
         }
 
         const response = await fetch(`${API_BASE}/api/analyze`, { method: 'POST', body: formData });

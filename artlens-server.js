@@ -17,7 +17,8 @@ app.post('/api/analyze', upload.single('image'), async (req, res) => {
     if (!req.file) return res.status(400).json({ error: 'No image provided' });
 
     const imageBase64 = req.file.buffer.toString('base64');
-    const mediaType = req.file.mimetype || 'image/jpeg';
+    const allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    const mediaType = allowed.includes(req.file.mimetype) ? req.file.mimetype : 'image/jpeg';
 
     const prompt = `You are an expert art historian and curator. Analyze this image and respond ONLY with a valid JSON object (no markdown, no explanation, just raw JSON).
 
