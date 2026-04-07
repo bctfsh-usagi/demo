@@ -1,34 +1,28 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="theme-color" content="#f7f5f2" />
-  <link rel="manifest" href='data:application/json,{"name":"ArtLens","short_name":"ArtLens","start_url":".","display":"standalone","background_color":"#f7f5f2","theme_color":"#f7f5f2","icons":[]}' />
-  <title>ArtLens · Snap a work, see the art</title>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#0f0f0f" />
+  <link rel="manifest" href='data:application/json,{"name":"ArtLens","short_name":"ArtLens","start_url":".","display":"standalone","background_color":"#0f0f0f","theme_color":"#0f0f0f","icons":[]}' />
+  <title>ArtLens · 작품을 찍으면, 예술이 보인다</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600&family=Noto+Sans+KR:wght@300;400;500;600&display=swap" rel="stylesheet" />
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Noto+Serif+KR:wght@300;400;600&family=Noto+Sans+KR:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <style>
     :root {
-      color-scheme: light;
-      --bg: #f7f5f2;
-      --bg2: #eeece8;
-      --surface: #ffffff;
-      --surface2: #f2f0ed;
-      --gold: #b8943a;
-      --gold-light: #c9a84c;
-      --gold-muted: #e8d5a3;
-      --text: #1a1a1a;
-      --text-muted: #888880;
-      --text-light: #aaa9a4;
-      --border: #e4e2de;
-      --border-strong: #ccc9c3;
-      --radius: 16px;
+      color-scheme: dark;
+      --bg: #0f0f0f;
+      --surface: #1a1a1a;
+      --surface2: #222;
+      --gold: #c9a84c;
+      --gold-light: #e8d5a3;
+      --text: #f5f5f0;
+      --text-muted: #888;
+      --border: #2a2a2a;
+      --radius: 18px;
       --card-radius: 20px;
       font-size: 16px;
     }
@@ -39,17 +33,12 @@
     }
     body {
       margin: 0;
-      font-family: 'Inter', 'Noto Sans KR', sans-serif;
+      font-family: 'Noto Sans KR', sans-serif;
       background: var(--bg);
       color: var(--text);
       min-height: 100dvh;
       overflow: hidden;
       -webkit-font-smoothing: antialiased;
-      letter-spacing: -0.01em;
-    }
-    /* 홈 화면 배경 그라데이션 */
-    #screen-home {
-      background: linear-gradient(160deg, #f7f5f2 0%, #edeae4 60%, #e8e4dc 100%);
     }
     button {
       font-family: inherit;
@@ -69,15 +58,15 @@
     .screen {
       position: fixed;
       inset: 0;
-      padding: 32px 24px calc(90px + env(safe-area-inset-bottom));
+      padding: 24px 20px calc(90px + env(safe-area-inset-bottom));
       background: var(--bg);
       transform: translateX(100%);
-      transition: transform 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
       display: flex;
       flex-direction: column;
-      gap: 28px;
+      gap: 24px;
       z-index: 1;
     }
     .screen::after {
@@ -99,63 +88,59 @@
       text-align: center;
     }
     .wordmark {
-      font-family: 'DM Serif Display', serif;
-      font-size: 1.1rem;
-      letter-spacing: 0.15em;
-      color: var(--text);
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      letter-spacing: 0.4rem;
+      text-transform: uppercase;
+      color: var(--gold);
+      opacity: 0.8;
     }
     .tagline {
-      display: none;
-    }
-    /* 홈 히어로 헤드라인 — 레퍼런스처럼 크고 이탤릭 */
-    .home-headline {
-      font-family: 'DM Serif Display', serif;
-      font-style: italic;
-      font-size: clamp(2.4rem, 10vw, 3.2rem);
-      line-height: 1.1;
+      margin-top: 6px;
+      font-family: 'Noto Serif KR', serif;
       color: var(--text);
-      margin: 0;
-    }
-    .home-headline em {
-      font-style: italic;
-      color: var(--gold);
-    }
-    .home-sub {
-      font-size: 0.88rem;
-      color: var(--text-muted);
-      line-height: 1.6;
-      max-width: 280px;
-      margin: 0;
+      font-size: 1rem;
     }
     .home-core {
       flex: 1;
       display: flex;
       flex-direction: column;
-      justify-content: flex-end;
-      position: relative;
-      gap: 20px;
-      padding-bottom: 8px;
-    }
-    .home-hero {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
+      align-items: center;
       justify-content: center;
-      gap: 16px;
+      position: relative;
+      gap: 24px;
     }
     .main-camera-btn {
-      display: none; /* 카메라는 HTTPS 필요, 숨김 처리 */
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 4px solid var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      color: var(--gold);
+      background: radial-gradient(circle, rgba(201, 168, 76, 0.1), rgba(0, 0, 0, 0.4));
+      box-shadow: 0 0 30px rgba(201, 168, 76, 0.25);
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .main-camera-btn:active {
+      transform: scale(0.96);
     }
     .home-instruction {
-      display: none;
+      font-size: 1rem;
+      color: var(--text);
+      letter-spacing: 2px;
     }
     .divider {
       display: flex;
       align-items: center;
       gap: 16px;
-      color: var(--text-light);
-      font-size: 0.72rem;
-      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.3rem;
+      font-size: 0.8rem;
     }
     .divider::before,
     .divider::after {
@@ -164,47 +149,21 @@
       height: 1px;
       background: var(--border);
     }
-    /* 업로드 버튼 — 레퍼런스처럼 검정 풀버튼 */
     .upload-btn {
-      width: 100%;
-      padding: 16px 24px;
-      border-radius: 0;
-      background: var(--text);
-      border: none;
-      color: #fff;
-      font-size: 0.82rem;
-      font-weight: 500;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
+      width: min(320px, 80vw);
+      padding: 16px;
+      border-radius: 16px;
+      background: var(--surface);
+      border: 1px dashed var(--gold);
+      color: var(--gold-light);
+      font-size: 1rem;
+      letter-spacing: 1px;
       cursor: pointer;
-      transition: opacity 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
+      transition: background 0.2s, transform 0.2s;
     }
-    .upload-btn:hover { opacity: 0.85; }
-    .upload-btn:active { opacity: 0.7; }
-    /* 카메라 버튼 — 아웃라인 */
-    .camera-outline-btn {
-      width: 100%;
-      padding: 15px 24px;
-      border-radius: 0;
-      background: transparent;
-      border: 1px solid var(--border-strong);
-      color: var(--text);
-      font-size: 0.82rem;
-      font-weight: 500;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: background 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
+    .upload-btn:active {
+      transform: translateY(2px);
     }
-    .camera-outline-btn:hover { background: rgba(0,0,0,0.04); }
     .drop-overlay {
       position: absolute;
       inset: 0;
@@ -257,38 +216,33 @@
       position: absolute;
       top: 12px;
       right: 12px;
-      width: 34px;
-      height: 34px;
+      width: 38px;
+      height: 38px;
       border-radius: 50%;
       border: none;
-      background: rgba(0, 0, 0, 0.55);
+      background: rgba(0, 0, 0, 0.6);
       color: var(--text);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      font-size: 1.1rem;
       cursor: pointer;
-      backdrop-filter: blur(8px);
-    }
-    .preview-clear svg {
-      width: 14px;
-      height: 14px;
-      stroke-width: 2;
+      backdrop-filter: blur(4px);
     }
     .analyze-btn {
       width: 100%;
-      padding: 17px;
-      border-radius: 0;
+      padding: 18px;
+      border-radius: 18px;
       border: none;
-      font-size: 0.82rem;
-      font-weight: 500;
-      letter-spacing: 0.12em;
+      font-size: 1.05rem;
+      letter-spacing: 0.2rem;
       text-transform: uppercase;
-      background: var(--text);
-      color: #fff;
-      transition: opacity 0.2s;
+      background: var(--gold);
+      color: #0f0f0f;
+      font-weight: 600;
+      transition: opacity 0.2s, transform 0.2s;
+      box-shadow: 0 18px 40px rgba(201, 168, 76, 0.35);
     }
     .analyze-btn:disabled {
-      opacity: 0.2;
+      opacity: 0.25;
+      box-shadow: none;
       pointer-events: none;
     }
     .camera-view {
@@ -346,33 +300,26 @@
       padding: 6px 0 4px;
     }
     .top-bar h2 {
-      font-family: 'DM Serif Display', serif;
-      font-size: 1.2rem;
-      letter-spacing: 0;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      letter-spacing: 0.2rem;
     }
     .icon-btn {
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
       border: 1px solid var(--border);
       background: var(--surface);
       color: var(--text);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      font-size: 1rem;
       cursor: pointer;
-    }
-    .icon-btn svg {
-      width: 16px;
-      height: 16px;
-      stroke-width: 1.5;
     }
     .result-card {
       background: var(--surface);
-      border-radius: 20px;
+      border-radius: 24px;
       border: 1px solid var(--border);
       overflow: hidden;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      box-shadow: 0 20px 45px rgba(0,0,0,0.35);
     }
     .result-image {
       position: relative;
@@ -387,15 +334,15 @@
     }
     .badge {
       position: absolute;
-      top: 14px;
-      left: 14px;
-      background: rgba(0, 0, 0, 0.65);
+      top: 16px;
+      left: 16px;
+      background: rgba(0, 0, 0, 0.7);
       color: var(--gold);
-      padding: 5px 12px;
+      padding: 6px 12px;
       border-radius: 999px;
-      font-size: 0.72rem;
-      letter-spacing: 0.04em;
-      backdrop-filter: blur(8px);
+      font-size: 0.8rem;
+      letter-spacing: 0.2rem;
+      text-transform: uppercase;
     }
     .result-body {
       padding: 24px;
@@ -404,7 +351,7 @@
       gap: 16px;
     }
     .result-title {
-      font-family: 'DM Serif Display', serif;
+      font-family: 'Playfair Display', serif;
       font-size: 1.8rem;
       line-height: 1.2;
     }
@@ -423,8 +370,7 @@
       border-radius: 999px;
       border: 1px solid var(--border);
       color: var(--text-muted);
-      font-size: 0.75rem;
-      background: var(--surface2);
+      font-size: 0.8rem;
     }
     .confidence {
       display: flex;
@@ -469,33 +415,29 @@
     .tag {
       border-radius: 999px;
       padding: 4px 12px;
-      font-size: 0.75rem;
-      background: rgba(184, 148, 58, 0.08);
-      border: 1px solid rgba(184, 148, 58, 0.2);
-      color: var(--gold);
+      font-size: 0.8rem;
+      background: rgba(201, 168, 76, 0.12);
+      border: 1px solid rgba(201, 168, 76, 0.3);
+      color: var(--gold-light);
     }
     .section-block {
       background: var(--surface);
-      border-radius: 20px;
+      border-radius: 24px;
       border: 1px solid var(--border);
       padding: 20px;
     }
     .section-title {
-      font-size: 0.78rem;
-      font-weight: 500;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      margin-bottom: 14px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 12px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
     .section-title small {
-      font-size: 0.72rem;
-      color: var(--gold);
-      letter-spacing: 0.04em;
-      text-transform: none;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      letter-spacing: 0.2rem;
     }
     .similar-scroll {
       display: flex;
@@ -505,15 +447,12 @@
       padding-bottom: 6px;
     }
     .similar-card {
-      flex: 0 0 172px;
+      flex: 0 0 200px;
       scroll-snap-align: start;
-      background: var(--surface);
-      border-radius: 16px;
+      background: var(--surface2);
+      border-radius: 20px;
       border: 1px solid var(--border);
       overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-      display: flex;
-      flex-direction: column;
     }
     .similar-card img {
       width: 100%;
@@ -522,72 +461,56 @@
     }
     .similar-card div {
       padding: 12px 14px;
-      display: flex;
-      flex-direction: column;
-      flex: 1;
     }
     .similar-card h4 {
-      font-size: 0.9rem;
+      font-size: 1rem;
       margin: 0 0 4px;
-      line-height: 1.3;
     }
     .similar-card p {
       margin: 0;
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      flex: 1;
-    }
-    .similar-card button {
-      margin-top: 12px;
-      width: 100%;
-      padding: 9px;
-      border-radius: 8px;
-      border: 1px solid var(--border-strong);
-      background: transparent;
-      color: var(--text);
-      font-size: 0.72rem;
-      font-weight: 500;
-      letter-spacing: 0.04em;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .similar-card button:hover { background: var(--surface2); }
-    .cta-banner {
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 24px 20px;
-      text-align: center;
-      background: var(--surface);
-    }
-    .cta-banner p { color: var(--text-muted); font-size: 0.88rem; }
-    .cta-banner button {
-      margin-top: 14px;
-      width: 100%;
-      padding: 15px;
-      border-radius: 0;
-      border: none;
-      background: var(--text);
-      color: #fff;
-      font-size: 0.8rem;
-      font-weight: 500;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: opacity 0.2s;
-    }
-    .cta-banner button:hover { opacity: 0.85; }
-    .loading-ring {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      border: 1.5px solid var(--border);
-      border-top-color: var(--gold);
-      animation: spin 0.9s linear infinite;
-    }
-    #loadingText {
-      margin-top: 20px;
       font-size: 0.85rem;
       color: var(--text-muted);
+    }
+    .similar-card button {
+      margin-top: 10px;
+      width: 100%;
+      padding: 8px;
+      border-radius: 12px;
+      border: 1px solid var(--gold);
+      background: transparent;
+      color: var(--gold-light);
+      cursor: pointer;
+    }
+    .cta-banner {
+      border: 1px solid var(--gold);
+      border-radius: 24px;
+      padding: 20px;
+      text-align: center;
+      background: linear-gradient(120deg, rgba(201, 168, 76, 0.15), rgba(0, 0, 0, 0.4));
+    }
+    .cta-banner button {
+      margin-top: 12px;
+      width: 100%;
+      padding: 14px;
+      border-radius: 16px;
+      border: none;
+      background: var(--gold);
+      color: #0f0f0f;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .loading-ring {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 6px solid rgba(255,255,255,0.08);
+      border-top-color: var(--gold);
+      animation: spin 1s linear infinite;
+    }
+    #loadingText {
+      margin-top: 24px;
+      font-size: 1rem;
+      color: var(--gold-light);
       min-height: 1.4em;
       transition: opacity 0.3s;
     }
@@ -606,16 +529,14 @@
       gap: 16px;
     }
     .explore-card {
-      border-radius: 16px;
+      border-radius: 24px;
       border: 1px solid var(--border);
       background: var(--surface);
       overflow: hidden;
       display: flex;
       flex-direction: column;
       cursor: pointer;
-      transition: box-shadow 0.2s;
     }
-    .explore-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
     .explore-card img {
       width: 100%;
       aspect-ratio: 4/5;
@@ -629,11 +550,11 @@
     }
     .price-chip {
       align-self: flex-start;
-      padding: 3px 8px;
-      border-radius: 6px;
-      background: rgba(184, 148, 58, 0.1);
-      color: var(--gold);
-      font-size: 0.72rem;
+      padding: 4px 10px;
+      border-radius: 12px;
+      background: rgba(201, 168, 76, 0.14);
+      color: var(--gold-light);
+      font-size: 0.8rem;
     }
     .tab-bar {
       position: fixed;
@@ -646,9 +567,8 @@
       justify-content: space-between;
       align-items: center;
       border-top: 1px solid var(--border);
-      background: rgba(247, 245, 242, 0.92);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      background: rgba(10, 10, 10, 0.9);
+      backdrop-filter: blur(12px);
       z-index: 5;
     }
     .nav-tab {
@@ -656,24 +576,19 @@
       border: none;
       background: none;
       color: var(--text-muted);
-      font-size: 0.7rem;
-      font-weight: 500;
-      letter-spacing: 0.02em;
+      font-size: 0.85rem;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 5px;
+      gap: 4px;
       cursor: pointer;
-      padding: 10px 8px;
-      transition: color 0.2s;
+      padding: 10px;
     }
-    .nav-tab i, .nav-tab svg {
-      width: 20px;
-      height: 20px;
-      stroke-width: 1.5;
+    .nav-tab span {
+      font-size: 1.3rem;
     }
     .nav-tab.active {
-      color: var(--text);
+      color: var(--gold);
     }
     .nav-tab.locked {
       opacity: 0.4;
@@ -684,54 +599,34 @@
       bottom: calc(80px + env(safe-area-inset-bottom));
       left: 50%;
       transform: translateX(-50%);
-      background: var(--text);
-      color: #fff;
+      background: rgba(0,0,0,0.85);
+      border: 1px solid var(--gold);
+      color: var(--gold-light);
       padding: 12px 20px;
-      border-radius: 12px;
-      font-size: 0.82rem;
-      white-space: nowrap;
-      max-width: 90vw;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      border-radius: 999px;
+      font-size: 0.9rem;
       animation: toastIn 0.3s ease forwards;
-      z-index: 9999;
+      z-index: 99;
     }
     @keyframes toastIn {
       from { opacity: 0; transform: translate(-50%, 20px); }
       to { opacity: 1; transform: translate(-50%, 0); }
     }
     @media (min-width: 768px) {
-      body {
-        background: #e8e5e0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100dvh;
-      }
-      #app {
-        width: 390px;
-        height: 844px;
-        max-height: 95dvh;
-        border-radius: 40px;
-        overflow: hidden;
-        box-shadow: 0 32px 80px rgba(0,0,0,0.18), 0 0 0 1px rgba(0,0,0,0.08);
-        position: relative;
-      }
-      main {
-        width: 100%;
-        height: 100%;
-      }
       .screen {
-        padding: 40px 28px calc(90px + env(safe-area-inset-bottom));
+        padding: 40px calc(28px + env(safe-area-inset-left)) calc(110px + env(safe-area-inset-bottom));
       }
-      .tab-bar {
-        border-radius: 0 0 40px 40px;
+      .home-core {
+        gap: 32px;
+      }
+      .upload-btn {
+        width: 360px;
       }
       .result-card {
         display: grid;
         grid-template-columns: 1fr 1fr;
       }
-      .result-image { height: 100%; aspect-ratio: unset; }
+      .result-image { height: 100%; }
     }
   </style>
 </head>
@@ -739,26 +634,24 @@
   <div id="app">
     <main>
       <section id="screen-home" class="screen active" aria-label="홈">
-        <div class="screen-header" style="text-align:left;">
+        <div class="screen-header">
           <div class="wordmark">ARTLENS</div>
+          <p class="tagline">작품을 찍으면, 예술이 보인다</p>
         </div>
         <div class="home-core" id="homeActions">
-          <div class="home-hero">
-            <p class="home-headline">Snap a work,<br><em>see the art.</em></p>
-            <p class="home-sub">AI analyzes the story behind any artwork and connects you with pieces that match your taste.</p>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:0;">
-            <button class="upload-btn" id="uploadButton"><i data-lucide="upload" style="width:16px;height:16px;stroke-width:2;"></i> Upload Image</button>
-            <button class="camera-outline-btn" id="cameraButton"><i data-lucide="camera" style="width:16px;height:16px;stroke-width:1.5;"></i> Take a Photo</button>
-          </div>
+          <button class="main-camera-btn" id="cameraButton" aria-label="카메라 열기">📷</button>
+          <p class="home-instruction">작품을 촬영하세요</p>
+          <div class="divider">OR</div>
+          <button class="upload-btn" id="uploadButton">이미지 업로드</button>
+          <p style="font-size:0.8rem;color:var(--text-muted);text-align:center;opacity:0.8;">JPG/PNG/WEBP · 최대 20MB · 드래그 앤 드롭 가능</p>
           <div class="drop-overlay" id="dropOverlay"></div>
         </div>
         <div class="preview-card" id="previewCard">
-          <img id="previewImage" alt="Preview" />
+          <img id="previewImage" alt="선택한 작품 미리보기" />
           <div class="preview-meta"><strong id="previewName">Untitled</strong><br/><span id="previewSize">0 MB</span></div>
-          <button class="preview-clear" id="clearPreview" aria-label="선택 초기화"><i data-lucide="x"></i></button>
+          <button class="preview-clear" id="clearPreview" aria-label="선택 초기화">✕</button>
         </div>
-        <button class="analyze-btn" id="analyzeButton" disabled>Analyze</button>
+        <button class="analyze-btn" id="analyzeButton" disabled>분석하기</button>
         <input type="file" id="fileInput" accept="image/*" hidden />
         <canvas id="snapCanvas" style="display:none;"></canvas>
       </section>
@@ -766,69 +659,69 @@
       <section id="screen-loading" class="screen" aria-live="polite">
         <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:20px;">
           <div class="loading-ring"></div>
-          <p id="loadingText">Analyzing image...</p>
+          <p id="loadingText">이미지 분석 중...</p>
         </div>
       </section>
 
-      <section id="screen-result" class="screen" aria-label="분석 결과" style="padding-top:20px;">
-        <div class="top-bar" style="position:sticky;top:0;background:var(--bg);z-index:2;padding-top:12px;padding-bottom:12px;margin-bottom:4px;">
-          <button class="icon-btn" id="resultBack" aria-label="뒤로"><i data-lucide="chevron-left"></i></button>
-          <h2>Analysis</h2>
-          <button class="icon-btn" id="shareBtn" aria-label="공유"><i data-lucide="share-2"></i></button>
+      <section id="screen-result" class="screen" aria-label="분석 결과">
+        <div class="top-bar">
+          <button class="icon-btn" id="resultBack" aria-label="뒤로">←</button>
+          <h2>분석 결과</h2>
+          <button class="icon-btn" id="shareBtn" aria-label="공유">⇪</button>
         </div>
         <article class="result-card">
           <div class="result-image">
-            <img id="resultImage" src="https://picsum.photos/800/500?blur=2" alt="Analyzed artwork" />
-            <span class="badge">AI Analyzed</span>
+            <img id="resultImage" src="https://picsum.photos/800/500?blur=2" alt="분석된 작품" />
+            <span class="badge">AI 분석 완료</span>
           </div>
           <div class="result-body">
             <div>
-              <div class="result-title" id="resultTitle">Water Lilies</div>
-              <div class="result-subtitle" id="resultArtist">Claude Monet · 1906</div>
+              <div class="result-title" id="resultTitle">수련 · Water Lilies</div>
+              <div class="result-subtitle" id="resultArtist">클로드 모네 · 1906</div>
             </div>
             <p id="resultDescription" style="line-height:1.6;color:var(--text-muted);">
-              A masterpiece inspired by Monet's garden at Giverny, capturing the fleeting beauty of light reflected on water.
+              모네의 지베르니 정원에서 영감을 받은 대표작. 물결과 빛이 만드는 순간을 포착했습니다.
             </p>
             <div class="result-meta" id="resultMeta"></div>
             <div class="confidence">
-              <span><span>Confidence</span><strong id="confidenceValue">0%</strong></span>
+              <span><span>신뢰도</span><strong id="confidenceValue">0%</strong></span>
               <div class="confidence-bar"><div class="confidence-fill" id="confidenceFill"></div></div>
             </div>
             <div class="palette" id="palette"></div>
             <div class="tag-list" id="tagList"></div>
-            <div style="font-family:'DM Serif Display',serif;font-size:1.1rem;color:var(--gold-light);" id="priceRange">₩ 2,500,000 ~ 8,000,000</div>
+            <div style="font-family:'Noto Serif KR',serif;font-size:1.1rem;color:var(--gold-light);" id="priceRange">₩ 2,500,000 ~ 8,000,000</div>
           </div>
         </article>
         <div class="section-block">
-          <div class="section-title">Similar Works <small>via artue.io</small></div>
+          <div class="section-title">ARTUE 추천 작품 <small>artue.io</small></div>
           <div class="similar-scroll" id="similarScroll"></div>
         </div>
         <div class="cta-banner">
-          <p style="margin:0;font-size:0.88rem;color:var(--text-muted);">Discover more works on ARTUE</p>
-          <button onclick="window.open('https://artue.io/en','_blank')">Explore ARTUE</button>
+          <p style="margin:0;font-size:1rem;">더 많은 작품은 ARTUE에서</p>
+          <button onclick="window.open('https://artue.io/ko','_blank')">ARTUE 방문하기</button>
         </div>
       </section>
 
       <section id="screen-explore" class="screen" aria-label="탐색">
         <div class="top-bar">
           <div></div>
-          <h2>Explore</h2>
+          <h2>탐색</h2>
           <div></div>
         </div>
-        <p style="font-size:0.75rem;color:var(--text-muted);letter-spacing:0.06em;text-transform:uppercase;margin:0;">Works on Artue</p>
+        <div class="pull-indicator">↻ 당겨서 새로고침 느낌</div>
         <div class="explore-grid" id="exploreGrid"></div>
       </section>
     </main>
 
     <nav class="tab-bar">
-      <button class="nav-tab active" data-screen="home"><i data-lucide="scan-line"></i>Home</button>
-      <button class="nav-tab locked" data-screen="result"><i data-lucide="sparkles"></i>Result</button>
-      <button class="nav-tab" data-screen="explore"><i data-lucide="layout-grid"></i>Explore</button>
+      <button class="nav-tab active" data-screen="home"><span>🏠</span>홈</button>
+      <button class="nav-tab locked" data-screen="result"><span>🔍</span>결과</button>
+      <button class="nav-tab" data-screen="explore"><span>🎨</span>탐색</button>
     </nav>
   </div>
 
   <div class="camera-view" id="cameraView">
-    <button class="camera-cancel" id="cameraCancel"><i data-lucide="x"></i> Close</button>
+    <button class="camera-cancel" id="cameraCancel">← 닫기</button>
     <video id="cameraVideo" autoplay playsinline muted></video>
     <div class="camera-controls">
       <span style="color:var(--text-muted);">환경광을 확인하세요</span>
@@ -927,7 +820,7 @@
 
     document.getElementById('shareBtn').addEventListener('click', async () => {
       if (!analysisResult) {
-        showToast('Please analyze an artwork first.');
+        showToast('먼저 작품을 분석하세요.');
         return;
       }
       if (navigator.share) {
@@ -935,7 +828,7 @@
           await navigator.share({ title: 'ArtLens 결과', text: analysisResult.title || 'ArtLens 분석 결과', url: location.href });
         } catch (e) {}
       } else {
-        navigator.clipboard.writeText(`${analysisResult.title || 'Artwork'} - ${analysisResult.artist || ''}`);
+        navigator.clipboard.writeText(`${analysisResult.title || 'ArtLens 작품'} - ${analysisResult.artist || ''}`);
         showToast('클립보드에 복사되었습니다.');
       }
     });
@@ -948,7 +841,6 @@
       currentEl.classList.add(direction === 'forward' ? 'prev' : 'next-out');
       nextEl.classList.remove('prev', 'next-out');
       nextEl.classList.add('active');
-      nextEl.scrollTop = 0; // 항상 맨 위에서 시작
       currentScreen = screenId;
       document.querySelectorAll('.nav-tab').forEach(tab => {
         tab.classList.toggle('active', tab.dataset.screen === screenId);
@@ -1027,77 +919,47 @@
       }, 'image/jpeg', 0.9);
     }
 
-    const API_BASE = 'http://185.111.159.139:3131';
+    const API_BASE = 'https://ethical-hearing-moment-ellis.trycloudflare.com';
 
     async function runAnalysis() {
       if (!currentFile) {
-        showToast('Please select an image first.');
+        showToast('이미지를 선택하세요.');
         return;
       }
-
-      // 미리보기 이미지 src 저장 (화면 전환 전에)
-      const savedPreviewSrc = previewImage.src;
-
       navigateTo('loading');
       startLoadingLoop();
-
       try {
         const formData = new FormData();
-        // Blob/File 모두 안전하게 처리
-        const fname = (currentFile instanceof File && currentFile.name) ? currentFile.name : (currentFileName || 'photo.jpg');
-        const ftype = currentFile.type || 'image/jpeg';
-        const fileBlob = (currentFile.type) ? currentFile : new Blob([currentFile], {type: 'image/jpeg'});
-        formData.append('image', fileBlob, fname);
-
-        const response = await fetch(`${API_BASE}/api/analyze`, {
-          method: 'POST',
-          body: formData
-        });
-
-        if (!response.ok) {
-          const errText = await response.text();
-          throw new Error(`Server error ${response.status}: ${errText}`);
-        }
-
+        formData.append('image', currentFile, currentFile.name || currentFileName || 'photo.jpg');
+        const response = await fetch(`${API_BASE}/api/analyze`, { method: 'POST', body: formData });
+        if (!response.ok) throw new Error('분석 실패');
         const data = await response.json();
-        if (data.error) throw new Error(data.error);
-
         analysisResult = data;
+        renderResult(data);
         stopLoadingLoop();
-        // 렌더링 먼저, 그 다음 화면 전환
-        renderResult(data, savedPreviewSrc);
-        document.querySelector('[data-screen="result"]').classList.remove('locked');
         navigateTo('result');
-        // 결과 화면 맨 위로 스크롤 (여러 번 시도)
-        const resultScreen = document.getElementById('screen-result');
-        if (resultScreen) resultScreen.scrollTop = 0;
-        setTimeout(() => { if (resultScreen) resultScreen.scrollTop = 0; }, 100);
-        setTimeout(() => { if (resultScreen) resultScreen.scrollTop = 0; }, 400);
-
+        document.querySelector('[data-screen="result"]').classList.remove('locked');
       } catch (error) {
-        console.error('Analysis error:', error);
+        console.error(error);
         stopLoadingLoop();
         navigateTo('home', 'back');
-        // 에러 내용 화면에 표시
-        showToast(`Error: ${error.message.slice(0, 60)}`);
+        showToast('분석 실패. 다시 시도해 주세요.');
       }
     }
 
-    function renderResult(data = {}, savedSrc = '') {
-      const resultImg = document.getElementById('resultImage');
-      if (savedSrc) resultImg.src = savedSrc;
-
-      const title = (data.title || 'Unknown Artwork').split('·')[0].trim();
-      const artist = (data.artist || '').split('·')[0].trim();
-      const subtitleParts = [artist, data.year].filter(Boolean).join(' · ');
+    function renderResult(data = {}) {
+      const imageUrl = previewImage.src || data.image || 'https://picsum.photos/800/500?blur=3';
+      document.getElementById('resultImage').src = imageUrl;
+      const title = data.title || '미지의 작품';
+      const subtitleParts = [data.artist, data.year].filter(Boolean).join(' · ');
       document.getElementById('resultTitle').textContent = title;
-      document.getElementById('resultArtist').textContent = subtitleParts || 'Analyzing...';
-      document.getElementById('resultDescription').textContent = data.description || 'No description available.';
-      document.getElementById('priceRange').textContent = data.priceRange || '';
+      document.getElementById('resultArtist').textContent = subtitleParts || 'AI 분석 중';
+      document.getElementById('resultDescription').textContent = data.description || '작품에 대한 상세 설명은 현재 수집 중입니다.';
+      document.getElementById('priceRange').textContent = data.priceRange || '가격 정보 없음';
 
       const meta = document.getElementById('resultMeta');
       meta.innerHTML = '';
-      [data.styleEn || data.style, data.medium].filter(Boolean).forEach(item => {
+      [data.style, data.medium, data.location].filter(Boolean).forEach(item => {
         const chip = document.createElement('span');
         chip.className = 'chip';
         chip.textContent = item;
@@ -1105,7 +967,7 @@
       });
 
       const palette = document.getElementById('palette');
-      palette.innerHTML = '<span style="font-size:0.75rem;color:var(--text-muted);letter-spacing:0.04em;">PALETTE</span>';
+      palette.innerHTML = '<span style="font-size:0.8rem;color:var(--text-muted);">팔레트</span>';
       (data.palette && data.palette.length ? data.palette : ['#4a7c6f', '#8da4a8', '#2b3a55', '#c9a84c', '#1c1c1c']).forEach(color => {
         const sw = document.createElement('div');
         sw.className = 'swatch';
@@ -1115,7 +977,7 @@
 
       const tags = document.getElementById('tagList');
       tags.innerHTML = '';
-      (data.tags || []).forEach(tag => {
+      (data.tags || ['인상주의', '풍경화']).forEach(tag => {
         const span = document.createElement('span');
         span.className = 'tag';
         span.textContent = tag.startsWith('#') ? tag : `#${tag}`;
@@ -1140,7 +1002,7 @@
             <h4>${item.title}</h4>
             <p>${item.artist}</p>
             <p style="color:var(--gold-light);font-weight:600;">${item.price || ''}</p>
-            <button onclick="window.open('${item.url || item.link || 'https://artue.io/en/works'}','_blank')">View on Artue</button>
+            <button onclick="window.open('${item.url || item.link || 'https://artue.io/ko/works'}','_blank')">보러가기</button>
           </div>`;
         scroll.appendChild(card);
       });
@@ -1148,7 +1010,7 @@
 
     function startLoadingLoop() {
       const textEl = document.getElementById('loadingText');
-      const texts = ['Analyzing image...', 'Searching artwork data...', 'Finding similar works...', 'Preparing results...'];
+      const texts = ['이미지 분석 중...', '작품 정보 검색 중...', '유사 작품 탐색 중...', '결과를 정리하는 중...'];
       let idx = 0;
       textEl.textContent = texts[idx];
       loadingTimer = setInterval(() => {
@@ -1206,9 +1068,6 @@
     }
 
     renderExplore();
-
-    // Init Lucide icons
-    if (typeof lucide !== 'undefined') lucide.createIcons();
   </script>
 </body>
 </html>
