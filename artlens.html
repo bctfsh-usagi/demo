@@ -92,17 +92,17 @@
     }
     .wordmark {
       font-family: 'DM Serif Display', serif;
-      font-size: 1.2rem;
-      letter-spacing: 0.4rem;
-      text-transform: uppercase;
+      font-size: 1.3rem;
+      letter-spacing: 0.12em;
       color: var(--gold);
-      opacity: 0.8;
     }
     .tagline {
-      margin-top: 6px;
-      font-family: 'DM Serif Display', serif;
-      color: var(--text);
-      font-size: 1rem;
+      margin-top: 4px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-weight: 300;
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      letter-spacing: 0;
     }
     .home-core {
       flex: 1;
@@ -136,18 +136,17 @@
       transform: scale(0.96);
     }
     .home-instruction {
-      font-size: 1rem;
-      color: var(--text);
-      letter-spacing: 2px;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      letter-spacing: 0;
     }
     .divider {
       display: flex;
       align-items: center;
       gap: 16px;
       color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.3rem;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
     }
     .divider::before,
     .divider::after {
@@ -158,15 +157,19 @@
     }
     .upload-btn {
       width: min(320px, 80vw);
-      padding: 16px;
-      border-radius: 16px;
+      padding: 15px 24px;
+      border-radius: 14px;
       background: var(--surface);
-      border: 1px dashed var(--gold);
-      color: var(--gold-light);
-      font-size: 1rem;
-      letter-spacing: 1px;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      letter-spacing: 0;
       cursor: pointer;
-      transition: background 0.2s, transform 0.2s;
+      transition: background 0.2s, border-color 0.2s, transform 0.15s;
+    }
+    .upload-btn:hover {
+      border-color: var(--gold-dark, #9a7a2e);
+      color: var(--text);
     }
     .upload-btn:active {
       transform: translateY(2px);
@@ -223,29 +226,35 @@
       position: absolute;
       top: 12px;
       right: 12px;
-      width: 38px;
-      height: 38px;
+      width: 34px;
+      height: 34px;
       border-radius: 50%;
       border: none;
-      background: rgba(0, 0, 0, 0.6);
+      background: rgba(0, 0, 0, 0.55);
       color: var(--text);
-      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
-      backdrop-filter: blur(4px);
+      backdrop-filter: blur(8px);
+    }
+    .preview-clear svg {
+      width: 14px;
+      height: 14px;
+      stroke-width: 2;
     }
     .analyze-btn {
       width: 100%;
-      padding: 18px;
-      border-radius: 18px;
+      padding: 17px;
+      border-radius: 14px;
       border: none;
-      font-size: 1.05rem;
-      letter-spacing: 0.2rem;
-      text-transform: uppercase;
+      font-size: 0.95rem;
+      letter-spacing: 0.01em;
       background: var(--gold);
       color: #0f0f0f;
       font-weight: 600;
-      transition: opacity 0.2s, transform 0.2s;
-      box-shadow: 0 18px 40px rgba(201, 168, 76, 0.35);
+      transition: opacity 0.2s, transform 0.15s;
+      box-shadow: 0 8px 24px rgba(201, 168, 76, 0.25);
     }
     .analyze-btn:disabled {
       opacity: 0.25;
@@ -308,18 +317,25 @@
     }
     .top-bar h2 {
       font-family: 'DM Serif Display', serif;
-      font-size: 1.3rem;
-      letter-spacing: 0.2rem;
+      font-size: 1.2rem;
+      letter-spacing: 0;
     }
     .icon-btn {
-      width: 40px;
-      height: 40px;
-      border-radius: 12px;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
       border: 1px solid var(--border);
       background: var(--surface);
-      color: var(--text);
-      font-size: 1rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
+    }
+    .icon-btn svg {
+      width: 16px;
+      height: 16px;
+      stroke-width: 1.5;
     }
     .result-card {
       background: var(--surface);
@@ -341,15 +357,15 @@
     }
     .badge {
       position: absolute;
-      top: 16px;
-      left: 16px;
-      background: rgba(0, 0, 0, 0.7);
+      top: 14px;
+      left: 14px;
+      background: rgba(0, 0, 0, 0.65);
       color: var(--gold);
-      padding: 6px 12px;
+      padding: 5px 12px;
       border-radius: 999px;
-      font-size: 0.8rem;
-      letter-spacing: 0.2rem;
-      text-transform: uppercase;
+      font-size: 0.72rem;
+      letter-spacing: 0.04em;
+      backdrop-filter: blur(8px);
     }
     .result-body {
       padding: 24px;
@@ -434,17 +450,21 @@
       padding: 20px;
     }
     .section-title {
-      font-size: 1.1rem;
-      font-weight: 600;
-      margin-bottom: 12px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 14px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
     .section-title small {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      letter-spacing: 0.2rem;
+      font-size: 0.72rem;
+      color: var(--gold);
+      letter-spacing: 0.04em;
+      text-transform: none;
     }
     .similar-scroll {
       display: flex;
@@ -507,17 +527,17 @@
       cursor: pointer;
     }
     .loading-ring {
-      width: 80px;
-      height: 80px;
+      width: 52px;
+      height: 52px;
       border-radius: 50%;
-      border: 6px solid rgba(255,255,255,0.08);
+      border: 2px solid rgba(255,255,255,0.08);
       border-top-color: var(--gold);
-      animation: spin 1s linear infinite;
+      animation: spin 0.9s linear infinite;
     }
     #loadingText {
-      margin-top: 24px;
-      font-size: 1rem;
-      color: var(--gold-light);
+      margin-top: 20px;
+      font-size: 0.9rem;
+      color: var(--text-muted);
       min-height: 1.4em;
       transition: opacity 0.3s;
     }
@@ -679,7 +699,7 @@
         <div class="top-bar">
           <button class="icon-btn" id="resultBack" aria-label="뒤로"><i data-lucide="chevron-left"></i></button>
           <h2>분석 결과</h2>
-          <button class="icon-btn" id="shareBtn" aria-label="공유">⇪</button>
+          <button class="icon-btn" id="shareBtn" aria-label="공유"><i data-lucide="share-2"></i></button>
         </div>
         <article class="result-card">
           <div class="result-image">
@@ -720,7 +740,7 @@
           <h2>탐색</h2>
           <div></div>
         </div>
-        <div class="pull-indicator">↻ 당겨서 새로고침 느낌</div>
+        <p style="font-size:0.75rem;color:var(--text-muted);letter-spacing:0.04em;text-transform:uppercase;margin:0;">Artue 작품</p>
         <div class="explore-grid" id="exploreGrid"></div>
       </section>
     </main>
