@@ -4,9 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="theme-color" content="#0f0f0f" />
-  <link rel="manifest" href='data:application/json,{"name":"ArtLens","short_name":"ArtLens","start_url":".","display":"standalone","background_color":"#0f0f0f","theme_color":"#0f0f0f","icons":[]}' />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="theme-color" content="#f7f5f2" />
+  <link rel="manifest" href='data:application/json,{"name":"ArtLens","short_name":"ArtLens","start_url":".","display":"standalone","background_color":"#f7f5f2","theme_color":"#f7f5f2","icons":[]}' />
   <title>ArtLens · 작품을 찍으면, 예술이 보인다</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -15,16 +15,20 @@
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
   <style>
     :root {
-      color-scheme: dark;
-      --bg: #0f0f0f;
-      --surface: #1a1a1a;
-      --surface2: #222;
-      --gold: #c9a84c;
-      --gold-light: #e8d5a3;
-      --text: #f5f5f0;
-      --text-muted: #888;
-      --border: #2a2a2a;
-      --radius: 18px;
+      color-scheme: light;
+      --bg: #f7f5f2;
+      --bg2: #eeece8;
+      --surface: #ffffff;
+      --surface2: #f2f0ed;
+      --gold: #b8943a;
+      --gold-light: #c9a84c;
+      --gold-muted: #e8d5a3;
+      --text: #1a1a1a;
+      --text-muted: #888880;
+      --text-light: #aaa9a4;
+      --border: #e4e2de;
+      --border-strong: #ccc9c3;
+      --radius: 16px;
       --card-radius: 20px;
       font-size: 16px;
     }
@@ -42,6 +46,10 @@
       overflow: hidden;
       -webkit-font-smoothing: antialiased;
       letter-spacing: -0.01em;
+    }
+    /* 홈 화면 배경 그라데이션 */
+    #screen-home {
+      background: linear-gradient(160deg, #f7f5f2 0%, #edeae4 60%, #e8e4dc 100%);
     }
     button {
       font-family: inherit;
@@ -61,15 +69,15 @@
     .screen {
       position: fixed;
       inset: 0;
-      padding: 24px 20px calc(90px + env(safe-area-inset-bottom));
+      padding: 32px 24px calc(90px + env(safe-area-inset-bottom));
       background: var(--bg);
       transform: translateX(100%);
-      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: transform 0.38s cubic-bezier(0.4, 0, 0.2, 1);
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      gap: 28px;
       z-index: 1;
     }
     .screen::after {
@@ -92,60 +100,61 @@
     }
     .wordmark {
       font-family: 'DM Serif Display', serif;
-      font-size: 1.3rem;
-      letter-spacing: 0.12em;
-      color: var(--gold);
+      font-size: 1.1rem;
+      letter-spacing: 0.15em;
+      color: var(--text);
     }
     .tagline {
-      margin-top: 4px;
-      font-family: 'Noto Sans KR', sans-serif;
-      font-weight: 300;
+      display: none;
+    }
+    /* 홈 히어로 헤드라인 — 레퍼런스처럼 크고 이탤릭 */
+    .home-headline {
+      font-family: 'DM Serif Display', serif;
+      font-style: italic;
+      font-size: clamp(2.4rem, 10vw, 3.2rem);
+      line-height: 1.1;
+      color: var(--text);
+      margin: 0;
+    }
+    .home-headline em {
+      font-style: italic;
+      color: var(--gold);
+    }
+    .home-sub {
+      font-size: 0.88rem;
       color: var(--text-muted);
-      font-size: 0.82rem;
-      letter-spacing: 0;
+      line-height: 1.6;
+      max-width: 280px;
+      margin: 0;
     }
     .home-core {
       flex: 1;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      justify-content: flex-end;
       position: relative;
-      gap: 24px;
+      gap: 20px;
+      padding-bottom: 8px;
+    }
+    .home-hero {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 16px;
     }
     .main-camera-btn {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      border: 1.5px solid var(--gold);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--gold);
-      background: radial-gradient(circle, rgba(201, 168, 76, 0.08), rgba(0, 0, 0, 0.4));
-      box-shadow: 0 0 40px rgba(201, 168, 76, 0.15);
-      cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .main-camera-btn svg {
-      width: 36px;
-      height: 36px;
-      stroke-width: 1.2;
-    }
-    .main-camera-btn:active {
-      transform: scale(0.96);
+      display: none; /* 카메라는 HTTPS 필요, 숨김 처리 */
     }
     .home-instruction {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      letter-spacing: 0;
+      display: none;
     }
     .divider {
       display: flex;
       align-items: center;
       gap: 16px;
-      color: var(--text-muted);
-      font-size: 0.75rem;
+      color: var(--text-light);
+      font-size: 0.72rem;
       letter-spacing: 0.05em;
     }
     .divider::before,
@@ -155,25 +164,47 @@
       height: 1px;
       background: var(--border);
     }
+    /* 업로드 버튼 — 레퍼런스처럼 검정 풀버튼 */
     .upload-btn {
-      width: min(320px, 80vw);
-      padding: 15px 24px;
-      border-radius: 14px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      font-size: 0.9rem;
-      letter-spacing: 0;
+      width: 100%;
+      padding: 16px 24px;
+      border-radius: 0;
+      background: var(--text);
+      border: none;
+      color: #fff;
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
       cursor: pointer;
-      transition: background 0.2s, border-color 0.2s, transform 0.15s;
+      transition: opacity 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
     }
-    .upload-btn:hover {
-      border-color: var(--gold-dark, #9a7a2e);
+    .upload-btn:hover { opacity: 0.85; }
+    .upload-btn:active { opacity: 0.7; }
+    /* 카메라 버튼 — 아웃라인 */
+    .camera-outline-btn {
+      width: 100%;
+      padding: 15px 24px;
+      border-radius: 0;
+      background: transparent;
+      border: 1px solid var(--border-strong);
       color: var(--text);
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
     }
-    .upload-btn:active {
-      transform: translateY(2px);
-    }
+    .camera-outline-btn:hover { background: rgba(0,0,0,0.04); }
     .drop-overlay {
       position: absolute;
       inset: 0;
@@ -246,19 +277,18 @@
     .analyze-btn {
       width: 100%;
       padding: 17px;
-      border-radius: 14px;
+      border-radius: 0;
       border: none;
-      font-size: 0.95rem;
-      letter-spacing: 0.01em;
-      background: var(--gold);
-      color: #0f0f0f;
-      font-weight: 600;
-      transition: opacity 0.2s, transform 0.15s;
-      box-shadow: 0 8px 24px rgba(201, 168, 76, 0.25);
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      background: var(--text);
+      color: #fff;
+      transition: opacity 0.2s;
     }
     .analyze-btn:disabled {
-      opacity: 0.25;
-      box-shadow: none;
+      opacity: 0.2;
       pointer-events: none;
     }
     .camera-view {
@@ -326,7 +356,7 @@
       border-radius: 10px;
       border: 1px solid var(--border);
       background: var(--surface);
-      color: var(--text-muted);
+      color: var(--text);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -339,10 +369,10 @@
     }
     .result-card {
       background: var(--surface);
-      border-radius: 24px;
+      border-radius: 20px;
       border: 1px solid var(--border);
       overflow: hidden;
-      box-shadow: 0 20px 45px rgba(0,0,0,0.35);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
     }
     .result-image {
       position: relative;
@@ -393,7 +423,8 @@
       border-radius: 999px;
       border: 1px solid var(--border);
       color: var(--text-muted);
-      font-size: 0.8rem;
+      font-size: 0.75rem;
+      background: var(--surface2);
     }
     .confidence {
       display: flex;
@@ -438,14 +469,14 @@
     .tag {
       border-radius: 999px;
       padding: 4px 12px;
-      font-size: 0.8rem;
-      background: rgba(201, 168, 76, 0.12);
-      border: 1px solid rgba(201, 168, 76, 0.3);
-      color: var(--gold-light);
+      font-size: 0.75rem;
+      background: rgba(184, 148, 58, 0.08);
+      border: 1px solid rgba(184, 148, 58, 0.2);
+      color: var(--gold);
     }
     .section-block {
       background: var(--surface);
-      border-radius: 24px;
+      border-radius: 20px;
       border: 1px solid var(--border);
       padding: 20px;
     }
@@ -474,12 +505,13 @@
       padding-bottom: 6px;
     }
     .similar-card {
-      flex: 0 0 200px;
+      flex: 0 0 180px;
       scroll-snap-align: start;
-      background: var(--surface2);
-      border-radius: 20px;
+      background: var(--surface);
+      border-radius: 16px;
       border: 1px solid var(--border);
       overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
     .similar-card img {
       width: 100%;
@@ -502,41 +534,50 @@
       margin-top: 10px;
       width: 100%;
       padding: 8px;
-      border-radius: 12px;
-      border: 1px solid var(--gold);
+      border-radius: 8px;
+      border: 1px solid var(--border-strong);
       background: transparent;
-      color: var(--gold-light);
+      color: var(--text-muted);
+      font-size: 0.75rem;
       cursor: pointer;
+      transition: background 0.2s;
     }
+    .similar-card button:hover { background: var(--surface2); }
     .cta-banner {
-      border: 1px solid var(--gold);
-      border-radius: 24px;
-      padding: 20px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px 20px;
       text-align: center;
-      background: linear-gradient(120deg, rgba(201, 168, 76, 0.15), rgba(0, 0, 0, 0.4));
+      background: var(--surface);
     }
+    .cta-banner p { color: var(--text-muted); font-size: 0.88rem; }
     .cta-banner button {
-      margin-top: 12px;
+      margin-top: 14px;
       width: 100%;
-      padding: 14px;
-      border-radius: 16px;
+      padding: 15px;
+      border-radius: 0;
       border: none;
-      background: var(--gold);
-      color: #0f0f0f;
-      font-weight: 600;
+      background: var(--text);
+      color: #fff;
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
       cursor: pointer;
+      transition: opacity 0.2s;
     }
+    .cta-banner button:hover { opacity: 0.85; }
     .loading-ring {
-      width: 52px;
-      height: 52px;
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
-      border: 2px solid rgba(255,255,255,0.08);
+      border: 1.5px solid var(--border);
       border-top-color: var(--gold);
       animation: spin 0.9s linear infinite;
     }
     #loadingText {
       margin-top: 20px;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       color: var(--text-muted);
       min-height: 1.4em;
       transition: opacity 0.3s;
@@ -556,14 +597,16 @@
       gap: 16px;
     }
     .explore-card {
-      border-radius: 24px;
+      border-radius: 16px;
       border: 1px solid var(--border);
       background: var(--surface);
       overflow: hidden;
       display: flex;
       flex-direction: column;
       cursor: pointer;
+      transition: box-shadow 0.2s;
     }
+    .explore-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
     .explore-card img {
       width: 100%;
       aspect-ratio: 4/5;
@@ -577,11 +620,11 @@
     }
     .price-chip {
       align-self: flex-start;
-      padding: 4px 10px;
-      border-radius: 12px;
-      background: rgba(201, 168, 76, 0.14);
-      color: var(--gold-light);
-      font-size: 0.8rem;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: rgba(184, 148, 58, 0.1);
+      color: var(--gold);
+      font-size: 0.72rem;
     }
     .tab-bar {
       position: fixed;
@@ -594,8 +637,9 @@
       justify-content: space-between;
       align-items: center;
       border-top: 1px solid var(--border);
-      background: rgba(10, 10, 10, 0.9);
-      backdrop-filter: blur(12px);
+      background: rgba(247, 245, 242, 0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       z-index: 5;
     }
     .nav-tab {
@@ -620,7 +664,7 @@
       stroke-width: 1.5;
     }
     .nav-tab.active {
-      color: var(--gold);
+      color: var(--text);
     }
     .nav-tab.locked {
       opacity: 0.4;
@@ -666,16 +710,18 @@
   <div id="app">
     <main>
       <section id="screen-home" class="screen active" aria-label="홈">
-        <div class="screen-header">
+        <div class="screen-header" style="text-align:left;">
           <div class="wordmark">ARTLENS</div>
-          <p class="tagline">작품을 찍으면, 예술이 보인다</p>
         </div>
         <div class="home-core" id="homeActions">
-          <button class="main-camera-btn" id="cameraButton" aria-label="카메라 열기"><i data-lucide="camera"></i></button>
-          <p class="home-instruction">작품을 촬영하세요</p>
-          <div class="divider">OR</div>
-          <button class="upload-btn" id="uploadButton">이미지 업로드</button>
-          <p style="font-size:0.8rem;color:var(--text-muted);text-align:center;opacity:0.8;">JPG/PNG/WEBP · 최대 20MB · 드래그 앤 드롭 가능</p>
+          <div class="home-hero">
+            <p class="home-headline">작품을 찍으면,<br><em>예술이 보인다.</em></p>
+            <p class="home-sub">AI가 작품의 이야기를 분석하고<br>당신의 감성에 맞는 작품을 연결합니다.</p>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:0;">
+            <button class="upload-btn" id="uploadButton"><i data-lucide="upload" style="width:16px;height:16px;stroke-width:2;"></i> 이미지 업로드</button>
+            <button class="camera-outline-btn" id="cameraButton"><i data-lucide="camera" style="width:16px;height:16px;stroke-width:1.5;"></i> 사진 촬영</button>
+          </div>
           <div class="drop-overlay" id="dropOverlay"></div>
         </div>
         <div class="preview-card" id="previewCard">
@@ -683,7 +729,7 @@
           <div class="preview-meta"><strong id="previewName">Untitled</strong><br/><span id="previewSize">0 MB</span></div>
           <button class="preview-clear" id="clearPreview" aria-label="선택 초기화"><i data-lucide="x"></i></button>
         </div>
-        <button class="analyze-btn" id="analyzeButton" disabled>분석하기</button>
+        <button class="analyze-btn" id="analyzeButton" disabled>분석 시작</button>
         <input type="file" id="fileInput" accept="image/*" hidden />
         <canvas id="snapCanvas" style="display:none;"></canvas>
       </section>
