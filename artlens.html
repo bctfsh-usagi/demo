@@ -10,7 +10,9 @@
   <title>ArtLens · 작품을 찍으면, 예술이 보인다</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Noto+Serif+KR:wght@300;400;600&family=Noto+Sans+KR:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600&family=Noto+Sans+KR:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
   <style>
     :root {
       color-scheme: dark;
@@ -33,12 +35,13 @@
     }
     body {
       margin: 0;
-      font-family: 'Noto Sans KR', sans-serif;
+      font-family: 'Inter', 'Noto Sans KR', sans-serif;
       background: var(--bg);
       color: var(--text);
       min-height: 100dvh;
       overflow: hidden;
       -webkit-font-smoothing: antialiased;
+      letter-spacing: -0.01em;
     }
     button {
       font-family: inherit;
@@ -88,7 +91,7 @@
       text-align: center;
     }
     .wordmark {
-      font-family: 'Playfair Display', serif;
+      font-family: 'DM Serif Display', serif;
       font-size: 1.2rem;
       letter-spacing: 0.4rem;
       text-transform: uppercase;
@@ -97,7 +100,7 @@
     }
     .tagline {
       margin-top: 6px;
-      font-family: 'Noto Serif KR', serif;
+      font-family: 'DM Serif Display', serif;
       color: var(--text);
       font-size: 1rem;
     }
@@ -114,16 +117,20 @@
       width: 120px;
       height: 120px;
       border-radius: 50%;
-      border: 4px solid var(--gold);
+      border: 1.5px solid var(--gold);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2rem;
       color: var(--gold);
-      background: radial-gradient(circle, rgba(201, 168, 76, 0.1), rgba(0, 0, 0, 0.4));
-      box-shadow: 0 0 30px rgba(201, 168, 76, 0.25);
+      background: radial-gradient(circle, rgba(201, 168, 76, 0.08), rgba(0, 0, 0, 0.4));
+      box-shadow: 0 0 40px rgba(201, 168, 76, 0.15);
       cursor: pointer;
-      transition: transform 0.2s;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .main-camera-btn svg {
+      width: 36px;
+      height: 36px;
+      stroke-width: 1.2;
     }
     .main-camera-btn:active {
       transform: scale(0.96);
@@ -300,7 +307,7 @@
       padding: 6px 0 4px;
     }
     .top-bar h2 {
-      font-family: 'Playfair Display', serif;
+      font-family: 'DM Serif Display', serif;
       font-size: 1.3rem;
       letter-spacing: 0.2rem;
     }
@@ -351,7 +358,7 @@
       gap: 16px;
     }
     .result-title {
-      font-family: 'Playfair Display', serif;
+      font-family: 'DM Serif Display', serif;
       font-size: 1.8rem;
       line-height: 1.2;
     }
@@ -576,16 +583,21 @@
       border: none;
       background: none;
       color: var(--text-muted);
-      font-size: 0.85rem;
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 4px;
+      gap: 5px;
       cursor: pointer;
-      padding: 10px;
+      padding: 10px 8px;
+      transition: color 0.2s;
     }
-    .nav-tab span {
-      font-size: 1.3rem;
+    .nav-tab i, .nav-tab svg {
+      width: 20px;
+      height: 20px;
+      stroke-width: 1.5;
     }
     .nav-tab.active {
       color: var(--gold);
@@ -639,7 +651,7 @@
           <p class="tagline">작품을 찍으면, 예술이 보인다</p>
         </div>
         <div class="home-core" id="homeActions">
-          <button class="main-camera-btn" id="cameraButton" aria-label="카메라 열기">📷</button>
+          <button class="main-camera-btn" id="cameraButton" aria-label="카메라 열기"><i data-lucide="camera"></i></button>
           <p class="home-instruction">작품을 촬영하세요</p>
           <div class="divider">OR</div>
           <button class="upload-btn" id="uploadButton">이미지 업로드</button>
@@ -649,7 +661,7 @@
         <div class="preview-card" id="previewCard">
           <img id="previewImage" alt="선택한 작품 미리보기" />
           <div class="preview-meta"><strong id="previewName">Untitled</strong><br/><span id="previewSize">0 MB</span></div>
-          <button class="preview-clear" id="clearPreview" aria-label="선택 초기화">✕</button>
+          <button class="preview-clear" id="clearPreview" aria-label="선택 초기화"><i data-lucide="x"></i></button>
         </div>
         <button class="analyze-btn" id="analyzeButton" disabled>분석하기</button>
         <input type="file" id="fileInput" accept="image/*" hidden />
@@ -665,7 +677,7 @@
 
       <section id="screen-result" class="screen" aria-label="분석 결과">
         <div class="top-bar">
-          <button class="icon-btn" id="resultBack" aria-label="뒤로">←</button>
+          <button class="icon-btn" id="resultBack" aria-label="뒤로"><i data-lucide="chevron-left"></i></button>
           <h2>분석 결과</h2>
           <button class="icon-btn" id="shareBtn" aria-label="공유">⇪</button>
         </div>
@@ -689,7 +701,7 @@
             </div>
             <div class="palette" id="palette"></div>
             <div class="tag-list" id="tagList"></div>
-            <div style="font-family:'Noto Serif KR',serif;font-size:1.1rem;color:var(--gold-light);" id="priceRange">₩ 2,500,000 ~ 8,000,000</div>
+            <div style="font-family:'DM Serif Display',serif;font-size:1.1rem;color:var(--gold-light);" id="priceRange">₩ 2,500,000 ~ 8,000,000</div>
           </div>
         </article>
         <div class="section-block">
@@ -714,14 +726,14 @@
     </main>
 
     <nav class="tab-bar">
-      <button class="nav-tab active" data-screen="home"><span>🏠</span>홈</button>
-      <button class="nav-tab locked" data-screen="result"><span>🔍</span>결과</button>
-      <button class="nav-tab" data-screen="explore"><span>🎨</span>탐색</button>
+      <button class="nav-tab active" data-screen="home"><i data-lucide="scan-line"></i>홈</button>
+      <button class="nav-tab locked" data-screen="result"><i data-lucide="sparkles"></i>결과</button>
+      <button class="nav-tab" data-screen="explore"><i data-lucide="layout-grid"></i>탐색</button>
     </nav>
   </div>
 
   <div class="camera-view" id="cameraView">
-    <button class="camera-cancel" id="cameraCancel">← 닫기</button>
+    <button class="camera-cancel" id="cameraCancel"><i data-lucide="x"></i> 닫기</button>
     <video id="cameraVideo" autoplay playsinline muted></video>
     <div class="camera-controls">
       <span style="color:var(--text-muted);">환경광을 확인하세요</span>
@@ -1068,6 +1080,9 @@
     }
 
     renderExplore();
+
+    // Init Lucide icons
+    if (typeof lucide !== 'undefined') lucide.createIcons();
   </script>
 </body>
 </html>
