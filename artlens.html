@@ -1083,12 +1083,61 @@
     loadingInterval = null;
   }
 
+  // ── 이미지 캐시 (같은 이미지 재호출 방지) ────────────────────────
+  const analysisCache = new Map();
+  async function hashFile(file) {
+    try {
+      const buf = await file.slice(0, 65536).arrayBuffer(); // 앞 64KB만 해시
+      const h = await crypto.subtle.digest('SHA-256', buf);
+      return Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,'0')).join('').slice(0,16);
+    } catch(e) { return Math.random().toString(36); }
+  }
+
+  // ── 이미지 리사이즈 (토큰 절약) ──────────────────────────────────
+  function resizeForAPI(file, maxPx = 768) {
+    return new Promise(resolve => {
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        const {width: w, height: h} = img;
+        if (w <= maxPx && h <= maxPx) { resolve(file); return; }
+        const s = Math.min(maxPx/w, maxPx/h);
+        const c = document.createElement('canvas');
+        c.width = Math.round(w*s); c.height = Math.round(h*s);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        c.toBlob(b => resolve(new File([b], file.name||'photo.jpg', {type:'image/jpeg'})), 'image/jpeg', 0.82);
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); resolve(file); };
+      img.src = url;
+    });
+  }
+
   async function runAnalysis() {
     if (!currentFile) {
       showToast('Please select an image first.');
       return;
     }
     const savedSrc = currentFile ? URL.createObjectURL(currentFile) : '';
+
+    // 캐시 확인 — 같은 이미지면 API 호출 없이 바로 결과
+    const hash = await hashFile(currentFile);
+    if (analysisCache.has(hash)) {
+      const cached = analysisCache.get(hash);
+      analysisResult = cached;
+      if (isMobile()) {
+        renderMobileResult(cached, savedSrc);
+        document.querySelector('[data-screen="result"]').classList.remove('locked');
+        navigateTo('result');
+      } else {
+        renderDesktopResult(cached, savedSrc);
+        document.getElementById('desktopResult').style.display = 'block';
+        document.getElementById('desktopResult').scrollIntoView({behavior:'smooth', block:'start'});
+      }
+      showToast('Cached result — no API call ✓');
+      return;
+    }
+
     if (isMobile()) {
       navigateTo('loading');
     } else {
@@ -1098,9 +1147,10 @@
     startLoadingLoop();
 
     try {
+      // 리사이즈 후 전송 (이미지 토큰 ~70% 절약)
+      const resized = await resizeForAPI(currentFile, 768);
       const formData = new FormData();
-      const blob = currentFile.type?.startsWith('image/') ? currentFile : new Blob([currentFile], { type: 'image/jpeg' });
-      formData.append('image', blob, currentFile.name || 'photo.jpg');
+      formData.append('image', resized, resized.name || 'photo.jpg');
 
       const res = await fetch(`${API_BASE}/api/analyze`, { method: 'POST', body: formData });
       if (!res.ok) throw new Error(`Server error ${res.status}`);
@@ -1108,6 +1158,7 @@
       if (data.error) throw new Error(data.error);
 
       analysisResult = data;
+      analysisCache.set(hash, data); // 결과 캐시 저장
 
       if (isMobile()) {
         renderMobileResult(data, savedSrc);
