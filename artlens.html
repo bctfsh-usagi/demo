@@ -761,8 +761,8 @@
         </div>
       </section>
 
-      <section id="screen-result" class="screen" aria-label="분석 결과">
-        <div class="top-bar">
+      <section id="screen-result" class="screen" aria-label="분석 결과" style="padding-top:20px;">
+        <div class="top-bar" style="position:sticky;top:0;background:var(--bg);z-index:2;padding-top:12px;padding-bottom:12px;margin-bottom:4px;">
           <button class="icon-btn" id="resultBack" aria-label="뒤로"><i data-lucide="chevron-left"></i></button>
           <h2>Analysis</h2>
           <button class="icon-btn" id="shareBtn" aria-label="공유"><i data-lucide="share-2"></i></button>
@@ -1059,11 +1059,11 @@
         renderResult(data, savedPreviewSrc);
         document.querySelector('[data-screen="result"]').classList.remove('locked');
         navigateTo('result');
-        // 결과 화면 맨 위로 스크롤
-        setTimeout(() => {
-          const resultScreen = document.getElementById('screen-result');
-          if (resultScreen) resultScreen.scrollTop = 0;
-        }, 50);
+        // 결과 화면 맨 위로 스크롤 (여러 번 시도)
+        const resultScreen = document.getElementById('screen-result');
+        if (resultScreen) resultScreen.scrollTop = 0;
+        setTimeout(() => { if (resultScreen) resultScreen.scrollTop = 0; }, 100);
+        setTimeout(() => { if (resultScreen) resultScreen.scrollTop = 0; }, 400);
 
       } catch (error) {
         console.error('Analysis error:', error);
@@ -1131,7 +1131,7 @@
             <h4>${item.title}</h4>
             <p>${item.artist}</p>
             <p style="color:var(--gold-light);font-weight:600;">${item.price || ''}</p>
-            <button onclick="window.open('${item.url || item.link || 'https://artue.io/ko/works'}','_blank')">보러가기</button>
+            <button onclick="window.open('${item.url || item.link || 'https://artue.io/en/works'}','_blank')">View on Artue</button>
           </div>`;
         scroll.appendChild(card);
       });
