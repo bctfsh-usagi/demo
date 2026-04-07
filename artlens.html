@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="theme-color" content="#f7f5f2" />
   <link rel="manifest" href='data:application/json,{"name":"ArtLens","short_name":"ArtLens","start_url":".","display":"standalone","background_color":"#f7f5f2","theme_color":"#f7f5f2","icons":[]}' />
-  <title>ArtLens · 작품을 찍으면, 예술이 보인다</title>
+  <title>ArtLens · Snap a work, see the art</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600&family=Noto+Sans+KR:wght@300;400;500;600&display=swap" rel="stylesheet" />
@@ -689,20 +689,31 @@
       to { opacity: 1; transform: translate(-50%, 0); }
     }
     @media (min-width: 768px) {
+      /* 데스크탑: 중앙 정렬 + 최대 너비 제한 */
+      #app {
+        display: flex;
+        justify-content: center;
+      }
+      main {
+        width: 100%;
+        max-width: 480px;
+        position: relative;
+        box-shadow: 0 0 60px rgba(0,0,0,0.08);
+      }
       .screen {
-        padding: 40px calc(28px + env(safe-area-inset-left)) calc(110px + env(safe-area-inset-bottom));
+        padding: 40px 32px calc(100px + env(safe-area-inset-bottom));
+        position: absolute;
       }
-      .home-core {
-        gap: 32px;
-      }
-      .upload-btn {
-        width: 360px;
+      .tab-bar {
+        max-width: 480px;
+        left: 50%;
+        transform: translateX(-50%);
       }
       .result-card {
         display: grid;
         grid-template-columns: 1fr 1fr;
       }
-      .result-image { height: 100%; }
+      .result-image { height: 100%; aspect-ratio: unset; }
     }
   </style>
 </head>
@@ -715,12 +726,12 @@
         </div>
         <div class="home-core" id="homeActions">
           <div class="home-hero">
-            <p class="home-headline">작품을 찍으면,<br><em>예술이 보인다.</em></p>
-            <p class="home-sub">AI가 작품의 이야기를 분석하고<br>당신의 감성에 맞는 작품을 연결합니다.</p>
+            <p class="home-headline">Snap a work,<br><em>see the art.</em></p>
+            <p class="home-sub">AI analyzes the story behind any artwork and connects you with pieces that match your taste.</p>
           </div>
           <div style="display:flex;flex-direction:column;gap:0;">
-            <button class="upload-btn" id="uploadButton"><i data-lucide="upload" style="width:16px;height:16px;stroke-width:2;"></i> 이미지 업로드</button>
-            <button class="camera-outline-btn" id="cameraButton"><i data-lucide="camera" style="width:16px;height:16px;stroke-width:1.5;"></i> 사진 촬영</button>
+            <button class="upload-btn" id="uploadButton"><i data-lucide="upload" style="width:16px;height:16px;stroke-width:2;"></i> Upload Image</button>
+            <button class="camera-outline-btn" id="cameraButton"><i data-lucide="camera" style="width:16px;height:16px;stroke-width:1.5;"></i> Take a Photo</button>
           </div>
           <div class="drop-overlay" id="dropOverlay"></div>
         </div>
@@ -729,7 +740,7 @@
           <div class="preview-meta"><strong id="previewName">Untitled</strong><br/><span id="previewSize">0 MB</span></div>
           <button class="preview-clear" id="clearPreview" aria-label="선택 초기화"><i data-lucide="x"></i></button>
         </div>
-        <button class="analyze-btn" id="analyzeButton" disabled>분석 시작</button>
+        <button class="analyze-btn" id="analyzeButton" disabled>Analyze</button>
         <input type="file" id="fileInput" accept="image/*" hidden />
         <canvas id="snapCanvas" style="display:none;"></canvas>
       </section>
@@ -737,32 +748,32 @@
       <section id="screen-loading" class="screen" aria-live="polite">
         <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:20px;">
           <div class="loading-ring"></div>
-          <p id="loadingText">이미지 분석 중...</p>
+          <p id="loadingText">Analyzing image...</p>
         </div>
       </section>
 
       <section id="screen-result" class="screen" aria-label="분석 결과">
         <div class="top-bar">
           <button class="icon-btn" id="resultBack" aria-label="뒤로"><i data-lucide="chevron-left"></i></button>
-          <h2>분석 결과</h2>
+          <h2>Analysis</h2>
           <button class="icon-btn" id="shareBtn" aria-label="공유"><i data-lucide="share-2"></i></button>
         </div>
         <article class="result-card">
           <div class="result-image">
             <img id="resultImage" src="https://picsum.photos/800/500?blur=2" alt="분석된 작품" />
-            <span class="badge">AI 분석 완료</span>
+            <span class="badge">AI Analyzed</span>
           </div>
           <div class="result-body">
             <div>
-              <div class="result-title" id="resultTitle">수련 · Water Lilies</div>
-              <div class="result-subtitle" id="resultArtist">클로드 모네 · 1906</div>
+              <div class="result-title" id="resultTitle">Water Lilies</div>
+              <div class="result-subtitle" id="resultArtist">Claude Monet · 1906</div>
             </div>
             <p id="resultDescription" style="line-height:1.6;color:var(--text-muted);">
-              모네의 지베르니 정원에서 영감을 받은 대표작. 물결과 빛이 만드는 순간을 포착했습니다.
+              A masterpiece inspired by Monet's garden at Giverny, capturing the fleeting beauty of light reflected on water.
             </p>
             <div class="result-meta" id="resultMeta"></div>
             <div class="confidence">
-              <span><span>신뢰도</span><strong id="confidenceValue">0%</strong></span>
+              <span><span>Confidence</span><strong id="confidenceValue">0%</strong></span>
               <div class="confidence-bar"><div class="confidence-fill" id="confidenceFill"></div></div>
             </div>
             <div class="palette" id="palette"></div>
@@ -771,35 +782,35 @@
           </div>
         </article>
         <div class="section-block">
-          <div class="section-title">ARTUE 추천 작품 <small>artue.io</small></div>
+          <div class="section-title">Similar Works <small>via artue.io</small></div>
           <div class="similar-scroll" id="similarScroll"></div>
         </div>
         <div class="cta-banner">
-          <p style="margin:0;font-size:1rem;">더 많은 작품은 ARTUE에서</p>
-          <button onclick="window.open('https://artue.io/ko','_blank')">ARTUE 방문하기</button>
+          <p style="margin:0;font-size:0.88rem;color:var(--text-muted);">Discover more works on ARTUE</p>
+          <button onclick="window.open('https://artue.io/en','_blank')">Explore ARTUE</button>
         </div>
       </section>
 
       <section id="screen-explore" class="screen" aria-label="탐색">
         <div class="top-bar">
           <div></div>
-          <h2>탐색</h2>
+          <h2>Explore</h2>
           <div></div>
         </div>
-        <p style="font-size:0.75rem;color:var(--text-muted);letter-spacing:0.04em;text-transform:uppercase;margin:0;">Artue 작품</p>
+        <p style="font-size:0.75rem;color:var(--text-muted);letter-spacing:0.06em;text-transform:uppercase;margin:0;">Works on Artue</p>
         <div class="explore-grid" id="exploreGrid"></div>
       </section>
     </main>
 
     <nav class="tab-bar">
-      <button class="nav-tab active" data-screen="home"><i data-lucide="scan-line"></i>홈</button>
-      <button class="nav-tab locked" data-screen="result"><i data-lucide="sparkles"></i>결과</button>
-      <button class="nav-tab" data-screen="explore"><i data-lucide="layout-grid"></i>탐색</button>
+      <button class="nav-tab active" data-screen="home"><i data-lucide="scan-line"></i>Home</button>
+      <button class="nav-tab locked" data-screen="result"><i data-lucide="sparkles"></i>Result</button>
+      <button class="nav-tab" data-screen="explore"><i data-lucide="layout-grid"></i>Explore</button>
     </nav>
   </div>
 
   <div class="camera-view" id="cameraView">
-    <button class="camera-cancel" id="cameraCancel"><i data-lucide="x"></i> 닫기</button>
+    <button class="camera-cancel" id="cameraCancel"><i data-lucide="x"></i> Close</button>
     <video id="cameraVideo" autoplay playsinline muted></video>
     <div class="camera-controls">
       <span style="color:var(--text-muted);">환경광을 확인하세요</span>
@@ -1010,7 +1021,7 @@
         const formData = new FormData();
         formData.append('image', currentFile, currentFile.name || currentFileName || 'photo.jpg');
         const response = await fetch(`${API_BASE}/api/analyze`, { method: 'POST', body: formData });
-        if (!response.ok) throw new Error('분석 실패');
+        if (!response.ok) throw new Error('Analysis failed');
         const data = await response.json();
         analysisResult = data;
         renderResult(data);
@@ -1021,7 +1032,7 @@
         console.error(error);
         stopLoadingLoop();
         navigateTo('home', 'back');
-        showToast('분석 실패. 다시 시도해 주세요.');
+        showToast('Analysis failed. Please try again.');
       }
     }
 
@@ -1088,7 +1099,7 @@
 
     function startLoadingLoop() {
       const textEl = document.getElementById('loadingText');
-      const texts = ['이미지 분석 중...', '작품 정보 검색 중...', '유사 작품 탐색 중...', '결과를 정리하는 중...'];
+      const texts = ['Analyzing image...', 'Searching artwork data...', 'Finding similar works...', 'Preparing results...'];
       let idx = 0;
       textEl.textContent = texts[idx];
       loadingTimer = setInterval(() => {
