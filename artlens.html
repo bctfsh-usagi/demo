@@ -939,6 +939,7 @@
       currentEl.classList.add(direction === 'forward' ? 'prev' : 'next-out');
       nextEl.classList.remove('prev', 'next-out');
       nextEl.classList.add('active');
+      nextEl.scrollTop = 0; // 항상 맨 위에서 시작
       currentScreen = screenId;
       document.querySelectorAll('.nav-tab').forEach(tab => {
         tab.classList.toggle('active', tab.dataset.screen === screenId);
@@ -1054,11 +1055,15 @@
 
         analysisResult = data;
         stopLoadingLoop();
-        // 화면 전환 먼저, 그 다음 렌더링
+        // 렌더링 먼저, 그 다음 화면 전환
+        renderResult(data, savedPreviewSrc);
         document.querySelector('[data-screen="result"]').classList.remove('locked');
         navigateTo('result');
-        // 전환 애니메이션 끝난 후 렌더링 (400ms)
-        setTimeout(() => renderResult(data, savedPreviewSrc), 420);
+        // 결과 화면 맨 위로 스크롤
+        setTimeout(() => {
+          const resultScreen = document.getElementById('screen-result');
+          if (resultScreen) resultScreen.scrollTop = 0;
+        }, 50);
 
       } catch (error) {
         console.error('Analysis error:', error);
