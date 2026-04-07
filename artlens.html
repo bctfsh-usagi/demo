@@ -675,14 +675,17 @@
       bottom: calc(80px + env(safe-area-inset-bottom));
       left: 50%;
       transform: translateX(-50%);
-      background: rgba(0,0,0,0.85);
-      border: 1px solid var(--gold);
-      color: var(--gold-light);
+      background: var(--text);
+      color: #fff;
       padding: 12px 20px;
-      border-radius: 999px;
-      font-size: 0.9rem;
+      border-radius: 12px;
+      font-size: 0.82rem;
+      white-space: nowrap;
+      max-width: 90vw;
+      overflow: hidden;
+      text-overflow: ellipsis;
       animation: toastIn 0.3s ease forwards;
-      z-index: 99;
+      z-index: 9999;
     }
     @keyframes toastIn {
       from { opacity: 0; transform: translate(-50%, 20px); }
@@ -1021,32 +1024,53 @@
         showToast('Please select an image first.');
         return;
       }
+
+      // 미리보기 이미지 src 저장 (화면 전환 전에)
+      const savedPreviewSrc = previewImage.src;
+
       navigateTo('loading');
       startLoadingLoop();
+
       try {
         const formData = new FormData();
-        formData.append('image', currentFile, currentFile.name || currentFileName || 'photo.jpg');
-        const response = await fetch(`${API_BASE}/api/analyze`, { method: 'POST', body: formData });
-        if (!response.ok) throw new Error('Analysis failed');
+        // Blob/File 모두 안전하게 처리
+        const fname = (currentFile instanceof File && currentFile.name) ? currentFile.name : (currentFileName || 'photo.jpg');
+        const ftype = currentFile.type || 'image/jpeg';
+        const fileBlob = (currentFile.type) ? currentFile : new Blob([currentFile], {type: 'image/jpeg'});
+        formData.append('image', fileBlob, fname);
+
+        const response = await fetch(`${API_BASE}/api/analyze`, {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!response.ok) {
+          const errText = await response.text();
+          throw new Error(`Server error ${response.status}: ${errText}`);
+        }
+
         const data = await response.json();
+        if (data.error) throw new Error(data.error);
+
         analysisResult = data;
-        renderResult(data);
+        // 저장해둔 미리보기 src로 결과 렌더링
+        renderResult(data, savedPreviewSrc);
         stopLoadingLoop();
         navigateTo('result');
         document.querySelector('[data-screen="result"]').classList.remove('locked');
+
       } catch (error) {
-        console.error(error);
+        console.error('Analysis error:', error);
         stopLoadingLoop();
         navigateTo('home', 'back');
-        showToast('Analysis failed. Please try again.');
+        // 에러 내용 화면에 표시
+        showToast(`Error: ${error.message.slice(0, 60)}`);
       }
     }
 
-    function renderResult(data = {}) {
-      // 이미지: 미리보기 src 저장해서 result에 반영
-      const imageUrl = previewImage.src || '';
+    function renderResult(data = {}, savedSrc = '') {
       const resultImg = document.getElementById('resultImage');
-      if (imageUrl) resultImg.src = imageUrl;
+      if (savedSrc) resultImg.src = savedSrc;
 
       const title = (data.title || 'Unknown Artwork').split('·')[0].trim();
       const artist = (data.artist || '').split('·')[0].trim();
