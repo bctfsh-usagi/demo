@@ -990,10 +990,10 @@
               imgEl.src = item.image;
               imgEl.alt = titleKo;
             }
-            // Link to Met page if available
+            // Link to Artue page
             const btnEl = cards[i].querySelector('.art-card-btn');
-            if (btnEl && item.metUrl) {
-              btnEl.href = item.metUrl;
+            if (btnEl) {
+              btnEl.href = item.artueUrl || 'https://artue.io/ko/works';
             }
           });
         }

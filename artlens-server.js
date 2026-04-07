@@ -19,6 +19,40 @@ function fetchJson(url) {
   });
 }
 
+// Artue.io works — manually curated from live site (Apr 2026)
+// Each entry: title, artist, price, artueUrl, tags (for matching), imageHint (for picsum seed)
+const ARTUE_WORKS = [
+  { title: "The color of waves : Mint", artist: "Yeonhong Kim", price: "$870", tags: ["추상화","자연","컬러필드","물"], artueUrl: "https://artue.io/ko/works", img: "https://picsum.photos/seed/waves-mint/400/300" },
+  { title: "tipping point-形-20", artist: "Jaehyuk Han", price: "$25,710", tags: ["추상화","현대미술","한국"], artueUrl: "https://artue.io/ko/works", img: "https://picsum.photos/seed/tipping-form/400/300" },
+  { title: "The Transparent Visual Apparatus no.5", artist: "Goo Gijeong", price: "₩2,600,000", tags: ["현대미술","개념미술","설치"], artueUrl: "https://artue.io/ko/works", img: "https://picsum.photos/seed/transparent-visual/400/300" },
+  { title: "Human Behaviour", artist: "Matthew Stone", price: "$17,000", tags: ["인물화","현대미술","디지털"], artueUrl: "https://artue.io/ko/works", img: "https://picsum.photos/seed/human-behaviour/400/300" },
+  { title: "cresc.", artist: "YEWON SEO", price: "₩7,000,000", tags: ["추상화","현대미술","한국"], artueUrl: "https://artue.io/ko/works", img: "https://picsum.photos/seed/cresc-seo/400/300" },
+  { title: "With You", artist: "Young Jae", price: "₩960,000", tags: ["풍경화","자연","서정적"], artueUrl: "https://artue.io/ko/works", img: "https://picsum.photos/seed/with-you-jae/400/300" },
+  { title: "Flower", artist: "Yerang Hwang", price: "₩600,000", tags: ["꽃","자연","서정적","인상주의"], artueUrl: "https://artue.io/ko/works", img: "https://picsum.photos/seed/flower-hwang/400/300" },
+  { title: "Landscape Elements", artist: "Jina Jung", price: "$3,500", tags: ["풍경화","자연","추상화"], artueUrl: "https://artue.io/ko/works", img: "https://picsum.photos/seed/landscape-jung/400/300" },
+  { title: "Scenes", artist: "Moonhee Cho", price: "₩2,400,000", tags: ["풍경화","서정적","한국"], artueUrl: "https://artue.io/ko/works", img: "https://picsum.photos/seed/scenes-cho/400/300" },
+  { title: "Crow and Star", artist: "Yoo Suzy", price: "$470", tags: ["자연","새","서정적","밤"], artueUrl: "https://artue.io/ko/works", img: "https://picsum.photos/seed/crow-star/400/300" },
+  { title: "Behind the curtain: Venus 001", artist: "Wonmi Seo", price: "$3,150", tags: ["인물화","여성","현대미술","서정적"], artueUrl: "https://artue.io/ko/works", img: "https://picsum.photos/seed/venus-wonmi/400/300" },
+  { title: "Moon Gazing", artist: "Mina Lee", price: "$2,340", tags: ["자연","달","서정적","밤"], artueUrl: "https://artue.io/ko/works", img: "https://picsum.photos/seed/moon-gazing/400/300" },
+  { title: "A widening crack", artist: "Hansol Noh", price: "Available", tags: ["현대미술","개념미술","한국","추상화"], artueUrl: "https://artue.io/ko/artist/hansol-noh", img: "https://picsum.photos/seed/crack-noh/400/300" },
+  { title: "Still life with Sphere and a floral crown", artist: "Hansol Noh", price: "Available", tags: ["정물화","꽃","현대미술"], artueUrl: "https://artue.io/ko/artist/hansol-noh", img: "https://picsum.photos/seed/sphere-noh/400/300" },
+  { title: "ALICES", artist: "Hyeyoung Hwang", price: "$14,500", tags: ["인물화","현대미술","서사"], artueUrl: "https://artue.io/ko/works", img: "https://picsum.photos/seed/alices-hwang/400/300" },
+];
+
+function getArtueRecommendations(tags, style, n = 3) {
+  // Score each work by tag overlap
+  const scored = ARTUE_WORKS.map(work => {
+    let score = 0;
+    const allTags = [...tags, style].map(t => t.toLowerCase());
+    for (const wTag of work.tags) {
+      if (allTags.some(t => t.includes(wTag) || wTag.includes(t))) score++;
+    }
+    return { ...work, score };
+  });
+  scored.sort((a, b) => b.score - a.score || Math.random() - 0.5);
+  return scored.slice(0, n);
+}
+
 async function getMetImage(title, artist) {
   try {
     const q = encodeURIComponent(`${title} ${artist}`.trim());
@@ -146,22 +180,16 @@ IMPORTANT for "similar" works: You MUST choose artworks from this confirmed list
     const cleaned = raw.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '').trim();
     const result = JSON.parse(cleaned);
 
-    // Enrich similar works with real images from Met Museum API
-    // Use English title/artist (after ·) for better search results
-    if (result.similar && result.similar.length > 0) {
-      result.similar = await Promise.all(result.similar.map(async (item) => {
-        const parts = (item.title || '').split('·');
-        const titleEn = (parts[1] || parts[0] || '').trim();
-        const artistParts = (item.artist || '').split('·');
-        const artistEn = (artistParts[1] || artistParts[0] || '').trim();
-        const met = await getMetImage(titleEn, artistEn);
-        return {
-          ...item,
-          image: met ? met.image : null,
-          metUrl: met ? met.metUrl : null
-        };
-      }));
-    }
+    // Replace similar works with actual Artue.io works (matched by style/tags)
+    const artueRecs = getArtueRecommendations(result.tags || [], result.style || '');
+    result.similar = artueRecs.map(w => ({
+      title: w.title,
+      artist: w.artist,
+      style: w.tags[0] || result.style,
+      price: w.price,
+      image: w.img,
+      artueUrl: w.artueUrl
+    }));
 
     res.json(result);
 
