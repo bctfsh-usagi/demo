@@ -770,6 +770,7 @@
     // ── State ──
     let stream = null;
     let capturedBlob = null;
+    let currentFile = null;
 
     // ── Upload trigger ──
     function triggerUpload() {
@@ -778,7 +779,7 @@
 
     function onFileSelect(e) {
       const file = e.target.files[0];
-      if (file) showPreview(file);
+      if (file) { currentFile = file; showPreview(file); }
     }
 
     // ── Drag & Drop ──
@@ -793,7 +794,7 @@
       e.preventDefault();
       document.getElementById('dropZone').classList.remove('drag-over');
       const file = e.dataTransfer.files[0];
-      if (file && file.type.startsWith('image/')) showPreview(file);
+      if (file && file.type.startsWith('image/')) { currentFile = file; showPreview(file); }
     }
 
     // ── Camera ──
@@ -819,6 +820,7 @@
       canvas.getContext('2d').drawImage(video, 0, 0);
       canvas.toBlob(blob => {
         capturedBlob = blob;
+        currentFile = blob;
         showPreview(blob);
         stopCamera();
       }, 'image/jpeg', 0.92);
@@ -847,6 +849,10 @@
       reader.readAsDataURL(file);
     }
 
+    // ── API endpoint (same origin when served via server.js) ──
+    const API_BASE = window.location.port === '3131' || window.location.hostname !== 'localhost'
+      ? '' : 'http://localhost:3131';
+
     // ── Analysis ──
     const loadingTexts = [
       '이미지 분석 중...',
@@ -855,10 +861,9 @@
       '결과를 정리하는 중...'
     ];
 
-    function startAnalysis() {
+    async function startAnalysis() {
       const previewSrc = document.getElementById('previewImg').src;
 
-      // hide upload, show loading
       document.getElementById('analyzeRow').style.display = 'none';
       document.getElementById('loadingSection').style.display = 'block';
       document.getElementById('loadingSection').scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -866,42 +871,130 @@
       let idx = 0;
       const textEl = document.getElementById('loadingText');
       textEl.textContent = loadingTexts[0];
+      textEl.style.transition = 'opacity 0.3s';
       const textInterval = setInterval(() => {
         idx = (idx + 1) % loadingTexts.length;
         textEl.style.opacity = 0;
-        setTimeout(() => {
-          textEl.textContent = loadingTexts[idx];
-          textEl.style.opacity = 1;
-        }, 300);
-      }, 700);
-      textEl.style.transition = 'opacity 0.3s';
+        setTimeout(() => { textEl.textContent = loadingTexts[idx]; textEl.style.opacity = 1; }, 300);
+      }, 800);
 
-      setTimeout(() => {
+      try {
+        // Build FormData from current file or blob URL
+        const formData = new FormData();
+        if (currentFile) {
+          formData.append('image', currentFile instanceof Blob ? currentFile : currentFile);
+        } else {
+          // Fallback: fetch blob from data URL
+          const resp = await fetch(previewSrc);
+          const blob = await resp.blob();
+          formData.append('image', blob, 'photo.jpg');
+        }
+
+        const response = await fetch(`${API_BASE}/api/analyze`, { method: 'POST', body: formData });
+        if (!response.ok) throw new Error(`Server error: ${response.status}`);
+        const data = await response.json();
+
         clearInterval(textInterval);
-        showResult(previewSrc);
-      }, 2800);
+        showResult(previewSrc, data);
+      } catch (err) {
+        clearInterval(textInterval);
+        console.error('Analysis error:', err);
+        textEl.style.opacity = 1;
+        textEl.textContent = '분석 중 오류가 발생했습니다. 다시 시도해 주세요.';
+        setTimeout(() => {
+          document.getElementById('loadingSection').style.display = 'none';
+          document.getElementById('analyzeRow').style.display = 'block';
+        }, 2500);
+      }
     }
 
-    function showResult(src) {
+    function showResult(src, data) {
       document.getElementById('loadingSection').style.display = 'none';
       document.getElementById('resultSection').style.display = 'block';
       document.getElementById('resultImg').src = src;
 
-      // trigger fade-in for result elements
+      // ── Populate result data ──
+      if (data) {
+        // Title
+        const titleEl = document.querySelector('.result-title');
+        if (data.title) {
+          const parts = data.title.split('·').map(s => s.trim());
+          titleEl.innerHTML = parts[0] + (parts[1] ? `<br><small style="font-size:1rem;color:var(--text-muted);">${parts[1]}</small>` : '');
+        }
+
+        // Artist
+        const artistEl = document.querySelector('.result-artist');
+        if (data.artist) artistEl.textContent = data.artist;
+
+        // Meta chips
+        const metaEl = document.querySelector('.result-meta');
+        metaEl.innerHTML = '';
+        const chips = [data.year, data.style, data.medium].filter(Boolean);
+        chips.forEach(c => {
+          const span = document.createElement('span');
+          span.className = 'meta-chip';
+          span.textContent = c;
+          metaEl.appendChild(span);
+        });
+
+        // Description
+        const descEl = document.querySelector('.result-desc');
+        if (data.description) descEl.textContent = data.description;
+
+        // Price
+        const priceEl = document.querySelector('.result-price');
+        if (data.priceRange) priceEl.innerHTML = data.priceRange + ' <span>추정가</span>';
+
+        // Palette
+        if (data.palette && data.palette.length) {
+          const paletteWrap = document.querySelector('.palette-wrap');
+          const swatches = paletteWrap.querySelectorAll('.swatch');
+          swatches.forEach((s, i) => {
+            if (data.palette[i]) s.style.background = data.palette[i];
+          });
+        }
+
+        // Tags
+        const tagsEl = document.querySelector('.result-tags');
+        if (data.tags && data.tags.length) {
+          tagsEl.innerHTML = data.tags.map(t => `<span class="tag">${t.startsWith('#') ? t : '#' + t}</span>`).join('');
+        }
+
+        // Confidence
+        const conf = data.confidence || 88;
+        setTimeout(() => {
+          document.getElementById('confFill').style.width = conf + '%';
+          animateCount(document.getElementById('confVal'), 0, conf, 1200, '%');
+        }, 400);
+
+        // Similar works
+        if (data.similar && data.similar.length) {
+          const cards = document.querySelectorAll('#similar .art-card');
+          data.similar.forEach((item, i) => {
+            if (!cards[i]) return;
+            cards[i].querySelector('.art-card-title').textContent = item.title || '';
+            cards[i].querySelector('.art-card-artist').textContent = item.artist || '';
+            const styleEl = cards[i].querySelector('.art-card-style');
+            if (styleEl) styleEl.textContent = item.style || '';
+            const priceEl2 = cards[i].querySelector('.art-card-price');
+            if (priceEl2) priceEl2.textContent = item.price || '';
+          });
+        }
+      } else {
+        // Fallback confidence
+        setTimeout(() => {
+          document.getElementById('confFill').style.width = '92%';
+          animateCount(document.getElementById('confVal'), 0, 92, 1200, '%');
+        }, 400);
+      }
+
+      // Fade-in
       document.querySelectorAll('#resultSection .fade-in').forEach(el => {
         el.classList.remove('visible');
         setTimeout(() => el.classList.add('visible'), 50);
       });
 
-      // animate confidence bar
-      setTimeout(() => {
-        document.getElementById('confFill').style.width = '92%';
-        animateCount(document.getElementById('confVal'), 0, 92, 1200, '%');
-      }, 400);
-
       document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-      // also show similar section
       document.getElementById('similar').style.display = 'block';
     }
 
