@@ -57,7 +57,7 @@ If it's NOT an artwork (regular photo, selfie, food, etc.):
 Be specific and accurate. For well-known artworks, use the real title/artist. For unknown works, make educated estimates based on style.`;
 
     const response = await client.messages.create({
-      model: 'claude-haiku-3-5',
+      model: 'claude-haiku-4-5',
       max_tokens: 1024,
       messages: [{
         role: 'user',
