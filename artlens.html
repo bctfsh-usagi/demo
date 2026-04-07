@@ -973,12 +973,28 @@
           const cards = document.querySelectorAll('#similar .art-card');
           data.similar.forEach((item, i) => {
             if (!cards[i]) return;
-            cards[i].querySelector('.art-card-title').textContent = item.title || '';
-            cards[i].querySelector('.art-card-artist').textContent = item.artist || '';
+            // Title (strip · English part for display)
+            const titleKo = (item.title || '').split('·')[0].trim();
+            const titleEn = (item.title || '').split('·')[1]?.trim() || '';
+            cards[i].querySelector('.art-card-title').textContent = titleKo;
+            // Artist (strip · English)
+            const artistKo = (item.artist || '').split('·')[0].trim();
+            cards[i].querySelector('.art-card-artist').textContent = artistKo + (titleEn ? ` — ${titleEn}` : '');
             const styleEl = cards[i].querySelector('.art-card-style');
             if (styleEl) styleEl.textContent = item.style || '';
             const priceEl2 = cards[i].querySelector('.art-card-price');
             if (priceEl2) priceEl2.textContent = item.price || '';
+            // Real image from Met Museum
+            const imgEl = cards[i].querySelector('.art-card-img');
+            if (imgEl && item.image) {
+              imgEl.src = item.image;
+              imgEl.alt = titleKo;
+            }
+            // Link to Met page if available
+            const btnEl = cards[i].querySelector('.art-card-btn');
+            if (btnEl && item.metUrl) {
+              btnEl.href = item.metUrl;
+            }
           });
         }
       } else {
