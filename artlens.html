@@ -1,1076 +1,1285 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="theme-color" content="#0f0f0f" />
-  <link rel="manifest" href='data:application/json,{"name":"ArtLens","short_name":"ArtLens","start_url":".","display":"standalone","background_color":"#0f0f0f","theme_color":"#0f0f0f","icons":[]}' />
-  <title>ArtLens · 작품을 찍으면, 예술이 보인다</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Noto+Serif+KR:wght@300;400;600&family=Noto+Sans+KR:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>ArtLens</title>
+
+  <!-- PWA -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="theme-color" content="#f7f5f2">
+  <link rel="manifest" href='data:application/json,{"name":"ArtLens","short_name":"ArtLens","start_url":".","display":"standalone","background_color":"#f7f5f2","theme_color":"#f7f5f2","icons":[]}'>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
   <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     :root {
-      color-scheme: dark;
-      --bg: #0f0f0f;
-      --surface: #1a1a1a;
-      --surface2: #222;
-      --gold: #c9a84c;
-      --gold-light: #e8d5a3;
-      --text: #f5f5f0;
-      --text-muted: #888;
-      --border: #2a2a2a;
-      --radius: 18px;
-      --card-radius: 20px;
-      font-size: 16px;
+      --bg: #f7f5f2;
+      --surface: #ffffff;
+      --surface2: #f2f0ed;
+      --text: #1a1a1a;
+      --text-muted: #888880;
+      --border: #e4e2de;
+      --gold: #b8943a;
+      --gold-light: rgba(184,148,58,0.12);
     }
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
-    }
-    body {
-      margin: 0;
-      font-family: 'Noto Sans KR', sans-serif;
+
+    html {
       background: var(--bg);
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      font-family: 'Inter', 'Noto Sans KR', sans-serif;
       color: var(--text);
+      background: var(--bg);
       min-height: 100dvh;
-      overflow: hidden;
-      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
     }
-    button {
-      font-family: inherit;
+
+    /* ── Desktop phone frame ── */
+    @media (min-width: 768px) {
+      body {
+        background: #e8e5e0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+      }
+
+      #app {
+        width: 390px;
+        max-height: 95vh;
+        border-radius: 40px;
+        overflow: hidden;
+        box-shadow: 0 40px 120px rgba(0,0,0,0.22), 0 8px 32px rgba(0,0,0,0.12);
+        position: relative;
+        background: var(--bg);
+      }
+
+      .tab-bar {
+        max-width: 390px !important;
+        left: 50% !important;
+        right: auto !important;
+        transform: translateX(-50%) !important;
+        border-radius: 0 0 40px 40px;
+      }
     }
+
     #app {
       position: relative;
-      width: 100%;
-      height: 100dvh;
-      overflow: hidden;
       background: var(--bg);
     }
-    main {
-      position: relative;
-      width: 100%;
-      height: 100%;
-    }
+
+    /* ── Screen management ── */
     .screen {
-      position: fixed;
-      inset: 0;
-      padding: 24px 20px calc(90px + env(safe-area-inset-bottom));
-      background: var(--bg);
-      transform: translateX(100%);
-      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-      z-index: 1;
+      display: none;
     }
-    .screen::after {
-      content: '';
-      flex: 0 0 env(safe-area-inset-bottom);
-    }
+
     .screen.active {
-      transform: translateX(0);
-      z-index: 3;
-    }
-    .screen.prev {
-      transform: translateX(-30%);
-      z-index: 2;
-    }
-    .screen.next-out {
-      transform: translateX(100%);
-    }
-    .screen-header {
-      text-align: center;
-    }
-    .wordmark {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.2rem;
-      letter-spacing: 0.4rem;
-      text-transform: uppercase;
-      color: var(--gold);
-      opacity: 0.8;
-    }
-    .tagline {
-      margin-top: 6px;
-      font-family: 'Noto Serif KR', serif;
-      color: var(--text);
-      font-size: 1rem;
-    }
-    .home-core {
-      flex: 1;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      gap: 24px;
-    }
-    .main-camera-btn {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      border: 4px solid var(--gold);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2rem;
-      color: var(--gold);
-      background: radial-gradient(circle, rgba(201, 168, 76, 0.1), rgba(0, 0, 0, 0.4));
-      box-shadow: 0 0 30px rgba(201, 168, 76, 0.25);
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
-    .main-camera-btn:active {
-      transform: scale(0.96);
-    }
-    .home-instruction {
-      font-size: 1rem;
-      color: var(--text);
-      letter-spacing: 2px;
-    }
-    .divider {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.3rem;
-      font-size: 0.8rem;
-    }
-    .divider::before,
-    .divider::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--border);
-    }
-    .upload-btn {
-      width: min(320px, 80vw);
-      padding: 16px;
-      border-radius: 16px;
-      background: var(--surface);
-      border: 1px dashed var(--gold);
-      color: var(--gold-light);
-      font-size: 1rem;
-      letter-spacing: 1px;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.2s;
-    }
-    .upload-btn:active {
-      transform: translateY(2px);
-    }
-    .drop-overlay {
-      position: absolute;
-      inset: 0;
-      border-radius: var(--radius);
-      border: 2px dashed rgba(201, 168, 76, 0.4);
-      background: rgba(0, 0, 0, 0.35);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.2s;
-    }
-    .drop-overlay.active {
-      opacity: 1;
-    }
-    .preview-card {
-      position: relative;
-      width: 100%;
-      max-width: 420px;
-      margin: 0 auto;
-      border-radius: var(--card-radius);
-      overflow: hidden;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
-      display: none;
-    }
-    .preview-card.active {
-      display: block;
-    }
-    .preview-card img {
-      width: 100%;
-      height: 60vh;
-      object-fit: cover;
-      display: block;
-    }
-    .preview-meta {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      padding: 16px 20px calc(16px + env(safe-area-inset-bottom));
-      background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.8) 70%);
-      font-size: 0.9rem;
-      color: var(--text);
-    }
-    .preview-meta span {
-      color: var(--text-muted);
-      font-size: 0.8rem;
-    }
-    .preview-clear {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      border: none;
-      background: rgba(0, 0, 0, 0.6);
-      color: var(--text);
-      font-size: 1.1rem;
-      cursor: pointer;
-      backdrop-filter: blur(4px);
-    }
-    .analyze-btn {
-      width: 100%;
-      padding: 18px;
-      border-radius: 18px;
-      border: none;
-      font-size: 1.05rem;
-      letter-spacing: 0.2rem;
-      text-transform: uppercase;
-      background: var(--gold);
-      color: #0f0f0f;
-      font-weight: 600;
-      transition: opacity 0.2s, transform 0.2s;
-      box-shadow: 0 18px 40px rgba(201, 168, 76, 0.35);
-    }
-    .analyze-btn:disabled {
-      opacity: 0.25;
-      box-shadow: none;
-      pointer-events: none;
-    }
-    .camera-view {
-      position: fixed;
-      inset: 0;
-      background: #000;
-      z-index: 999;
-      display: none;
-      flex-direction: column;
-      justify-content: space-between;
-      padding: 20px;
-    }
-    .camera-view.active {
-      display: flex;
-    }
-    .camera-view video {
-      flex: 1;
-      width: 100%;
-      object-fit: cover;
-      border-radius: 20px;
-    }
-    .camera-controls {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-top: 20px;
-    }
-    .camera-cancel,
-    .camera-shutter {
-      border: none;
-      background: transparent;
-      color: var(--text);
-      font-size: 1rem;
-      letter-spacing: 0.2rem;
-    }
-    .camera-shutter {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      border: 4px solid var(--gold);
-      font-size: 0;
-      position: relative;
-    }
-    .camera-shutter::after {
-      content: '';
-      position: absolute;
-      inset: 10px;
-      border-radius: 50%;
-      background: var(--gold);
-    }
-    .top-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 6px 0 4px;
-    }
-    .top-bar h2 {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.3rem;
-      letter-spacing: 0.2rem;
-    }
-    .icon-btn {
-      width: 40px;
-      height: 40px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      background: var(--surface);
-      color: var(--text);
-      font-size: 1rem;
-      cursor: pointer;
-    }
-    .result-card {
-      background: var(--surface);
-      border-radius: 24px;
-      border: 1px solid var(--border);
-      overflow: hidden;
-      box-shadow: 0 20px 45px rgba(0,0,0,0.35);
-    }
-    .result-image {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 16/9;
-      overflow: hidden;
-    }
-    .result-image img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .badge {
-      position: absolute;
-      top: 16px;
-      left: 16px;
-      background: rgba(0, 0, 0, 0.7);
-      color: var(--gold);
-      padding: 6px 12px;
-      border-radius: 999px;
-      font-size: 0.8rem;
-      letter-spacing: 0.2rem;
-      text-transform: uppercase;
-    }
-    .result-body {
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-    .result-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.8rem;
-      line-height: 1.2;
-    }
-    .result-subtitle {
-      font-size: 1rem;
-      color: var(--text-muted);
-      margin-top: 6px;
-    }
-    .result-meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-    .chip {
-      padding: 4px 12px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      font-size: 0.8rem;
-    }
-    .confidence {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .confidence span {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.9rem;
-      color: var(--text-muted);
-    }
-    .confidence-bar {
-      width: 100%;
-      height: 6px;
-      border-radius: 999px;
-      background: var(--border);
-      overflow: hidden;
-    }
-    .confidence-fill {
-      height: 100%;
-      width: 0;
-      background: linear-gradient(90deg, #9a7a2e, var(--gold));
-      transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .palette {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .swatch {
-      width: 32px;
-      height: 32px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.15);
-    }
-    .tag-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-    .tag {
-      border-radius: 999px;
-      padding: 4px 12px;
-      font-size: 0.8rem;
-      background: rgba(201, 168, 76, 0.12);
-      border: 1px solid rgba(201, 168, 76, 0.3);
-      color: var(--gold-light);
-    }
-    .section-block {
-      background: var(--surface);
-      border-radius: 24px;
-      border: 1px solid var(--border);
-      padding: 20px;
-    }
-    .section-title {
-      font-size: 1.1rem;
-      font-weight: 600;
-      margin-bottom: 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .section-title small {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      letter-spacing: 0.2rem;
-    }
-    .similar-scroll {
-      display: flex;
-      gap: 16px;
-      overflow-x: auto;
-      scroll-snap-type: x mandatory;
-      padding-bottom: 6px;
-    }
-    .similar-card {
-      flex: 0 0 200px;
-      scroll-snap-align: start;
-      background: var(--surface2);
-      border-radius: 20px;
-      border: 1px solid var(--border);
-      overflow: hidden;
-    }
-    .similar-card img {
-      width: 100%;
-      height: 140px;
-      object-fit: cover;
-    }
-    .similar-card div {
-      padding: 12px 14px;
-    }
-    .similar-card h4 {
-      font-size: 1rem;
-      margin: 0 0 4px;
-    }
-    .similar-card p {
-      margin: 0;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-    .similar-card button {
-      margin-top: 10px;
-      width: 100%;
-      padding: 8px;
-      border-radius: 12px;
-      border: 1px solid var(--gold);
-      background: transparent;
-      color: var(--gold-light);
-      cursor: pointer;
-    }
-    .cta-banner {
-      border: 1px solid var(--gold);
-      border-radius: 24px;
-      padding: 20px;
-      text-align: center;
-      background: linear-gradient(120deg, rgba(201, 168, 76, 0.15), rgba(0, 0, 0, 0.4));
-    }
-    .cta-banner button {
-      margin-top: 12px;
-      width: 100%;
-      padding: 14px;
-      border-radius: 16px;
-      border: none;
-      background: var(--gold);
-      color: #0f0f0f;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    .loading-ring {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      border: 6px solid rgba(255,255,255,0.08);
-      border-top-color: var(--gold);
-      animation: spin 1s linear infinite;
-    }
-    #loadingText {
-      margin-top: 24px;
-      font-size: 1rem;
-      color: var(--gold-light);
-      min-height: 1.4em;
-      transition: opacity 0.3s;
-    }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-    .pull-indicator {
-      text-align: center;
-      color: var(--text-muted);
-      font-size: 0.8rem;
-      letter-spacing: 0.2rem;
-    }
-    .explore-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 16px;
-    }
-    .explore-card {
-      border-radius: 24px;
-      border: 1px solid var(--border);
-      background: var(--surface);
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      cursor: pointer;
-    }
-    .explore-card img {
-      width: 100%;
-      aspect-ratio: 4/5;
-      object-fit: cover;
-    }
-    .explore-card div {
-      padding: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .price-chip {
-      align-self: flex-start;
-      padding: 4px 10px;
-      border-radius: 12px;
-      background: rgba(201, 168, 76, 0.14);
-      color: var(--gold-light);
-      font-size: 0.8rem;
-    }
+      min-height: 100dvh;
+    }
+
+    @media (min-width: 768px) {
+      .screen.active {
+        min-height: 95vh;
+        max-height: 95vh;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+    }
+
+    /* ── Tab Bar ── */
     .tab-bar {
       position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
       height: calc(60px + env(safe-area-inset-bottom));
-      padding: 0 20px env(safe-area-inset-bottom);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-top: 1px solid var(--border);
-      background: rgba(10, 10, 10, 0.9);
+      padding: 0 0 env(safe-area-inset-bottom);
+      background: rgba(247,245,242,0.95);
       backdrop-filter: blur(12px);
-      z-index: 5;
+      -webkit-backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border);
+      display: flex;
+      z-index: 100;
     }
+
     .nav-tab {
       flex: 1;
-      border: none;
-      background: none;
-      color: var(--text-muted);
-      font-size: 0.85rem;
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
       gap: 4px;
+      background: none;
+      border: none;
       cursor: pointer;
-      padding: 10px;
+      color: var(--text-muted);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.62rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 8px 4px 4px;
+      transition: color 0.2s;
+      -webkit-tap-highlight-color: transparent;
     }
-    .nav-tab span {
-      font-size: 1.3rem;
-    }
+
     .nav-tab.active {
-      color: var(--gold);
+      color: var(--text);
     }
+
+    .nav-tab.active svg {
+      stroke: var(--text);
+    }
+
     .nav-tab.locked {
       opacity: 0.4;
-      pointer-events: none;
     }
+
+    .nav-tab svg {
+      width: 22px;
+      height: 22px;
+      stroke: var(--text-muted);
+      stroke-width: 1.6;
+      fill: none;
+      transition: stroke 0.2s;
+    }
+
+    .nav-tab.active svg {
+      stroke: var(--text);
+    }
+
+    /* ── Header / Wordmark ── */
+    .app-header {
+      padding: 20px 24px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .wordmark {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.4rem;
+      letter-spacing: 0.08em;
+      color: var(--text);
+      text-transform: uppercase;
+    }
+
+    /* ── Home Screen ── */
+    #screen-home {
+      padding-bottom: calc(70px + env(safe-area-inset-bottom));
+    }
+
+    .home-hero {
+      background: linear-gradient(160deg, #f7f5f2 0%, #edeae4 60%, #e8e4dc 100%);
+      padding: 36px 24px 40px;
+      margin-top: 16px;
+    }
+
+    .home-hero h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2.6rem;
+      line-height: 1.2;
+      color: var(--text);
+      margin-bottom: 14px;
+    }
+
+    .home-hero h1 em {
+      font-style: italic;
+      color: var(--text);
+    }
+
+    .home-hero p {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      max-width: 280px;
+    }
+
+    .home-actions {
+      padding: 24px 24px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* ── Buttons ── */
+    .btn-primary {
+      width: 100%;
+      background: #1a1a1a;
+      color: #fff;
+      border: none;
+      border-radius: 0;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: opacity 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-primary:hover { opacity: 0.88; }
+    .btn-primary:active { opacity: 0.75; }
+    .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    .btn-outline {
+      width: 100%;
+      background: transparent;
+      color: var(--text);
+      border: 1px solid #ccc9c3;
+      border-radius: 0;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: background 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-outline:hover { background: var(--surface2); }
+    .btn-outline:active { background: var(--border); }
+
+    .btn-outline-small {
+      width: 100%;
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 0;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 10px;
+      cursor: pointer;
+      transition: background 0.15s;
+      -webkit-tap-highlight-color: transparent;
+      margin-top: auto;
+    }
+
+    .btn-outline-small:hover { background: var(--surface2); }
+
+    /* ── Preview Card ── */
+    #previewCard {
+      margin: 20px 24px 0;
+      border-radius: 20px;
+      overflow: hidden;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      position: relative;
+    }
+
+    #previewImage {
+      width: 100%;
+      height: 60vw;
+      max-height: 60vh;
+      object-fit: cover;
+      display: block;
+    }
+
+    @media (min-width: 768px) {
+      #previewImage {
+        height: 240px;
+        max-height: 240px;
+      }
+    }
+
+    .preview-close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.5);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .preview-close svg {
+      width: 16px;
+      height: 16px;
+      stroke: #fff;
+      stroke-width: 2;
+      fill: none;
+    }
+
+    #analyzeBtn {
+      margin: 16px 24px 0;
+    }
+
+    /* ── Loading Screen ── */
+    #screen-loading {
+      padding-bottom: calc(70px + env(safe-area-inset-bottom));
+    }
+
+    .loading-ring {
+      width: 44px;
+      height: 44px;
+      border: 1.5px solid var(--border);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    #loadingText {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+      transition: opacity 0.2s;
+    }
+
+    /* ── Top Bar ── */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .top-bar-title {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text);
+      flex: 1;
+      text-align: center;
+    }
+
+    .icon-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      -webkit-tap-highlight-color: transparent;
+      flex-shrink: 0;
+    }
+
+    .icon-btn svg {
+      width: 16px;
+      height: 16px;
+      stroke: var(--text);
+      stroke-width: 1.8;
+      fill: none;
+    }
+
+    /* ── Result Screen ── */
+    #screen-result {
+      padding-bottom: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .result-card {
+      background: var(--surface);
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .result-image-wrap {
+      position: relative;
+      aspect-ratio: 16/9;
+      overflow: hidden;
+    }
+
+    .result-image-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .ai-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 20px;
+      padding: 4px 10px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,0.6);
+    }
+
+    .result-body {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .result-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.6rem;
+      line-height: 1.2;
+      color: var(--text);
+    }
+
+    .result-artist {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .result-description {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    .result-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .chip {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      letter-spacing: 0.04em;
+    }
+
+    .confidence-row {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .confidence-label-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .confidence-track {
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .confidence-fill {
+      height: 100%;
+      background: var(--gold);
+      border-radius: 2px;
+      width: 0%;
+      transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .palette-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .palette-label {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-right: 4px;
+    }
+
+    .swatch {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(0,0,0,0.08);
+      flex-shrink: 0;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .tag {
+      background: var(--gold-light);
+      color: var(--gold);
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+    }
+
+    .price-display {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.4rem;
+      color: var(--gold);
+    }
+
+    /* ── Similar Works ── */
+    .section-label {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .similar-scroll {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scroll-snap-type: x mandatory;
+      padding-bottom: 8px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+
+    .similar-scroll::-webkit-scrollbar {
+      height: 4px;
+    }
+    .similar-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .similar-scroll::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 2px;
+    }
+
+    .similar-card {
+      width: 168px;
+      flex-shrink: 0;
+      background: var(--surface);
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      scroll-snap-align: start;
+    }
+
+    .similar-card img {
+      width: 100%;
+      height: 130px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .similar-card-body {
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      gap: 4px;
+    }
+
+    .similar-card-body h4 {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1.3;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .similar-card-body p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .similar-card-body button {
+      width: 100%;
+      margin-top: auto;
+      padding-top: 8px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 0;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.66rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text);
+      cursor: pointer;
+      padding: 7px 8px;
+      transition: background 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .similar-card-body button:hover { background: var(--surface2); }
+
+    /* ── CTA Banner ── */
+    .cta-banner {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .cta-banner h3 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.3rem;
+      color: var(--text);
+    }
+
+    .cta-banner p {
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .cta-banner .btn-primary {
+      max-width: 240px;
+    }
+
+    /* ── Explore Screen ── */
+    #screen-explore {
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .explore-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .explore-card {
+      background: var(--surface);
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: transform 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .explore-card:active { transform: scale(0.97); }
+
+    .explore-card img {
+      width: 100%;
+      aspect-ratio: 4/5;
+      object-fit: cover;
+      display: block;
+    }
+
+    .explore-card-body {
+      padding: 10px 12px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .explore-card-body h4 {
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1.3;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .explore-card-body p {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .price-chip {
+      display: inline-block;
+      background: var(--gold-light);
+      color: var(--gold);
+      border-radius: 10px;
+      padding: 3px 8px;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      margin-top: 4px;
+      align-self: flex-start;
+    }
+
+    /* ── Toast ── */
     .toast {
       position: fixed;
       bottom: calc(80px + env(safe-area-inset-bottom));
       left: 50%;
       transform: translateX(-50%);
-      background: rgba(0,0,0,0.85);
-      border: 1px solid var(--gold);
-      color: var(--gold-light);
+      background: rgba(26,26,26,0.92);
+      color: #fff;
       padding: 12px 20px;
-      border-radius: 999px;
-      font-size: 0.9rem;
-      animation: toastIn 0.3s ease forwards;
-      z-index: 99;
+      border-radius: 0;
+      font-size: 0.82rem;
+      letter-spacing: 0.03em;
+      z-index: 9999;
+      max-width: 320px;
+      text-align: center;
+      animation: toastIn 0.2s ease, toastOut 0.3s ease 2.7s forwards;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
+
     @keyframes toastIn {
-      from { opacity: 0; transform: translate(-50%, 20px); }
-      to { opacity: 1; transform: translate(-50%, 0); }
+      from { opacity: 0; transform: translateX(-50%) translateY(12px); }
+      to { opacity: 1; transform: translateX(-50%) translateY(0); }
     }
+    @keyframes toastOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+
+    /* ── Camera Overlay ── */
+    #cameraView {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #000;
+      z-index: 999;
+      flex-direction: column;
+      padding: 20px;
+      padding-top: max(20px, env(safe-area-inset-top));
+      padding-bottom: max(20px, env(safe-area-inset-bottom));
+    }
+
+    #cameraCancel {
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
+      padding: 10px 20px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      border-radius: 0;
+      align-self: flex-start;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    #cameraVideo {
+      flex: 1;
+      width: 100%;
+      object-fit: cover;
+      border-radius: 16px;
+      margin-top: 16px;
+    }
+
+    .shutter-btn {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      background: #fff;
+      border: 4px solid rgba(255,255,255,0.4);
+      cursor: pointer;
+      box-shadow: 0 0 0 3px rgba(255,255,255,0.2);
+      transition: transform 0.1s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .shutter-btn:active { transform: scale(0.9); }
+
+    /* ── Misc ── */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 4px 0;
+    }
+
     @media (min-width: 768px) {
-      .screen {
-        padding: 40px calc(28px + env(safe-area-inset-left)) calc(110px + env(safe-area-inset-bottom));
+      #screen-result, #screen-explore {
+        max-height: calc(95vh - 60px);
       }
-      .home-core {
-        gap: 32px;
-      }
-      .upload-btn {
-        width: 360px;
-      }
-      .result-card {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-      }
-      .result-image { height: 100%; }
     }
   </style>
 </head>
 <body>
-  <div id="app">
-    <main>
-      <section id="screen-home" class="screen active" aria-label="홈">
-        <div class="screen-header">
-          <div class="wordmark">ARTLENS</div>
-          <p class="tagline">작품을 찍으면, 예술이 보인다</p>
-        </div>
-        <div class="home-core" id="homeActions">
-          <button class="main-camera-btn" id="cameraButton" aria-label="카메라 열기">📷</button>
-          <p class="home-instruction">작품을 촬영하세요</p>
-          <div class="divider">OR</div>
-          <button class="upload-btn" id="uploadButton">이미지 업로드</button>
-          <p style="font-size:0.8rem;color:var(--text-muted);text-align:center;opacity:0.8;">JPG/PNG/WEBP · 최대 20MB · 드래그 앤 드롭 가능</p>
-          <div class="drop-overlay" id="dropOverlay"></div>
-        </div>
-        <div class="preview-card" id="previewCard">
-          <img id="previewImage" alt="선택한 작품 미리보기" />
-          <div class="preview-meta"><strong id="previewName">Untitled</strong><br/><span id="previewSize">0 MB</span></div>
-          <button class="preview-clear" id="clearPreview" aria-label="선택 초기화">✕</button>
-        </div>
-        <button class="analyze-btn" id="analyzeButton" disabled>분석하기</button>
-        <input type="file" id="fileInput" accept="image/*" hidden />
-        <canvas id="snapCanvas" style="display:none;"></canvas>
-      </section>
 
-      <section id="screen-loading" class="screen" aria-live="polite">
-        <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:20px;">
-          <div class="loading-ring"></div>
-          <p id="loadingText">이미지 분석 중...</p>
-        </div>
-      </section>
+<div id="app">
 
-      <section id="screen-result" class="screen" aria-label="분석 결과">
-        <div class="top-bar">
-          <button class="icon-btn" id="resultBack" aria-label="뒤로">←</button>
-          <h2>분석 결과</h2>
-          <button class="icon-btn" id="shareBtn" aria-label="공유">⇪</button>
-        </div>
-        <article class="result-card">
-          <div class="result-image">
-            <img id="resultImage" src="https://picsum.photos/800/500?blur=2" alt="분석된 작품" />
-            <span class="badge">AI 분석 완료</span>
-          </div>
-          <div class="result-body">
-            <div>
-              <div class="result-title" id="resultTitle">수련 · Water Lilies</div>
-              <div class="result-subtitle" id="resultArtist">클로드 모네 · 1906</div>
-            </div>
-            <p id="resultDescription" style="line-height:1.6;color:var(--text-muted);">
-              모네의 지베르니 정원에서 영감을 받은 대표작. 물결과 빛이 만드는 순간을 포착했습니다.
-            </p>
-            <div class="result-meta" id="resultMeta"></div>
-            <div class="confidence">
-              <span><span>신뢰도</span><strong id="confidenceValue">0%</strong></span>
-              <div class="confidence-bar"><div class="confidence-fill" id="confidenceFill"></div></div>
-            </div>
-            <div class="palette" id="palette"></div>
-            <div class="tag-list" id="tagList"></div>
-            <div style="font-family:'Noto Serif KR',serif;font-size:1.1rem;color:var(--gold-light);" id="priceRange">₩ 2,500,000 ~ 8,000,000</div>
-          </div>
-        </article>
-        <div class="section-block">
-          <div class="section-title">ARTUE 추천 작품 <small>artue.io</small></div>
-          <div class="similar-scroll" id="similarScroll"></div>
-        </div>
-        <div class="cta-banner">
-          <p style="margin:0;font-size:1rem;">더 많은 작품은 ARTUE에서</p>
-          <button onclick="window.open('https://artue.io/ko','_blank')">ARTUE 방문하기</button>
-        </div>
-      </section>
+  <!-- ═══ HOME ═══ -->
+  <section id="screen-home" class="screen active">
+    <header class="app-header">
+      <span class="wordmark">ArtLens</span>
+    </header>
 
-      <section id="screen-explore" class="screen" aria-label="탐색">
-        <div class="top-bar">
-          <div></div>
-          <h2>탐색</h2>
-          <div></div>
-        </div>
-        <div class="pull-indicator">↻ 당겨서 새로고침 느낌</div>
-        <div class="explore-grid" id="exploreGrid"></div>
-      </section>
-    </main>
-
-    <nav class="tab-bar">
-      <button class="nav-tab active" data-screen="home"><span>🏠</span>홈</button>
-      <button class="nav-tab locked" data-screen="result"><span>🔍</span>결과</button>
-      <button class="nav-tab" data-screen="explore"><span>🎨</span>탐색</button>
-    </nav>
-  </div>
-
-  <div class="camera-view" id="cameraView">
-    <button class="camera-cancel" id="cameraCancel">← 닫기</button>
-    <video id="cameraVideo" autoplay playsinline muted></video>
-    <div class="camera-controls">
-      <span style="color:var(--text-muted);">환경광을 확인하세요</span>
-      <button class="camera-shutter" id="cameraShutter" aria-label="촬영하기"></button>
+    <div class="home-hero">
+      <h1>Snap a work,<br><em>see the art.</em></h1>
+      <p>AI analyzes any artwork and connects you with pieces that match your taste.</p>
     </div>
+
+    <div id="homeActions" class="home-actions">
+      <button class="btn-primary" onclick="document.getElementById('fileInput').click()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Upload Image
+      </button>
+      <button class="btn-outline" onclick="openCamera()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        Take a Photo
+      </button>
+    </div>
+
+    <!-- Preview Card -->
+    <div id="previewCard" style="display:none">
+      <img id="previewImage" src="" alt="Preview">
+      <button class="preview-close" onclick="clearFile()">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <button id="analyzeBtn" class="btn-primary" style="margin: 16px 24px 0; display:none" onclick="runAnalysis()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Analyze Artwork
+    </button>
+
+    <input type="file" id="fileInput" accept="image/*" hidden>
+    <canvas id="snapCanvas" style="display:none"></canvas>
+  </section>
+
+  <!-- ═══ LOADING ═══ -->
+  <section id="screen-loading" class="screen">
+    <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px; min-height:100dvh">
+      <div class="loading-ring"></div>
+      <p id="loadingText">Analyzing image...</p>
+    </div>
+  </section>
+
+  <!-- ═══ RESULT ═══ -->
+  <section id="screen-result" class="screen">
+    <div class="top-bar" style="position:sticky; top:0; background:var(--bg); z-index:10; padding:16px 24px 12px;">
+      <button class="icon-btn" onclick="navigateTo('home')">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <span class="top-bar-title">Analysis</span>
+      <button class="icon-btn" id="shareBtn" onclick="shareResult()">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      </button>
+    </div>
+
+    <div style="padding: 0 24px; display:flex; flex-direction:column; gap:20px; padding-bottom: calc(80px + env(safe-area-inset-bottom))">
+
+      <!-- Result Card -->
+      <div class="result-card">
+        <div class="result-image-wrap">
+          <img id="resultImage" src="https://picsum.photos/seed/art1/800/450" alt="Analyzed artwork">
+          <span class="ai-badge">AI Analyzed</span>
+        </div>
+        <div class="result-body">
+          <h2 class="result-title" id="resultTitle">Unknown Artwork</h2>
+          <p class="result-artist" id="resultArtist">—</p>
+          <p class="result-description" id="resultDescription"></p>
+
+          <div class="result-meta" id="resultMeta"></div>
+
+          <!-- Confidence -->
+          <div class="confidence-row">
+            <div class="confidence-label-row">
+              <span>Confidence</span>
+              <span id="confidenceValue">—</span>
+            </div>
+            <div class="confidence-track">
+              <div class="confidence-fill" id="confidenceFill"></div>
+            </div>
+          </div>
+
+          <!-- Palette -->
+          <div class="palette-row" id="palette">
+            <span class="palette-label">Palette</span>
+          </div>
+
+          <!-- Tags -->
+          <div class="tag-row" id="tagList"></div>
+
+          <!-- Price -->
+          <div id="priceWrap">
+            <p style="font-size:0.72rem;color:var(--text-muted);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:4px;">Estimated Value</p>
+            <p class="price-display" id="priceRange"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Similar Works -->
+      <div>
+        <p class="section-label">Similar Works</p>
+        <div class="similar-scroll" id="similarScroll"></div>
+      </div>
+
+      <!-- CTA Banner -->
+      <div class="cta-banner">
+        <h3>Discover More Art</h3>
+        <p>Browse thousands of curated works from emerging and established artists on Artue.</p>
+        <button class="btn-primary" onclick="window.open('https://artue.io/en/works','_blank')">
+          Browse Artue
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══ EXPLORE ═══ -->
+  <section id="screen-explore" class="screen">
+    <div class="top-bar" style="position:sticky; top:0; background:var(--bg); z-index:10; padding:20px 24px 12px;">
+      <h2 style="font-family:'DM Serif Display',serif; font-size:1.6rem;">Explore</h2>
+    </div>
+    <div style="padding: 0 24px; padding-bottom: calc(80px + env(safe-area-inset-bottom))">
+      <p style="font-size:0.72rem; color:#888; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:16px;">Works on Artue</p>
+      <div class="explore-grid" id="exploreGrid"></div>
+    </div>
+  </section>
+
+</div><!-- /app -->
+
+<!-- ═══ Tab Bar ═══ -->
+<div class="tab-bar">
+  <button class="nav-tab active" data-screen="home">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    Home
+  </button>
+  <button class="nav-tab locked" data-screen="result">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    Result
+  </button>
+  <button class="nav-tab" data-screen="explore">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+    Explore
+  </button>
+</div>
+
+<!-- ═══ Camera Overlay ═══ -->
+<div id="cameraView">
+  <button id="cameraCancel" onclick="closeCamera()">Close</button>
+  <video id="cameraVideo" autoplay playsinline muted></video>
+  <div style="display:flex; justify-content:center; padding-top:20px;">
+    <button class="shutter-btn" id="cameraShutter" onclick="capturePhoto()"></button>
   </div>
+</div>
 
-  <script>
-    const screens = ['home', 'loading', 'result', 'explore'];
-    const screenOrder = { home: 0, loading: 1, result: 2, explore: 3 };
-    let currentScreen = 'home';
-    let currentFile = null;
-    let currentFileName = '';
-    let currentFileSize = 0;
-    let analysisResult = null;
-    let stream = null;
-    let loadingTimer = null;
+<script>
+  // ── State ──────────────────────────────────────────────────────────
+  let currentScreen = 'home';
+  let currentFile = null;
+  let stream = null;
+  let analysisResult = null;
 
-    const ARTUE_WORKS = [
-      { title: "The color of waves : Mint", artist: "Yeonhong Kim", price: "$870", tags: ["추상화","자연","컬러필드","물"], img: "https://picsum.photos/seed/waves-mint/400/300", url: "https://artue.io/ko/works" },
-      { title: "tipping point-形-20", artist: "Jaehyuk Han", price: "$25,710", tags: ["추상화","현대미술","한국"], img: "https://picsum.photos/seed/tipping-form/400/300", url: "https://artue.io/ko/works" },
-      { title: "The Transparent Visual Apparatus no.5", artist: "Goo Gijeong", price: "₩2,600,000", tags: ["현대미술","개념미술","설치"], img: "https://picsum.photos/seed/transparent-visual/400/300", url: "https://artue.io/ko/works" },
-      { title: "Human Behaviour", artist: "Matthew Stone", price: "$17,000", tags: ["인물화","현대미술","디지털"], img: "https://picsum.photos/seed/human-behaviour/400/300", url: "https://artue.io/ko/works" },
-      { title: "cresc.", artist: "YEWON SEO", price: "₩7,000,000", tags: ["추상화","현대미술","한국"], img: "https://picsum.photos/seed/cresc-seo/400/300", url: "https://artue.io/ko/works" },
-      { title: "With You", artist: "Young Jae", price: "₩960,000", tags: ["풍경화","자연","서정적"], img: "https://picsum.photos/seed/with-you-jae/400/300", url: "https://artue.io/ko/works" },
-      { title: "Flower", artist: "Yerang Hwang", price: "₩600,000", tags: ["꽃","자연","서정적","인상주의"], img: "https://picsum.photos/seed/flower-hwang/400/300", url: "https://artue.io/ko/works" },
-      { title: "Landscape Elements", artist: "Jina Jung", price: "$3,500", tags: ["풍경화","자연","추상화"], img: "https://picsum.photos/seed/landscape-jung/400/300", url: "https://artue.io/ko/works" },
-      { title: "Scenes", artist: "Moonhee Cho", price: "₩2,400,000", tags: ["풍경화","서정적","한국"], img: "https://picsum.photos/seed/scenes-cho/400/300", url: "https://artue.io/ko/works" },
-      { title: "Crow and Star", artist: "Yoo Suzy", price: "$470", tags: ["자연","새","서정적","밤"], img: "https://picsum.photos/seed/crow-star/400/300", url: "https://artue.io/ko/works" },
-      { title: "Behind the curtain: Venus 001", artist: "Wonmi Seo", price: "$3,150", tags: ["인물화","여성","현대미술"], img: "https://picsum.photos/seed/venus-wonmi/400/300", url: "https://artue.io/ko/works" },
-      { title: "Moon Gazing", artist: "Mina Lee", price: "$2,340", tags: ["자연","달","서정적","밤"], img: "https://picsum.photos/seed/moon-gazing/400/300", url: "https://artue.io/ko/works" },
-      { title: "A widening crack", artist: "Hansol Noh", price: "문의", tags: ["현대미술","개념미술","한국","추상화"], img: "https://picsum.photos/seed/crack-noh/400/300", url: "https://artue.io/ko/artist/hansol-noh" },
-      { title: "Still life with Sphere", artist: "Hansol Noh", price: "문의", tags: ["정물화","꽃","현대미술"], img: "https://picsum.photos/seed/sphere-noh/400/300", url: "https://artue.io/ko/artist/hansol-noh" },
-      { title: "ALICES", artist: "Hyeyoung Hwang", price: "$14,500", tags: ["인물화","현대미술","서사"], img: "https://picsum.photos/seed/alices-hwang/400/300", url: "https://artue.io/ko/works" }
-    ];
+  const API_BASE = 'http://185.111.159.139:3131';
 
-    const dropOverlay = document.getElementById('dropOverlay');
-    const uploadButton = document.getElementById('uploadButton');
-    const cameraButton = document.getElementById('cameraButton');
-    const analyzeButton = document.getElementById('analyzeButton');
-    const previewCard = document.getElementById('previewCard');
-    const previewImage = document.getElementById('previewImage');
-    const previewName = document.getElementById('previewName');
-    const previewSize = document.getElementById('previewSize');
-    const fileInput = document.getElementById('fileInput');
-    const clearPreview = document.getElementById('clearPreview');
-    const cameraView = document.getElementById('cameraView');
-    const cameraVideo = document.getElementById('cameraVideo');
-    const cameraCancel = document.getElementById('cameraCancel');
-    const cameraShutter = document.getElementById('cameraShutter');
-
-    uploadButton.addEventListener('click', () => fileInput.click());
-    cameraButton.addEventListener('click', openCamera);
-    analyzeButton.addEventListener('click', runAnalysis);
-    clearPreview.addEventListener('click', clearSelection);
-    cameraCancel.addEventListener('click', closeCamera);
-    cameraShutter.addEventListener('click', captureFrame);
-    fileInput.addEventListener('change', handleFileInput);
-
-    ['dragover', 'dragenter'].forEach(evt => {
-      document.addEventListener(evt, e => {
-        e.preventDefault();
-        dropOverlay.classList.add('active');
-      });
+  // ── Navigation ────────────────────────────────────────────────────
+  function navigateTo(screenId) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    const target = document.getElementById('screen-' + screenId);
+    if (!target) return;
+    target.classList.add('active');
+    window.scrollTo(0, 0);
+    target.scrollTop = 0;
+    currentScreen = screenId;
+    document.querySelectorAll('.nav-tab').forEach(t => {
+      t.classList.toggle('active', t.dataset.screen === screenId);
     });
-    ['dragleave', 'drop'].forEach(evt => {
-      document.addEventListener(evt, e => {
-        e.preventDefault();
-        if (evt === 'drop') {
-          const file = e.dataTransfer.files[0];
-          if (file && file.type.startsWith('image/')) {
-            ingestFile(file);
-          } else {
-            showToast('이미지 파일만 지원합니다.');
-          }
-        }
-        dropOverlay.classList.remove('active');
-      });
-    });
+  }
 
-    document.querySelectorAll('.nav-tab').forEach(tab => {
-      tab.addEventListener('click', () => {
-        const target = tab.dataset.screen;
-        if (!target || tab.classList.contains('locked')) {
-          showToast('분석 후 결과를 확인할 수 있어요.');
-          return;
-        }
-        const dir = screenOrder[target] < screenOrder[currentScreen] ? 'back' : 'forward';
-        navigateTo(target, dir);
-      });
-    });
+  // ── File handling ─────────────────────────────────────────────────
+  document.getElementById('fileInput').addEventListener('change', e => {
+    const f = e.target.files[0];
+    if (f) ingestFile(f);
+  });
 
-    document.getElementById('resultBack').addEventListener('click', () => {
-      navigateTo('home', 'back');
-    });
+  function ingestFile(file) {
+    currentFile = file;
+    const reader = new FileReader();
+    reader.onload = e => {
+      document.getElementById('previewImage').src = e.target.result;
+      document.getElementById('previewCard').style.display = 'block';
+      document.getElementById('analyzeBtn').style.display = 'block';
+      document.getElementById('analyzeBtn').disabled = false;
+      document.getElementById('homeActions').style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  }
 
-    document.getElementById('shareBtn').addEventListener('click', async () => {
-      if (!analysisResult) {
-        showToast('먼저 작품을 분석하세요.');
-        return;
-      }
-      if (navigator.share) {
-        try {
-          await navigator.share({ title: 'ArtLens 결과', text: analysisResult.title || 'ArtLens 분석 결과', url: location.href });
-        } catch (e) {}
-      } else {
-        navigator.clipboard.writeText(`${analysisResult.title || 'ArtLens 작품'} - ${analysisResult.artist || ''}`);
-        showToast('클립보드에 복사되었습니다.');
-      }
-    });
+  function clearFile() {
+    currentFile = null;
+    document.getElementById('fileInput').value = '';
+    document.getElementById('previewCard').style.display = 'none';
+    document.getElementById('analyzeBtn').style.display = 'none';
+    document.getElementById('analyzeBtn').disabled = true;
+    document.getElementById('homeActions').style.display = 'flex';
+  }
 
-    function navigateTo(screenId, direction = 'forward') {
-      const currentEl = document.getElementById(`screen-${currentScreen}`);
-      const nextEl = document.getElementById(`screen-${screenId}`);
-      if (!nextEl || currentScreen === screenId) return;
-      currentEl.classList.remove('active', 'prev', 'next-out');
-      currentEl.classList.add(direction === 'forward' ? 'prev' : 'next-out');
-      nextEl.classList.remove('prev', 'next-out');
-      nextEl.classList.add('active');
-      currentScreen = screenId;
-      document.querySelectorAll('.nav-tab').forEach(tab => {
-        tab.classList.toggle('active', tab.dataset.screen === screenId);
-      });
+  // ── Camera ────────────────────────────────────────────────────────
+  async function openCamera() {
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({video: {facingMode: 'environment'}});
+      document.getElementById('cameraView').style.display = 'flex';
+      document.getElementById('cameraVideo').srcObject = stream;
+    } catch(e) {
+      showToast('Camera access denied. Please use image upload.');
+    }
+  }
+
+  function closeCamera() {
+    if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+    document.getElementById('cameraView').style.display = 'none';
+  }
+
+  function capturePhoto() {
+    const video = document.getElementById('cameraVideo');
+    const canvas = document.getElementById('snapCanvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video, 0, 0);
+    canvas.toBlob(blob => {
+      closeCamera();
+      ingestFile(new File([blob], 'photo.jpg', {type: 'image/jpeg'}));
+    }, 'image/jpeg', 0.92);
+  }
+
+  // ── Loading Loop ──────────────────────────────────────────────────
+  const loadingTexts = [
+    'Analyzing image...',
+    'Searching artwork data...',
+    'Finding similar works...',
+    'Preparing results...'
+  ];
+  let loadingInterval = null;
+  let loadingIdx = 0;
+
+  function startLoadingLoop() {
+    loadingIdx = 0;
+    document.getElementById('loadingText').textContent = loadingTexts[0];
+    loadingInterval = setInterval(() => {
+      loadingIdx = (loadingIdx + 1) % loadingTexts.length;
+      const el = document.getElementById('loadingText');
+      el.style.opacity = 0;
       setTimeout(() => {
-        currentEl.classList.remove('prev', 'next-out');
-      }, 400);
-    }
+        el.textContent = loadingTexts[loadingIdx];
+        el.style.opacity = 1;
+      }, 200);
+    }, 900);
+  }
 
-    function handleFileInput(e) {
-      const file = e.target.files[0];
-      if (file) ingestFile(file);
-    }
+  function stopLoadingLoop() {
+    clearInterval(loadingInterval);
+    loadingInterval = null;
+  }
 
-    function ingestFile(file) {
-      if (!file.type.startsWith('image/')) {
-        showToast('이미지 파일만 지원합니다.');
+  // ── Run Analysis ──────────────────────────────────────────────────
+  async function runAnalysis() {
+    if (!currentFile) { showToast('Please select an image first.'); return; }
+
+    const savedSrc = document.getElementById('previewImage').src;
+    navigateTo('loading');
+    startLoadingLoop();
+
+    try {
+      const formData = new FormData();
+      const blob = (currentFile.type && currentFile.type.startsWith('image/'))
+        ? currentFile
+        : new Blob([currentFile], {type: 'image/jpeg'});
+      formData.append('image', blob, currentFile.name || 'photo.jpg');
+
+      const res = await fetch(`${API_BASE}/api/analyze`, {method: 'POST', body: formData});
+      if (!res.ok) throw new Error(`Server error ${res.status}`);
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+
+      analysisResult = data;
+      renderResult(data, savedSrc);
+      stopLoadingLoop();
+      document.querySelector('[data-screen="result"]').classList.remove('locked');
+      navigateTo('result');
+
+    } catch(e) {
+      console.error(e);
+      stopLoadingLoop();
+      navigateTo('home');
+      showToast('Error: ' + e.message.slice(0, 60));
+    }
+  }
+
+  // ── Render Result ─────────────────────────────────────────────────
+  function renderResult(data, savedSrc) {
+    if (savedSrc) document.getElementById('resultImage').src = savedSrc;
+    document.getElementById('resultTitle').textContent = data.title || 'Unknown Artwork';
+    document.getElementById('resultArtist').textContent = [data.artist, data.year].filter(Boolean).join(' · ');
+    document.getElementById('resultDescription').textContent = data.description || '';
+    document.getElementById('priceRange').textContent = data.priceRange || '';
+
+    // meta chips
+    const meta = document.getElementById('resultMeta');
+    meta.innerHTML = '';
+    [data.style, data.medium].filter(Boolean).forEach(t => {
+      meta.innerHTML += `<span class="chip">${t}</span>`;
+    });
+
+    // confidence
+    const conf = data.confidence || 88;
+    document.getElementById('confidenceValue').textContent = conf + '%';
+    setTimeout(() => { document.getElementById('confidenceFill').style.width = conf + '%'; }, 100);
+
+    // palette
+    const palette = document.getElementById('palette');
+    palette.innerHTML = '<span class="palette-label">Palette</span>';
+    (data.palette || ['#4a7c6f','#8da4a8','#2b3a55','#c9a84c','#1c1c1c']).forEach(c => {
+      palette.innerHTML += `<div class="swatch" style="background:${c}"></div>`;
+    });
+
+    // tags
+    const tags = document.getElementById('tagList');
+    tags.innerHTML = '';
+    (data.tags || []).forEach(t => {
+      tags.innerHTML += `<span class="tag">${t.startsWith('#') ? t : '#' + t}</span>`;
+    });
+
+    // similar works
+    const similar = (data.similar && data.similar.length) ? data.similar : ARTUE_WORKS.slice(0, 5);
+    const scroll = document.getElementById('similarScroll');
+    scroll.innerHTML = '';
+    similar.forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'similar-card';
+      card.innerHTML = `
+        <img src="${item.image || item.img || 'https://picsum.photos/seed/art/400/300'}" alt="${item.title}" loading="lazy">
+        <div class="similar-card-body">
+          <h4>${item.title}</h4>
+          <p>${item.artist}</p>
+          <button onclick="window.open('${item.artueUrl || item.url || 'https://artue.io/en/works'}','_blank')">View on Artue</button>
+        </div>
+      `;
+      scroll.appendChild(card);
+    });
+  }
+
+  // ── Share ─────────────────────────────────────────────────────────
+  async function shareResult() {
+    if (!analysisResult) { showToast('No result to share yet.'); return; }
+    const text = `${analysisResult.title || 'Artwork'} by ${analysisResult.artist || 'Unknown'} — analyzed with ArtLens`;
+    if (navigator.share) {
+      try { await navigator.share({title: 'ArtLens Result', text, url: 'https://artue.io/en/works'}); } catch {}
+    } else {
+      try { await navigator.clipboard.writeText(text); showToast('Copied to clipboard!'); } catch { showToast('Share not supported.'); }
+    }
+  }
+
+  // ── Toast ─────────────────────────────────────────────────────────
+  function showToast(msg) {
+    const t = document.createElement('div');
+    t.className = 'toast';
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3000);
+  }
+
+  // ── Artue Works Data ──────────────────────────────────────────────
+  const ARTUE_WORKS = [
+    {title:"The color of waves : Mint", artist:"Yeonhong Kim", price:"$870", img:"https://picsum.photos/seed/waves-mint/400/300", url:"https://artue.io/en/works"},
+    {title:"tipping point-形-20", artist:"Jaehyuk Han", price:"$25,710", img:"https://picsum.photos/seed/tipping-form/400/300", url:"https://artue.io/en/works"},
+    {title:"The Transparent Visual Apparatus no.5", artist:"Goo Gijeong", price:"₩2,600,000", img:"https://picsum.photos/seed/transparent-visual/400/300", url:"https://artue.io/en/works"},
+    {title:"Human Behaviour", artist:"Matthew Stone", price:"$17,000", img:"https://picsum.photos/seed/human-behaviour/400/300", url:"https://artue.io/en/works"},
+    {title:"cresc.", artist:"YEWON SEO", price:"₩7,000,000", img:"https://picsum.photos/seed/cresc-seo/400/300", url:"https://artue.io/en/works"},
+    {title:"With You", artist:"Young Jae", price:"₩960,000", img:"https://picsum.photos/seed/with-you-jae/400/300", url:"https://artue.io/en/works"},
+    {title:"Flower", artist:"Yerang Hwang", price:"₩600,000", img:"https://picsum.photos/seed/flower-hwang/400/300", url:"https://artue.io/en/works"},
+    {title:"Landscape Elements", artist:"Jina Jung", price:"$3,500", img:"https://picsum.photos/seed/landscape-jung/400/300", url:"https://artue.io/en/works"},
+    {title:"Scenes", artist:"Moonhee Cho", price:"₩2,400,000", img:"https://picsum.photos/seed/scenes-cho/400/300", url:"https://artue.io/en/works"},
+    {title:"Crow and Star", artist:"Yoo Suzy", price:"$470", img:"https://picsum.photos/seed/crow-star/400/300", url:"https://artue.io/en/works"},
+    {title:"Behind the curtain: Venus 001", artist:"Wonmi Seo", price:"$3,150", img:"https://picsum.photos/seed/venus-wonmi/400/300", url:"https://artue.io/en/works"},
+    {title:"Moon Gazing", artist:"Mina Lee", price:"$2,340", img:"https://picsum.photos/seed/moon-gazing/400/300", url:"https://artue.io/en/works"},
+    {title:"A widening crack", artist:"Hansol Noh", price:"Inquire", img:"https://picsum.photos/seed/crack-noh/400/300", url:"https://artue.io/en/artist/hansol-noh"},
+    {title:"Still life with Sphere", artist:"Hansol Noh", price:"Inquire", img:"https://picsum.photos/seed/sphere-noh/400/300", url:"https://artue.io/en/artist/hansol-noh"},
+    {title:"ALICES", artist:"Hyeyoung Hwang", price:"$14,500", img:"https://picsum.photos/seed/alices-hwang/400/300", url:"https://artue.io/en/works"},
+  ];
+
+  // ── Explore Grid ──────────────────────────────────────────────────
+  function renderExplore() {
+    const grid = document.getElementById('exploreGrid');
+    ARTUE_WORKS.forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'explore-card';
+      card.innerHTML = `
+        <img src="${item.img}" alt="${item.title}" loading="lazy">
+        <div class="explore-card-body">
+          <h4>${item.title}</h4>
+          <p>${item.artist}</p>
+          <span class="price-chip">${item.price}</span>
+        </div>
+      `;
+      card.addEventListener('click', () => window.open(item.url, '_blank'));
+      grid.appendChild(card);
+    });
+  }
+  renderExplore();
+
+  // ── Nav Tabs ──────────────────────────────────────────────────────
+  document.querySelectorAll('.nav-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const screen = tab.dataset.screen;
+      if (tab.classList.contains('locked')) {
+        showToast('Analyze an artwork first');
         return;
       }
-      currentFile = file;
-      currentFileName = file.name || 'photo.jpg';
-      currentFileSize = file.size || 0;
-      const reader = new FileReader();
-      reader.onload = () => {
-        previewImage.src = reader.result;
-        previewName.textContent = currentFileName;
-        previewSize.textContent = formatBytes(currentFileSize);
-        previewCard.classList.add('active');
-        analyzeButton.disabled = false;
-        document.getElementById('homeActions').style.display = 'none';
-        showToast('이미지를 불러왔어요. 분석을 시작하세요.');
-      };
-      reader.readAsDataURL(file);
-    }
+      navigateTo(screen);
+    });
+  });
 
-    function clearSelection() {
-      currentFile = null;
-      previewImage.src = '';
-      previewCard.classList.remove('active');
-      analyzeButton.disabled = true;
-      fileInput.value = '';
-      document.getElementById('homeActions').style.display = '';
-    }
-
-    async function openCamera() {
-      try {
-        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-        cameraVideo.srcObject = stream;
-        cameraView.classList.add('active');
-      } catch (err) {
-        showToast('카메라 접근이 거부되었습니다.');
-      }
-    }
-
-    function closeCamera() {
-      if (stream) {
-        stream.getTracks().forEach(track => track.stop());
-        stream = null;
-      }
-      cameraView.classList.remove('active');
-    }
-
-    function captureFrame() {
-      if (!stream) return;
-      const canvas = document.getElementById('snapCanvas');
-      const videoTrack = stream.getVideoTracks()[0];
-      const settings = videoTrack.getSettings();
-      canvas.width = settings.width || cameraVideo.videoWidth;
-      canvas.height = settings.height || cameraVideo.videoHeight;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(cameraVideo, 0, 0, canvas.width, canvas.height);
-      canvas.toBlob(blob => {
-        blob.name = 'camera.jpg';
-        ingestFile(blob);
-        closeCamera();
-      }, 'image/jpeg', 0.9);
-    }
-
-    const API_BASE = 'http://185.111.159.139:3131';
-
-    async function runAnalysis() {
-      if (!currentFile) {
-        showToast('이미지를 선택하세요.');
-        return;
-      }
-      navigateTo('loading');
-      startLoadingLoop();
-      try {
-        const formData = new FormData();
-        formData.append('image', currentFile, currentFile.name || currentFileName || 'photo.jpg');
-        const response = await fetch(`${API_BASE}/api/analyze`, { method: 'POST', body: formData });
-        if (!response.ok) throw new Error('분석 실패');
-        const data = await response.json();
-        analysisResult = data;
-        renderResult(data);
-        stopLoadingLoop();
-        document.querySelector('[data-screen="result"]').classList.remove('locked');
-        navigateTo('result');
-        // 결과 화면 맨 위로 강제 스크롤
-        const rs = document.getElementById('screen-result');
-        if (rs) { rs.scrollTop = 0; setTimeout(() => { rs.scrollTop = 0; }, 100); setTimeout(() => { rs.scrollTop = 0; }, 400); }
-      } catch (error) {
-        console.error(error);
-        stopLoadingLoop();
-        navigateTo('home', 'back');
-        showToast('분석 실패. 다시 시도해 주세요.');
-      }
-    }
-
-    function renderResult(data = {}) {
-      const imageUrl = previewImage.src || data.image || 'https://picsum.photos/800/500?blur=3';
-      document.getElementById('resultImage').src = imageUrl;
-      const title = data.title || '미지의 작품';
-      const subtitleParts = [data.artist, data.year].filter(Boolean).join(' · ');
-      document.getElementById('resultTitle').textContent = title;
-      document.getElementById('resultArtist').textContent = subtitleParts || 'AI 분석 중';
-      document.getElementById('resultDescription').textContent = data.description || '작품에 대한 상세 설명은 현재 수집 중입니다.';
-      document.getElementById('priceRange').textContent = data.priceRange || '가격 정보 없음';
-
-      const meta = document.getElementById('resultMeta');
-      meta.innerHTML = '';
-      [data.style, data.medium, data.location].filter(Boolean).forEach(item => {
-        const chip = document.createElement('span');
-        chip.className = 'chip';
-        chip.textContent = item;
-        meta.appendChild(chip);
-      });
-
-      const palette = document.getElementById('palette');
-      palette.innerHTML = '<span style="font-size:0.8rem;color:var(--text-muted);">팔레트</span>';
-      (data.palette && data.palette.length ? data.palette : ['#4a7c6f', '#8da4a8', '#2b3a55', '#c9a84c', '#1c1c1c']).forEach(color => {
-        const sw = document.createElement('div');
-        sw.className = 'swatch';
-        sw.style.background = color;
-        palette.appendChild(sw);
-      });
-
-      const tags = document.getElementById('tagList');
-      tags.innerHTML = '';
-      (data.tags || ['인상주의', '풍경화']).forEach(tag => {
-        const span = document.createElement('span');
-        span.className = 'tag';
-        span.textContent = tag.startsWith('#') ? tag : `#${tag}`;
-        tags.appendChild(span);
-      });
-
-      const confidence = Math.round(data.confidence || 92);
-      document.getElementById('confidenceValue').textContent = `${confidence}%`;
-      requestAnimationFrame(() => {
-        document.getElementById('confidenceFill').style.width = `${confidence}%`;
-      });
-
-      const similar = data.similar && data.similar.length ? data.similar : ARTUE_WORKS.slice(0, 6);
-      const scroll = document.getElementById('similarScroll');
-      scroll.innerHTML = '';
-      similar.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'similar-card';
-        card.innerHTML = `
-          <img src="${item.image || item.img}" alt="${item.title}" loading="lazy" />
-          <div>
-            <h4>${item.title}</h4>
-            <p>${item.artist}</p>
-            <p style="color:var(--gold-light);font-weight:600;">${item.price || ''}</p>
-            <button onclick="window.open('${item.url || item.link || 'https://artue.io/ko/works'}','_blank')">보러가기</button>
-          </div>`;
-        scroll.appendChild(card);
-      });
-    }
-
-    function startLoadingLoop() {
-      const textEl = document.getElementById('loadingText');
-      const texts = ['이미지 분석 중...', '작품 정보 검색 중...', '유사 작품 탐색 중...', '결과를 정리하는 중...'];
-      let idx = 0;
-      textEl.textContent = texts[idx];
-      loadingTimer = setInterval(() => {
-        idx = (idx + 1) % texts.length;
-        textEl.style.opacity = 0;
-        setTimeout(() => {
-          textEl.textContent = texts[idx];
-          textEl.style.opacity = 1;
-        }, 300);
-      }, 800);
-    }
-
-    function stopLoadingLoop() {
-      clearInterval(loadingTimer);
-      loadingTimer = null;
-      document.getElementById('loadingText').style.opacity = 1;
-    }
-
-    function showToast(message) {
-      const toast = document.createElement('div');
-      toast.className = 'toast';
-      toast.textContent = message;
-      document.body.appendChild(toast);
-      setTimeout(() => toast.remove(), 2600);
-    }
-
-    function formatBytes(bytes) {
-      if (!bytes) return '0 MB';
-      const units = ['B', 'KB', 'MB', 'GB'];
-      let i = 0;
-      let num = bytes;
-      while (num >= 1024 && i < units.length - 1) {
-        num /= 1024;
-        i++;
-      }
-      return `${num.toFixed(i === 0 ? 0 : 1)} ${units[i]}`;
-    }
-
-    function renderExplore() {
-      const grid = document.getElementById('exploreGrid');
-      grid.innerHTML = '';
-      ARTUE_WORKS.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'explore-card';
-        card.innerHTML = `
-          <img src="${item.img}" alt="${item.title}" loading="lazy" />
-          <div>
-            <strong>${item.title}</strong>
-            <span style="color:var(--text-muted);font-size:0.85rem;">${item.artist}</span>
-            <span class="price-chip">${item.price}</span>
-          </div>`;
-        card.addEventListener('click', () => window.open(item.url, '_blank'));
-        grid.appendChild(card);
-      });
-    }
-
-    renderExplore();
-  </script>
+  // ── Init Lucide ───────────────────────────────────────────────────
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+</script>
 </body>
 </html>
