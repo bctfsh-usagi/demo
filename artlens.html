@@ -689,25 +689,31 @@
       to { opacity: 1; transform: translate(-50%, 0); }
     }
     @media (min-width: 768px) {
-      /* 데스크탑: 중앙 정렬 + 최대 너비 제한 */
-      #app {
+      body {
+        background: #e8e5e0;
         display: flex;
         justify-content: center;
+        align-items: center;
+        min-height: 100dvh;
+      }
+      #app {
+        width: 390px;
+        height: 844px;
+        max-height: 95dvh;
+        border-radius: 40px;
+        overflow: hidden;
+        box-shadow: 0 32px 80px rgba(0,0,0,0.18), 0 0 0 1px rgba(0,0,0,0.08);
+        position: relative;
       }
       main {
         width: 100%;
-        max-width: 480px;
-        position: relative;
-        box-shadow: 0 0 60px rgba(0,0,0,0.08);
+        height: 100%;
       }
       .screen {
-        padding: 40px 32px calc(100px + env(safe-area-inset-bottom));
-        position: absolute;
+        padding: 40px 28px calc(90px + env(safe-area-inset-bottom));
       }
       .tab-bar {
-        max-width: 480px;
-        left: 50%;
-        transform: translateX(-50%);
+        border-radius: 0 0 40px 40px;
       }
       .result-card {
         display: grid;
@@ -736,7 +742,7 @@
           <div class="drop-overlay" id="dropOverlay"></div>
         </div>
         <div class="preview-card" id="previewCard">
-          <img id="previewImage" alt="선택한 작품 미리보기" />
+          <img id="previewImage" alt="Preview" />
           <div class="preview-meta"><strong id="previewName">Untitled</strong><br/><span id="previewSize">0 MB</span></div>
           <button class="preview-clear" id="clearPreview" aria-label="선택 초기화"><i data-lucide="x"></i></button>
         </div>
@@ -760,7 +766,7 @@
         </div>
         <article class="result-card">
           <div class="result-image">
-            <img id="resultImage" src="https://picsum.photos/800/500?blur=2" alt="분석된 작품" />
+            <img id="resultImage" src="https://picsum.photos/800/500?blur=2" alt="Analyzed artwork" />
             <span class="badge">AI Analyzed</span>
           </div>
           <div class="result-body">
@@ -909,7 +915,7 @@
 
     document.getElementById('shareBtn').addEventListener('click', async () => {
       if (!analysisResult) {
-        showToast('먼저 작품을 분석하세요.');
+        showToast('Please analyze an artwork first.');
         return;
       }
       if (navigator.share) {
@@ -917,7 +923,7 @@
           await navigator.share({ title: 'ArtLens 결과', text: analysisResult.title || 'ArtLens 분석 결과', url: location.href });
         } catch (e) {}
       } else {
-        navigator.clipboard.writeText(`${analysisResult.title || 'ArtLens 작품'} - ${analysisResult.artist || ''}`);
+        navigator.clipboard.writeText(`${analysisResult.title || 'Artwork'} - ${analysisResult.artist || ''}`);
         showToast('클립보드에 복사되었습니다.');
       }
     });
@@ -1012,7 +1018,7 @@
 
     async function runAnalysis() {
       if (!currentFile) {
-        showToast('이미지를 선택하세요.');
+        showToast('Please select an image first.');
         return;
       }
       navigateTo('loading');
@@ -1037,18 +1043,22 @@
     }
 
     function renderResult(data = {}) {
-      const imageUrl = previewImage.src || data.image || 'https://picsum.photos/800/500?blur=3';
-      document.getElementById('resultImage').src = imageUrl;
-      const title = data.title || '미지의 작품';
-      const subtitleParts = [data.artist, data.year].filter(Boolean).join(' · ');
+      // 이미지: 미리보기 src 저장해서 result에 반영
+      const imageUrl = previewImage.src || '';
+      const resultImg = document.getElementById('resultImage');
+      if (imageUrl) resultImg.src = imageUrl;
+
+      const title = (data.title || 'Unknown Artwork').split('·')[0].trim();
+      const artist = (data.artist || '').split('·')[0].trim();
+      const subtitleParts = [artist, data.year].filter(Boolean).join(' · ');
       document.getElementById('resultTitle').textContent = title;
-      document.getElementById('resultArtist').textContent = subtitleParts || 'AI 분석 중';
-      document.getElementById('resultDescription').textContent = data.description || '작품에 대한 상세 설명은 현재 수집 중입니다.';
-      document.getElementById('priceRange').textContent = data.priceRange || '가격 정보 없음';
+      document.getElementById('resultArtist').textContent = subtitleParts || 'Analyzing...';
+      document.getElementById('resultDescription').textContent = data.description || 'No description available.';
+      document.getElementById('priceRange').textContent = data.priceRange || '';
 
       const meta = document.getElementById('resultMeta');
       meta.innerHTML = '';
-      [data.style, data.medium, data.location].filter(Boolean).forEach(item => {
+      [data.styleEn || data.style, data.medium].filter(Boolean).forEach(item => {
         const chip = document.createElement('span');
         chip.className = 'chip';
         chip.textContent = item;
@@ -1056,7 +1066,7 @@
       });
 
       const palette = document.getElementById('palette');
-      palette.innerHTML = '<span style="font-size:0.8rem;color:var(--text-muted);">팔레트</span>';
+      palette.innerHTML = '<span style="font-size:0.75rem;color:var(--text-muted);letter-spacing:0.04em;">PALETTE</span>';
       (data.palette && data.palette.length ? data.palette : ['#4a7c6f', '#8da4a8', '#2b3a55', '#c9a84c', '#1c1c1c']).forEach(color => {
         const sw = document.createElement('div');
         sw.className = 'swatch';
@@ -1066,7 +1076,7 @@
 
       const tags = document.getElementById('tagList');
       tags.innerHTML = '';
-      (data.tags || ['인상주의', '풍경화']).forEach(tag => {
+      (data.tags || []).forEach(tag => {
         const span = document.createElement('span');
         span.className = 'tag';
         span.textContent = tag.startsWith('#') ? tag : `#${tag}`;
