@@ -1053,11 +1053,12 @@
         if (data.error) throw new Error(data.error);
 
         analysisResult = data;
-        // 저장해둔 미리보기 src로 결과 렌더링
-        renderResult(data, savedPreviewSrc);
         stopLoadingLoop();
-        navigateTo('result');
+        // 화면 전환 먼저, 그 다음 렌더링
         document.querySelector('[data-screen="result"]').classList.remove('locked');
+        navigateTo('result');
+        // 전환 애니메이션 끝난 후 렌더링 (400ms)
+        setTimeout(() => renderResult(data, savedPreviewSrc), 420);
 
       } catch (error) {
         console.error('Analysis error:', error);

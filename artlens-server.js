@@ -111,58 +111,34 @@ app.post('/api/analyze', upload.single('image'), async (req, res) => {
     const allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
     const mediaType = allowed.includes(req.file.mimetype) ? req.file.mimetype : 'image/jpeg';
 
-    const prompt = `You are an expert art historian and curator. Analyze this image and respond ONLY with a valid JSON object (no markdown, no explanation, just raw JSON).
+    const prompt = `You are an expert art historian and curator. Analyze this image and respond ONLY with a valid JSON object. No markdown, no explanation, just raw JSON. ALL text fields must be in ENGLISH only.
 
 If the image contains an artwork (painting, drawing, sculpture, print, digital art, etc.):
 {
   "isArtwork": true,
-  "title": "작품 제목 (한국어 · English)",
-  "artist": "작가명 (한국어 · English)",
-  "year": "제작연도 또는 추정 연도",
-  "style": "미술 양식 (한국어)",
-  "styleEn": "Art style (English)",
-  "medium": "재료/기법 (한국어)",
-  "description": "작품에 대한 설명 2-3문장 (한국어)",
-  "priceRange": "₩ 추정 가격대 (프린트 기준, 예: ₩ 500,000 ~ ₩ 2,000,000)",
-  "tags": ["태그1", "태그2", "태그3", "태그4"],
+  "title": "Artwork title in English",
+  "artist": "Artist full name in English",
+  "year": "Year or estimated period (e.g. 1889 or c. 1600s)",
+  "style": "Art style in English (e.g. Impressionism, Baroque, Abstract)",
+  "medium": "Medium in English (e.g. Oil on canvas, Watercolor)",
+  "description": "2-3 sentences describing the artwork in English.",
+  "priceRange": "Estimated print price range in USD (e.g. $500 ~ $2,000)",
+  "tags": ["tag1", "tag2", "tag3", "tag4"],
   "palette": ["#hex1", "#hex2", "#hex3", "#hex4", "#hex5"],
-  "confidence": 숫자(0-100),
-  "similar": [
-    {"title": "한국어 제목 · English Title", "artist": "한국어 작가명 · English Artist Name", "style": "양식", "price": "₩ 가격"},
-    {"title": "한국어 제목 · English Title", "artist": "한국어 작가명 · English Artist Name", "style": "양식", "price": "₩ 가격"},
-    {"title": "한국어 제목 · English Title", "artist": "한국어 작가명 · English Artist Name", "style": "양식", "price": "₩ 가격"}
-  ]
+  "confidence": 92
 }
 
-If it's NOT an artwork (regular photo, selfie, food, etc.):
+If it's NOT an artwork:
 {
   "isArtwork": false,
-  "title": "이미지 내용 간단 설명",
-  "description": "이 이미지는 미술 작품이 아닙니다. 설명: ...",
-  "tags": ["태그1", "태그2"],
+  "title": "Brief description of the image",
+  "description": "This image does not appear to be an artwork. Description: ...",
+  "tags": ["tag1", "tag2"],
   "palette": ["#hex1", "#hex2", "#hex3", "#hex4", "#hex5"],
-  "confidence": 숫자(0-100),
-  "similar": []
+  "confidence": 60
 }
 
-Be specific and accurate. For well-known artworks, use the real title/artist. For unknown works, make educated estimates based on style.
-
-IMPORTANT for "similar" works: You MUST choose artworks from this confirmed list of Metropolitan Museum of Art (New York) holdings, as we fetch real images from their API. Pick the 3 most stylistically relevant from:
-- Vermeer: "Young Woman with a Water Pitcher", "Woman with a Lute", "A Maid Asleep"
-- Rembrandt: "Self-Portrait", "Aristotle with a Bust of Homer", "Portrait of a Man"
-- Van Gogh: "Wheat Field with Cypresses", "Self-Portrait with a Straw Hat", "Sunflowers"
-- Monet: "Bridge over a Pond of Water Lilies", "Garden at Sainte-Adresse", "Haystacks"  
-- Degas: "The Dancing Class", "At the Milliner's", "Woman with Chrysanthemums"
-- Manet: "Boating", "The Dead Christ with Angels"
-- Renoir: "Madame Georges Charpentier and Her Children", "By the Seashore"
-- Cezanne: "The Card Players", "Mont Sainte-Victoire"
-- Seurat: "Circus Sideshow"
-- El Greco: "Portrait of a Cardinal", "View of Toledo"
-- Caravaggio: "The Denial of Saint Peter"
-- Raphael: "Madonna and Child Enthroned with Saints"
-- Titian: "Venus and the Lute Player", "Portrait of a Man"
-- Goya: "Manuel Osorio Manrique de Zuñiga", "Don Sebastian Martinez y Perez"
-- Velazquez: "Juan de Pareja"`;
+Be accurate. For famous artworks use the real title and artist. For unknown works make educated estimates based on visible style and technique.`;
 
     const response = await client.messages.create({
       model: 'claude-haiku-4-5',
