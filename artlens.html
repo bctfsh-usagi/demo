@@ -8,8 +8,8 @@
   <!-- PWA -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="theme-color" content="#f7f5f2">
-  <link rel="manifest" href='data:application/json,{"name":"ArtLens","short_name":"ArtLens","start_url":".","display":"standalone","background_color":"#f7f5f2","theme_color":"#f7f5f2","icons":[]}'>
+  <meta name="theme-color" content="#f7f5f0">
+  <link rel="manifest" href='data:application/json,{"name":"ArtLens","short_name":"ArtLens","start_url":".","display":"standalone","background_color":"#f7f5f0","theme_color":"#f7f5f0","icons":[]}'>
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,84 +23,493 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #f7f5f2;
+      --bg: #f7f5f0;
       --surface: #ffffff;
       --surface2: #f2f0ed;
       --text: #1a1a1a;
-      --text-muted: #888880;
+      --text-muted: #777777;
       --border: #e4e2de;
       --gold: #b8943a;
       --gold-light: rgba(184,148,58,0.12);
+      --dark: #111111;
     }
 
-    html {
-      background: var(--bg);
-      -webkit-text-size-adjust: 100%;
-    }
+    html { background: var(--bg); -webkit-text-size-adjust: 100%; }
 
     body {
       font-family: 'Inter', 'Noto Sans KR', sans-serif;
       color: var(--text);
       background: var(--bg);
-      min-height: 100dvh;
+      min-height: 100vh;
       overflow-x: hidden;
     }
 
-    /* ── Desktop phone frame ── */
+    a { color: inherit; text-decoration: none; }
+    button { font-family: inherit; }
+
+    .desktop-only { display: none; }
+    .mobile-only { display: block; }
+
     @media (min-width: 768px) {
-      body {
-        background: #e8e5e0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 100vh;
-      }
-
-      #app {
-        width: 390px;
-        max-height: 95vh;
-        border-radius: 40px;
-        overflow: hidden;
-        box-shadow: 0 40px 120px rgba(0,0,0,0.22), 0 8px 32px rgba(0,0,0,0.12);
-        position: relative;
-        background: var(--bg);
-      }
-
-      .tab-bar {
-        max-width: 390px !important;
-        left: 50% !important;
-        right: auto !important;
-        transform: translateX(-50%) !important;
-        border-radius: 0 0 40px 40px;
-      }
+      .desktop-only { display: block; }
+      .mobile-only { display: none !important; }
+      #desktop-layout { display: block; }
     }
 
-    #app {
-      position: relative;
+    @media (max-width: 767px) {
+      #desktop-layout { display: none; }
+    }
+
+    /* ── Desktop Layout ─────────────────────────────────────────── */
+    #desktop-layout {
+      min-height: 100vh;
       background: var(--bg);
     }
 
-    /* ── Screen management ── */
-    .screen {
+    .desktop-nav {
+      position: sticky;
+      top: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 60px;
+      height: 60px;
+      background: rgba(247,245,240,0.95);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border);
+      z-index: 20;
+    }
+
+    .desktop-nav .logo {
+      font-family: 'DM Serif Display', serif;
+      letter-spacing: 0.15em;
+      font-size: 1.1rem;
+    }
+
+    .desktop-nav nav {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    .desktop-nav button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 6px;
+    }
+
+    main.desktop-main { display: flex; flex-direction: column; gap: 0; }
+
+    .desktop-hero {
+      padding: 80px 60px;
+      min-height: 85vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      background: var(--bg);
+    }
+
+    .hero-copy { display: flex; flex-direction: column; justify-content: center; gap: 32px; }
+
+    .hero-eyebrow {
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .hero-heading {
+      font-family: 'DM Serif Display', serif;
+      font-size: 4rem;
+      line-height: 1.05;
+      color: var(--text);
+    }
+
+    .hero-heading em { font-style: italic; color: var(--gold); }
+
+    .hero-description {
+      font-size: 1rem;
+      color: var(--text-muted);
+      max-width: 380px;
+      line-height: 1.8;
+      font-weight: 300;
+    }
+
+    .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; }
+
+    .hero-btn {
+      flex: 1;
+      min-width: 180px;
+      padding: 16px 20px;
+      border: 1px solid #1a1a1a;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 0.85rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: opacity 0.2s, background 0.2s;
+    }
+
+    .hero-btn.primary { background: #1a1a1a; color: #fff; }
+    .hero-btn.primary:hover { opacity: 0.85; }
+    .hero-btn.outline { background: transparent; color: #1a1a1a; }
+    .hero-btn.outline:hover { background: rgba(0,0,0,0.05); }
+
+    .desktop-analyze-btn {
+      align-self: flex-start;
+      padding: 14px 38px;
+      border: none;
+      background: var(--gold);
+      color: #fff;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .desktop-analyze-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .hero-visual {
+      background: linear-gradient(135deg, #e8e4dc, #d4cfc6);
+      border-radius: 6px;
+      min-height: 420px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #desktopHeroImg {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
       display: none;
     }
 
-    .screen.active {
+    #desktopHeroPlaceholder {
+      position: absolute;
+      inset: 0;
       display: flex;
       flex-direction: column;
-      min-height: 100dvh;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      color: var(--text);
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      background: linear-gradient(135deg, rgba(248,245,236,0.95), rgba(217,208,196,0.85));
     }
 
-    @media (min-width: 768px) {
-      .screen.active {
-        min-height: 95vh;
-        max-height: 95vh;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-      }
+    #desktopHeroPlaceholder svg { width: 40px; height: 40px; stroke-width: 1.2; }
+
+    /* Methodology */
+    .methodology {
+      padding: 100px 60px;
+      background: #ffffff;
+      display: grid;
+      grid-template-columns: 0.9fr 1.2fr;
+      gap: 60px;
+      align-items: center;
     }
 
-    /* ── Tab Bar ── */
+    .methodology h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2.5rem;
+      margin: 16px 0 20px;
+    }
+
+    .methodology p { color: var(--text-muted); line-height: 1.8; max-width: 360px; }
+
+    .link-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-size: 0.72rem;
+      margin-top: 24px;
+      cursor: pointer;
+      color: var(--text);
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .feature-card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      background: var(--surface);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .feature-card h4 { font-size: 0.92rem; font-weight: 600; }
+    .feature-card p { font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; }
+
+    .desktop-section { padding: 80px 60px; }
+
+    #desktopResult {
+      background: var(--bg);
+      display: none;
+    }
+
+    .desktop-result-grid {
+      display: grid;
+      grid-template-columns: minmax(320px, 420px) 1fr;
+      gap: 48px;
+      align-items: flex-start;
+    }
+
+    .desktop-result-media { position: sticky; top: 120px; }
+
+    .desktop-image-frame {
+      border-radius: 8px;
+      overflow: hidden;
+      background: #e0ddd6;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+    }
+
+    .desktop-image-frame img { width: 100%; display: block; object-fit: cover; }
+
+    .ai-inline-badge {
+      display: inline-flex;
+      margin-top: 14px;
+      padding: 6px 14px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-size: 0.65rem;
+      color: var(--text);
+      background: rgba(255,255,255,0.6);
+    }
+
+    .desktop-result-content {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .desktop-result-content h3 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2.2rem;
+    }
+
+    .desktop-result-content p { line-height: 1.8; }
+    #desktopArtistYear { color: var(--text-muted); font-size: 1rem; }
+    #desktopDescription { color: var(--text-muted); }
+
+    .desktop-meta-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .desktop-meta-chips .chip {
+      border-radius: 999px;
+      padding: 6px 14px;
+    }
+
+    .desktop-confidence .confidence-track { margin-top: 8px; }
+
+    .palette-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .palette-label { text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.72rem; color: var(--text-muted); }
+    .swatch { width: 32px; height: 32px; border-radius: 50%; border: 2px solid rgba(0,0,0,0.08); }
+
+    .tag-row { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { border-radius: 999px; padding: 6px 16px; font-size: 0.78rem; }
+
+    .label { text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.72rem; color: var(--text-muted); }
+    .desktop-price { font-family: 'DM Serif Display', serif; font-size: 1.6rem; color: var(--gold); }
+
+    .desktop-similar-row {
+      display: flex;
+      gap: 16px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+    }
+
+    .desktop-similar-card {
+      min-width: 200px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      background: var(--surface);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .desktop-similar-card img { width: 100%; height: 140px; object-fit: cover; }
+    .desktop-similar-card div { padding: 12px; }
+    .desktop-similar-card h5 { font-size: 1rem; margin-bottom: 4px; }
+    .desktop-similar-card p { font-size: 0.85rem; color: var(--text-muted); }
+
+    .cta-link {
+      align-self: flex-start;
+      background: var(--gold);
+      color: #fff;
+      border: none;
+      padding: 14px 26px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+
+    .recently {
+      background: #fff;
+    }
+
+    .recent-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 32px;
+    }
+
+    .recent-header h3 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2rem;
+    }
+
+    .recent-header a { text-transform: uppercase; letter-spacing: 0.16em; font-size: 0.7rem; color: var(--text); }
+
+    .recent-grid {
+      display: grid;
+      grid-template-columns: 7fr 5fr;
+      grid-template-rows: repeat(2, 260px);
+      gap: 20px;
+    }
+
+    .recent-card {
+      position: relative;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .recent-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .recent-card.large { grid-row: span 2; height: 540px; }
+
+    .recent-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(0deg, rgba(0,0,0,0.65), rgba(0,0,0,0.1));
+      display: flex;
+      align-items: flex-end;
+      padding: 24px;
+      color: #fff;
+    }
+
+    .recent-overlay h4 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.6rem;
+      margin-bottom: 4px;
+    }
+
+    .recent-overlay p { font-size: 0.9rem; color: rgba(255,255,255,0.8); }
+
+    .dark-cta {
+      background: var(--dark);
+      color: #fff;
+      text-align: center;
+      padding: 100px 60px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .dark-cta h3 {
+      font-family: 'DM Serif Display', serif;
+      font-style: italic;
+      font-size: 3rem;
+      line-height: 1.2;
+    }
+
+    .dark-cta p { color: #888; max-width: 520px; line-height: 1.8; }
+
+    .dark-cta .cta-buttons { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+
+    .dark-cta button {
+      padding: 14px 28px;
+      border: 1px solid rgba(255,255,255,0.4);
+      background: transparent;
+      color: #fff;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      font-size: 0.78rem;
+      cursor: pointer;
+    }
+
+    .dark-cta button.filled { background: var(--gold); border-color: var(--gold); color: #111; }
+
+    footer.desktop-footer {
+      background: #111;
+      color: #fff;
+      padding: 40px 60px;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      border-top: 1px solid #333;
+      gap: 20px;
+    }
+
+    footer .wordmark {
+      font-family: 'DM Serif Display', serif;
+      letter-spacing: 0.15em;
+    }
+
+    footer p { color: #999; }
+
+    footer a { color: var(--gold); text-transform: uppercase; letter-spacing: 0.2em; font-size: 0.7rem; }
+
+    .desktop-loading-overlay {
+      display: none;
+      padding: 120px 60px;
+      background: var(--bg);
+      text-align: center;
+    }
+
+    .desktop-loading-overlay .loading-ring { margin: 0 auto 20px; }
+
+    /* ── Mobile Layout ─────────────────────────────────────────── */
+    #mobile-app {
+      position: relative;
+      min-height: 100vh;
+      background: var(--bg);
+      padding-bottom: calc(70px + env(safe-area-inset-bottom));
+    }
+
+    .screen { display: none; }
+    .screen.active { display: flex; flex-direction: column; min-height: 100vh; }
+
     .tab-bar {
       position: fixed;
       bottom: 0;
@@ -127,7 +536,6 @@
       border: none;
       cursor: pointer;
       color: var(--text-muted);
-      font-family: 'Inter', sans-serif;
       font-size: 0.62rem;
       font-weight: 500;
       letter-spacing: 0.04em;
@@ -137,627 +545,117 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    .nav-tab.active {
-      color: var(--text);
-    }
+    .nav-tab svg { width: 22px; height: 22px; stroke: var(--text-muted); stroke-width: 1.6; fill: none; transition: stroke 0.2s; }
+    .nav-tab.active { color: var(--text); }
+    .nav-tab.active svg { stroke: var(--text); }
+    .nav-tab.locked { opacity: 0.4; }
 
-    .nav-tab.active svg {
-      stroke: var(--text);
-    }
+    .app-header { padding: 20px 24px 0; display: flex; align-items: center; justify-content: space-between; }
+    .wordmark { font-family: 'DM Serif Display', serif; font-size: 1.4rem; letter-spacing: 0.08em; text-transform: uppercase; }
 
-    .nav-tab.locked {
-      opacity: 0.4;
-    }
-
-    .nav-tab svg {
-      width: 22px;
-      height: 22px;
-      stroke: var(--text-muted);
-      stroke-width: 1.6;
-      fill: none;
-      transition: stroke 0.2s;
-    }
-
-    .nav-tab.active svg {
-      stroke: var(--text);
-    }
-
-    /* ── Header / Wordmark ── */
-    .app-header {
-      padding: 20px 24px 0;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .wordmark {
-      font-family: 'DM Serif Display', serif;
-      font-size: 1.4rem;
-      letter-spacing: 0.08em;
-      color: var(--text);
-      text-transform: uppercase;
-    }
-
-    /* ── Home Screen ── */
-    #screen-home {
-      padding-bottom: calc(70px + env(safe-area-inset-bottom));
-    }
+    #screen-home { padding-bottom: calc(70px + env(safe-area-inset-bottom)); }
 
     .home-hero {
-      background: linear-gradient(160deg, #f7f5f2 0%, #edeae4 60%, #e8e4dc 100%);
+      background: linear-gradient(160deg, #f7f5f0 0%, #edeae4 60%, #e8e4dc 100%);
       padding: 36px 24px 40px;
       margin-top: 16px;
     }
 
-    .home-hero h1 {
-      font-family: 'DM Serif Display', serif;
-      font-size: 2.6rem;
-      line-height: 1.2;
-      color: var(--text);
-      margin-bottom: 14px;
-    }
+    .home-hero h1 { font-family: 'DM Serif Display', serif; font-size: 2.6rem; line-height: 1.2; }
+    .home-hero h1 em { font-style: italic; }
+    .home-hero p { font-size: 0.88rem; color: var(--text-muted); line-height: 1.6; max-width: 280px; }
 
-    .home-hero h1 em {
-      font-style: italic;
-      color: var(--text);
-    }
+    .home-actions { padding: 24px 24px 0; display: flex; flex-direction: column; gap: 10px; }
 
-    .home-hero p {
-      font-size: 0.88rem;
-      color: var(--text-muted);
-      line-height: 1.6;
-      max-width: 280px;
-    }
-
-    .home-actions {
-      padding: 24px 24px 0;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    /* ── Buttons ── */
-    .btn-primary {
-      width: 100%;
-      background: #1a1a1a;
-      color: #fff;
-      border: none;
-      border-radius: 0;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.82rem;
-      font-weight: 500;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      padding: 16px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      transition: opacity 0.15s;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .btn-primary:hover { opacity: 0.88; }
-    .btn-primary:active { opacity: 0.75; }
-    .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; }
-
-    .btn-outline {
-      width: 100%;
-      background: transparent;
-      color: var(--text);
-      border: 1px solid #ccc9c3;
-      border-radius: 0;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.82rem;
-      font-weight: 500;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      padding: 16px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      transition: background 0.15s;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .btn-outline:hover { background: var(--surface2); }
-    .btn-outline:active { background: var(--border); }
-
+    .btn-primary,
+    .btn-outline,
     .btn-outline-small {
       width: 100%;
-      background: transparent;
-      color: var(--text);
-      border: 1px solid var(--border);
       border-radius: 0;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.72rem;
+      font-size: 0.82rem;
       font-weight: 500;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
-      padding: 10px;
-      cursor: pointer;
-      transition: background 0.15s;
-      -webkit-tap-highlight-color: transparent;
-      margin-top: auto;
-    }
-
-    .btn-outline-small:hover { background: var(--surface2); }
-
-    /* ── Preview Card ── */
-    #previewCard {
-      margin: 20px 24px 0;
-      border-radius: 20px;
-      overflow: hidden;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      position: relative;
-    }
-
-    #previewImage {
-      width: 100%;
-      height: 60vw;
-      max-height: 60vh;
-      object-fit: cover;
-      display: block;
-    }
-
-    @media (min-width: 768px) {
-      #previewImage {
-        height: 240px;
-        max-height: 240px;
-      }
-    }
-
-    .preview-close {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: rgba(0,0,0,0.5);
-      border: none;
-      cursor: pointer;
+      padding: 16px;
       display: flex;
       align-items: center;
       justify-content: center;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .preview-close svg {
-      width: 16px;
-      height: 16px;
-      stroke: #fff;
-      stroke-width: 2;
-      fill: none;
-    }
-
-    #analyzeBtn {
-      margin: 16px 24px 0;
-    }
-
-    /* ── Loading Screen ── */
-    #screen-loading {
-      padding-bottom: calc(70px + env(safe-area-inset-bottom));
-    }
-
-    .loading-ring {
-      width: 44px;
-      height: 44px;
-      border: 1.5px solid var(--border);
-      border-top-color: var(--gold);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    #loadingText {
-      font-size: 0.88rem;
-      color: var(--text-muted);
-      letter-spacing: 0.04em;
-      transition: opacity 0.2s;
-    }
-
-    /* ── Top Bar ── */
-    .top-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .top-bar-title {
-      font-family: 'Inter', sans-serif;
-      font-size: 0.82rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--text);
-      flex: 1;
-      text-align: center;
-    }
-
-    .icon-btn {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: var(--surface2);
-      border: 1px solid var(--border);
+      gap: 10px;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      -webkit-tap-highlight-color: transparent;
-      flex-shrink: 0;
-    }
-
-    .icon-btn svg {
-      width: 16px;
-      height: 16px;
-      stroke: var(--text);
-      stroke-width: 1.8;
-      fill: none;
-    }
-
-    /* ── Result Screen ── */
-    #screen-result {
-      padding-bottom: 0;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .result-card {
-      background: var(--surface);
-      border-radius: 20px;
-      overflow: hidden;
-      border: 1px solid var(--border);
-    }
-
-    .result-image-wrap {
-      position: relative;
-      aspect-ratio: 16/9;
-      overflow: hidden;
-    }
-
-    .result-image-wrap img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    .ai-badge {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      background: rgba(255,255,255,0.85);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border-radius: 20px;
-      padding: 4px 10px;
-      font-size: 0.65rem;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--text);
-      border: 1px solid rgba(255,255,255,0.6);
-    }
-
-    .result-body {
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    .result-title {
-      font-family: 'DM Serif Display', serif;
-      font-size: 1.6rem;
-      line-height: 1.2;
-      color: var(--text);
-    }
-
-    .result-artist {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-    }
-
-    .result-description {
-      font-size: 0.88rem;
-      color: var(--text-muted);
-      line-height: 1.7;
-    }
-
-    .result-meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-
-    .chip {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 4px 12px;
-      font-size: 0.72rem;
-      color: var(--text-muted);
-      font-weight: 500;
-      letter-spacing: 0.04em;
-    }
-
-    .confidence-row {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .confidence-label-row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.72rem;
-      color: var(--text-muted);
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-    }
-
-    .confidence-track {
-      height: 4px;
-      background: var(--border);
-      border-radius: 2px;
-      overflow: hidden;
-    }
-
-    .confidence-fill {
-      height: 100%;
-      background: var(--gold);
-      border-radius: 2px;
-      width: 0%;
-      transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
-    }
-
-    .palette-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .palette-label {
-      font-size: 0.72rem;
-      color: var(--text-muted);
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      margin-right: 4px;
-    }
-
-    .swatch {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      border: 1.5px solid rgba(0,0,0,0.08);
-      flex-shrink: 0;
-    }
-
-    .tag-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-
-    .tag {
-      background: var(--gold-light);
-      color: var(--gold);
-      border-radius: 20px;
-      padding: 4px 12px;
-      font-size: 0.72rem;
-      font-weight: 500;
-      letter-spacing: 0.04em;
-    }
-
-    .price-display {
-      font-family: 'DM Serif Display', serif;
-      font-size: 1.4rem;
-      color: var(--gold);
-    }
-
-    /* ── Similar Works ── */
-    .section-label {
-      font-size: 0.72rem;
-      color: var(--text-muted);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      margin-bottom: 12px;
-    }
-
-    .similar-scroll {
-      display: flex;
-      gap: 12px;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-      scroll-snap-type: x mandatory;
-      padding-bottom: 8px;
-      scrollbar-width: thin;
-      scrollbar-color: var(--border) transparent;
-    }
-
-    .similar-scroll::-webkit-scrollbar {
-      height: 4px;
-    }
-    .similar-scroll::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    .similar-scroll::-webkit-scrollbar-thumb {
-      background: var(--border);
-      border-radius: 2px;
-    }
-
-    .similar-card {
-      width: 168px;
-      flex-shrink: 0;
-      background: var(--surface);
-      border-radius: 14px;
-      border: 1px solid var(--border);
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      scroll-snap-align: start;
-    }
-
-    .similar-card img {
-      width: 100%;
-      height: 130px;
-      object-fit: cover;
-      display: block;
-    }
-
-    .similar-card-body {
-      padding: 10px;
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-      gap: 4px;
-    }
-
-    .similar-card-body h4 {
-      font-size: 0.85rem;
-      font-weight: 500;
-      color: var(--text);
-      line-height: 1.3;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-
-    .similar-card-body p {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-    }
-
-    .similar-card-body button {
-      width: 100%;
-      margin-top: auto;
-      padding-top: 8px;
-      background: transparent;
-      border: 1px solid var(--border);
-      border-radius: 0;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.66rem;
-      font-weight: 500;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--text);
-      cursor: pointer;
-      padding: 7px 8px;
-      transition: background 0.15s;
       -webkit-tap-highlight-color: transparent;
     }
 
-    .similar-card-body button:hover { background: var(--surface2); }
+    .btn-primary { background: #1a1a1a; color: #fff; border: none; }
+    .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; }
+    .btn-outline { background: transparent; color: var(--text); border: 1px solid #ccc9c3; }
+    .btn-outline-small { border: 1px solid var(--border); font-size: 0.72rem; padding: 10px; letter-spacing: 0.08em; }
 
-    /* ── CTA Banner ── */
-    .cta-banner {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 24px;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-    }
+    #previewCard { margin: 20px 24px 0; border-radius: 20px; overflow: hidden; background: var(--surface); border: 1px solid var(--border); position: relative; display: none; }
+    #previewImage { width: 100%; height: 60vw; max-height: 60vh; object-fit: cover; display: block; }
 
-    .cta-banner h3 {
-      font-family: 'DM Serif Display', serif;
-      font-size: 1.3rem;
-      color: var(--text);
-    }
+    .preview-close { position: absolute; top: 12px; right: 12px; width: 32px; height: 32px; border-radius: 50%; background: rgba(0,0,0,0.5); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .preview-close svg { width: 16px; height: 16px; stroke: #fff; stroke-width: 2; fill: none; }
 
-    .cta-banner p {
-      font-size: 0.84rem;
-      color: var(--text-muted);
-      line-height: 1.6;
-    }
+    #analyzeBtn { margin: 16px 24px 0; }
 
-    .cta-banner .btn-primary {
-      max-width: 240px;
-    }
+    #screen-loading { padding-bottom: calc(70px + env(safe-area-inset-bottom)); }
+    .loading-ring { width: 44px; height: 44px; border: 1.5px solid var(--border); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #loadingText { font-size: 0.88rem; color: var(--text-muted); letter-spacing: 0.04em; transition: opacity 0.2s; }
 
-    /* ── Explore Screen ── */
-    #screen-explore {
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-    }
+    .top-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .top-bar-title { font-size: 0.82rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; flex: 1; text-align: center; }
+    .icon-btn { width: 36px; height: 36px; border-radius: 50%; background: var(--surface2); border: 1px solid var(--border); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .icon-btn svg { width: 16px; height: 16px; stroke: var(--text); stroke-width: 1.8; fill: none; }
 
-    .explore-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
+    .result-card { background: var(--surface); border-radius: 20px; overflow: hidden; border: 1px solid var(--border); }
+    .result-image-wrap { position: relative; aspect-ratio: 16/9; overflow: hidden; }
+    .result-image-wrap img { width: 100%; height: 100%; object-fit: cover; }
+    .ai-badge { position: absolute; top: 12px; right: 12px; background: rgba(255,255,255,0.85); border-radius: 20px; padding: 4px 10px; font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase; border: 1px solid rgba(255,255,255,0.6); }
 
-    .explore-card {
-      background: var(--surface);
-      border-radius: 14px;
-      overflow: hidden;
-      border: 1px solid var(--border);
-      cursor: pointer;
-      transition: transform 0.15s;
-      -webkit-tap-highlight-color: transparent;
-    }
+    .result-body { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+    .result-title { font-family: 'DM Serif Display', serif; font-size: 1.6rem; }
+    .result-artist { font-size: 0.9rem; color: var(--text-muted); }
+    .result-description { font-size: 0.88rem; color: var(--text-muted); line-height: 1.7; }
+    .result-meta { display: flex; flex-wrap: wrap; gap: 6px; }
+    .chip { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; font-size: 0.72rem; color: var(--text-muted); font-weight: 500; letter-spacing: 0.04em; }
 
-    .explore-card:active { transform: scale(0.97); }
+    .confidence-row { display: flex; flex-direction: column; gap: 6px; }
+    .confidence-label-row { display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-muted); letter-spacing: 0.04em; text-transform: uppercase; }
+    .confidence-track { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+    .confidence-fill { height: 100%; background: var(--gold); border-radius: 2px; width: 0%; transition: width 0.8s cubic-bezier(0.4,0,0.2,1); }
 
-    .explore-card img {
-      width: 100%;
-      aspect-ratio: 4/5;
-      object-fit: cover;
-      display: block;
-    }
+    .palette-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .swatch { width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid rgba(0,0,0,0.08); }
+    .palette-label { font-size: 0.72rem; color: var(--text-muted); letter-spacing: 0.04em; text-transform: uppercase; margin-right: 4px; }
 
-    .explore-card-body {
-      padding: 10px 12px 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
+    .tag-row { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tag { background: var(--gold-light); color: var(--gold); border-radius: 20px; padding: 4px 12px; font-size: 0.72rem; font-weight: 500; letter-spacing: 0.04em; }
 
-    .explore-card-body h4 {
-      font-size: 0.82rem;
-      font-weight: 500;
-      color: var(--text);
-      line-height: 1.3;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
+    .price-display { font-family: 'DM Serif Display', serif; font-size: 1.4rem; color: var(--gold); }
 
-    .explore-card-body p {
-      font-size: 0.72rem;
-      color: var(--text-muted);
-    }
+    .section-label { font-size: 0.72rem; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 12px; }
+    .similar-scroll { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 8px; }
+    .similar-card { width: 168px; flex-shrink: 0; background: var(--surface); border-radius: 14px; border: 1px solid var(--border); overflow: hidden; display: flex; flex-direction: column; scroll-snap-align: start; }
+    .similar-card img { width: 100%; height: 130px; object-fit: cover; }
+    .similar-card-body { padding: 10px; display: flex; flex-direction: column; gap: 4px; }
+    .similar-card-body h4 { font-size: 0.85rem; font-weight: 500; color: var(--text); line-height: 1.3; }
+    .similar-card-body p { font-size: 0.75rem; color: var(--text-muted); }
+    .similar-card-body button { margin-top: auto; padding: 7px 8px; border: 1px solid var(--border); background: transparent; font-size: 0.66rem; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; }
 
-    .price-chip {
-      display: inline-block;
-      background: var(--gold-light);
-      color: var(--gold);
-      border-radius: 10px;
-      padding: 3px 8px;
-      font-size: 0.68rem;
-      font-weight: 600;
-      letter-spacing: 0.03em;
-      margin-top: 4px;
-      align-self: flex-start;
-    }
+    .cta-banner { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 24px; text-align: center; display: flex; flex-direction: column; gap: 12px; }
+    .cta-banner h3 { font-family: 'DM Serif Display', serif; font-size: 1.3rem; }
+    .cta-banner p { font-size: 0.84rem; color: var(--text-muted); line-height: 1.6; }
 
-    /* ── Toast ── */
+    #screen-explore { overflow-y: auto; }
+    .explore-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .explore-card { background: var(--surface); border-radius: 14px; overflow: hidden; border: 1px solid var(--border); cursor: pointer; }
+    .explore-card img { width: 100%; aspect-ratio: 4/5; object-fit: cover; }
+    .explore-card-body { padding: 10px 12px 12px; display: flex; flex-direction: column; gap: 4px; }
+    .explore-card-body h4 { font-size: 0.82rem; font-weight: 500; }
+    .explore-card-body p { font-size: 0.72rem; color: var(--text-muted); }
+    .price-chip { background: var(--gold-light); color: var(--gold); border-radius: 10px; padding: 3px 8px; font-size: 0.68rem; font-weight: 600; align-self: flex-start; margin-top: 4px; }
+
     .toast {
       position: fixed;
       bottom: calc(80px + env(safe-area-inset-bottom));
@@ -766,95 +664,170 @@
       background: rgba(26,26,26,0.92);
       color: #fff;
       padding: 12px 20px;
-      border-radius: 0;
       font-size: 0.82rem;
       letter-spacing: 0.03em;
       z-index: 9999;
-      max-width: 320px;
-      text-align: center;
       animation: toastIn 0.2s ease, toastOut 0.3s ease 2.7s forwards;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
     }
 
-    @keyframes toastIn {
-      from { opacity: 0; transform: translateX(-50%) translateY(12px); }
-      to { opacity: 1; transform: translateX(-50%) translateY(0); }
-    }
-    @keyframes toastOut {
-      from { opacity: 1; }
-      to { opacity: 0; }
-    }
+    @keyframes toastIn { from { opacity: 0; transform: translateX(-50%) translateY(12px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+    @keyframes toastOut { from { opacity: 1; } to { opacity: 0; } }
 
-    /* ── Camera Overlay ── */
-    #cameraView {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: #000;
-      z-index: 999;
-      flex-direction: column;
-      padding: 20px;
-      padding-top: max(20px, env(safe-area-inset-top));
-      padding-bottom: max(20px, env(safe-area-inset-bottom));
-    }
-
-    #cameraCancel {
-      background: rgba(255,255,255,0.15);
-      border: 1px solid rgba(255,255,255,0.2);
-      color: #fff;
-      padding: 10px 20px;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.82rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      cursor: pointer;
-      border-radius: 0;
-      align-self: flex-start;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    #cameraVideo {
-      flex: 1;
-      width: 100%;
-      object-fit: cover;
-      border-radius: 16px;
-      margin-top: 16px;
-    }
-
-    .shutter-btn {
-      width: 68px;
-      height: 68px;
-      border-radius: 50%;
-      background: #fff;
-      border: 4px solid rgba(255,255,255,0.4);
-      cursor: pointer;
-      box-shadow: 0 0 0 3px rgba(255,255,255,0.2);
-      transition: transform 0.1s;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .shutter-btn:active { transform: scale(0.9); }
-
-    /* ── Misc ── */
-    .divider {
-      height: 1px;
-      background: var(--border);
-      margin: 4px 0;
-    }
-
-    @media (min-width: 768px) {
-      #screen-result, #screen-explore {
-        max-height: calc(95vh - 60px);
-      }
-    }
+    #cameraView { display: none; position: fixed; inset: 0; background: #000; z-index: 999; flex-direction: column; padding: 20px; padding-top: max(20px, env(safe-area-inset-top)); padding-bottom: max(20px, env(safe-area-inset-bottom)); }
+    #cameraCancel { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 10px 20px; text-transform: uppercase; letter-spacing: 0.08em; }
+    #cameraVideo { flex: 1; width: 100%; object-fit: cover; border-radius: 16px; margin-top: 16px; }
+    .shutter-btn { width: 68px; height: 68px; border-radius: 50%; background: #fff; border: 4px solid rgba(255,255,255,0.4); cursor: pointer; }
   </style>
 </head>
 <body>
 
-<div id="app">
+<div id="desktop-layout" class="desktop-only">
+  <header class="desktop-nav">
+    <div class="logo">ARTLENS</div>
+    <nav>
+      <a href="#methodology">How it works</a>
+      <a href="#desktopResult">Explore</a>
+      <button onclick="showToast('Search coming soon')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+    </nav>
+  </header>
 
+  <main class="desktop-main">
+    <section class="desktop-hero">
+      <div class="hero-copy">
+        <div class="hero-eyebrow">THE CURATED INTELLIGENCE</div>
+        <h1 class="hero-heading">Identify art through <em>pure vision.</em></h1>
+        <p class="hero-description">AI analyzes brushstrokes, color theory, and historical context to reveal the story behind any canvas.</p>
+        <div class="hero-actions">
+          <button class="hero-btn primary" onclick="document.getElementById('fileInput').click()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Upload Image
+          </button>
+          <button class="hero-btn outline" onclick="openCamera()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            Take Photo
+          </button>
+        </div>
+        <button id="desktopAnalyzeBtn" class="desktop-analyze-btn" onclick="runAnalysis()" disabled>Analyze Artwork</button>
+      </div>
+      <div class="hero-visual">
+        <img id="desktopHeroImg" src="" alt="Artwork preview">
+        <div id="desktopHeroPlaceholder">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.19-3.19a1 1 0 0 0-1.45 0L9 19"/></svg>
+          Upload an artwork to analyze
+        </div>
+      </div>
+    </section>
+
+    <section class="methodology" id="methodology">
+      <div>
+        <div class="hero-eyebrow">THE METHODOLOGY</div>
+        <h2>How Artificial Intelligence Sees.</h2>
+        <p>ArtLens deconstructs every captured canvas—studying pigment behavior, spatial rhythm, provenance, and stylistic lineage—to deliver museum-grade attributions in seconds.</p>
+        <div class="link-btn" onclick="document.getElementById('fileInput').click()">
+          Analyze Now
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </div>
+      </div>
+      <div class="feature-grid">
+        <article class="feature-card">
+          <svg data-lucide="layers" width="20" height="20"></svg>
+          <h4>Visual Decomposition</h4>
+          <p>Analyzes brushstrokes, medium, and technique.</p>
+        </article>
+        <article class="feature-card">
+          <svg data-lucide="palette" width="20" height="20"></svg>
+          <h4>Chromatic Analysis</h4>
+          <p>Maps color relationships and palette signatures.</p>
+        </article>
+        <article class="feature-card">
+          <svg data-lucide="search" width="20" height="20"></svg>
+          <h4>Provenance Research</h4>
+          <p>Cross-references global art databases and auction records.</p>
+        </article>
+        <article class="feature-card">
+          <svg data-lucide="type" width="20" height="20"></svg>
+          <h4>Style Recognition</h4>
+          <p>Identifies art movements, periods, and influences.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="desktopLoadingOverlay" class="desktop-loading-overlay">
+      <div class="loading-ring"></div>
+      <p class="hero-description" style="margin: 0 auto; text-align: center;">Preparing your analysis...</p>
+    </section>
+
+    <section id="desktopResult" class="desktop-section">
+      <div class="desktop-result-grid">
+        <div class="desktop-result-media">
+          <div class="desktop-image-frame">
+            <img id="desktopResultImage" src="https://picsum.photos/seed/placeholder-art/800/600" alt="Analyzed artwork">
+          </div>
+          <span class="ai-inline-badge">AI Analyzed</span>
+        </div>
+        <div class="desktop-result-content">
+          <div>
+            <h3 id="desktopResultTitle">Your analyzed artwork</h3>
+            <p id="desktopArtistYear">—</p>
+          </div>
+          <p id="desktopDescription"></p>
+          <div class="desktop-meta-chips" id="desktopResultMeta"></div>
+          <div class="desktop-confidence">
+            <div class="confidence-label-row">
+              <span>Confidence</span>
+              <span id="desktopConfidenceValue">—</span>
+            </div>
+            <div class="confidence-track">
+              <div class="confidence-fill" id="desktopConfidenceFill"></div>
+            </div>
+          </div>
+          <div class="palette-row" id="desktopPalette">
+            <span class="palette-label">Palette</span>
+          </div>
+          <div class="tag-row" id="desktopTags"></div>
+          <div>
+            <p class="label">Estimated Value</p>
+            <p class="desktop-price" id="desktopPriceRange"></p>
+          </div>
+          <div>
+            <h4 style="font-family:'DM Serif Display', serif; font-size:1.3rem;">Similar Works</h4>
+            <div class="desktop-similar-row" id="desktopSimilar"></div>
+          </div>
+          <button class="cta-link" onclick="window.open('https://artue.io/en','_blank')">Explore Artue</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="desktop-section recently" id="recent">
+      <div class="recent-header">
+        <h3>Recently Identified</h3>
+        <a href="https://artue.io/en/works" target="_blank" rel="noreferrer">View all →</a>
+      </div>
+      <div class="recent-grid" id="recentGrid"></div>
+    </section>
+
+    <section class="dark-cta">
+      <h3>Curate your own private archive.</h3>
+      <p>ArtLens pairs with Artue to let you collect, catalog, and insure entire collections with museum-grade intelligence.</p>
+      <div class="cta-buttons">
+        <button onclick="document.getElementById('fileInput').click()">Begin Exploration</button>
+        <button class="filled" onclick="window.open('https://artue.io/en','_blank')">Explore Artue</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="desktop-footer">
+    <div>
+      <div class="wordmark">ARTLENS</div>
+      <p>Vision-forward art identification by ArtLens.</p>
+    </div>
+    <a href="https://artue.io/en" target="_blank" rel="noreferrer">Powered by Artue</a>
+  </footer>
+</div>
+
+<div id="mobile-app" class="mobile-only">
   <!-- ═══ HOME ═══ -->
   <section id="screen-home" class="screen active">
     <header class="app-header">
@@ -877,15 +850,14 @@
       </button>
     </div>
 
-    <!-- Preview Card -->
-    <div id="previewCard" style="display:none">
+    <div id="previewCard">
       <img id="previewImage" src="" alt="Preview">
       <button class="preview-close" onclick="clearFile()">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
 
-    <button id="analyzeBtn" class="btn-primary" style="margin: 16px 24px 0; display:none" onclick="runAnalysis()">
+    <button id="analyzeBtn" class="btn-primary" onclick="runAnalysis()" disabled>
       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       Analyze Artwork
     </button>
@@ -896,7 +868,7 @@
 
   <!-- ═══ LOADING ═══ -->
   <section id="screen-loading" class="screen">
-    <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px; min-height:100dvh">
+    <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px; min-height:100vh">
       <div class="loading-ring"></div>
       <p id="loadingText">Analyzing image...</p>
     </div>
@@ -915,8 +887,6 @@
     </div>
 
     <div style="padding: 0 24px; display:flex; flex-direction:column; gap:20px; padding-bottom: calc(80px + env(safe-area-inset-bottom))">
-
-      <!-- Result Card -->
       <div class="result-card">
         <div class="result-image-wrap">
           <img id="resultImage" src="https://picsum.photos/seed/art1/800/450" alt="Analyzed artwork">
@@ -926,10 +896,7 @@
           <h2 class="result-title" id="resultTitle">Unknown Artwork</h2>
           <p class="result-artist" id="resultArtist">—</p>
           <p class="result-description" id="resultDescription"></p>
-
           <div class="result-meta" id="resultMeta"></div>
-
-          <!-- Confidence -->
           <div class="confidence-row">
             <div class="confidence-label-row">
               <span>Confidence</span>
@@ -939,16 +906,10 @@
               <div class="confidence-fill" id="confidenceFill"></div>
             </div>
           </div>
-
-          <!-- Palette -->
           <div class="palette-row" id="palette">
             <span class="palette-label">Palette</span>
           </div>
-
-          <!-- Tags -->
           <div class="tag-row" id="tagList"></div>
-
-          <!-- Price -->
           <div id="priceWrap">
             <p style="font-size:0.72rem;color:var(--text-muted);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:4px;">Estimated Value</p>
             <p class="price-display" id="priceRange"></p>
@@ -956,21 +917,16 @@
         </div>
       </div>
 
-      <!-- Similar Works -->
       <div>
         <p class="section-label">Similar Works</p>
         <div class="similar-scroll" id="similarScroll"></div>
       </div>
 
-      <!-- CTA Banner -->
       <div class="cta-banner">
         <h3>Discover More Art</h3>
         <p>Browse thousands of curated works from emerging and established artists on Artue.</p>
-        <button class="btn-primary" onclick="window.open('https://artue.io/en/works','_blank')">
-          Browse Artue
-        </button>
+        <button class="btn-primary" onclick="window.open('https://artue.io/en/works','_blank')">Browse Artue</button>
       </div>
-
     </div>
   </section>
 
@@ -985,25 +941,23 @@
     </div>
   </section>
 
-</div><!-- /app -->
-
-<!-- ═══ Tab Bar ═══ -->
-<div class="tab-bar">
-  <button class="nav-tab active" data-screen="home">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-    Home
-  </button>
-  <button class="nav-tab locked" data-screen="result">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-    Result
-  </button>
-  <button class="nav-tab" data-screen="explore">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
-    Explore
-  </button>
+  <div class="tab-bar">
+    <button class="nav-tab active" data-screen="home">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Home
+    </button>
+    <button class="nav-tab locked" data-screen="result">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Result
+    </button>
+    <button class="nav-tab" data-screen="explore">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+      Explore
+    </button>
+  </div>
 </div>
 
-<!-- ═══ Camera Overlay ═══ -->
+<!-- Camera Overlay -->
 <div id="cameraView">
   <button id="cameraCancel" onclick="closeCamera()">Close</button>
   <video id="cameraVideo" autoplay playsinline muted></video>
@@ -1013,15 +967,20 @@
 </div>
 
 <script>
-  // ── State ──────────────────────────────────────────────────────────
   let currentScreen = 'home';
   let currentFile = null;
   let stream = null;
   let analysisResult = null;
-
   const API_BASE = 'http://185.111.159.139:3131';
+  const loadingTexts = ['Analyzing image...','Searching artwork data...','Finding similar works...','Preparing results...'];
+  const isMobile = () => window.innerWidth < 768;
 
-  // ── Navigation ────────────────────────────────────────────────────
+  const fileInput = document.getElementById('fileInput');
+  fileInput.addEventListener('change', e => {
+    const f = e.target.files[0];
+    if (f) ingestFile(f);
+  });
+
   function navigateTo(screenId) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     const target = document.getElementById('screen-' + screenId);
@@ -1030,52 +989,64 @@
     window.scrollTo(0, 0);
     target.scrollTop = 0;
     currentScreen = screenId;
-    document.querySelectorAll('.nav-tab').forEach(t => {
-      t.classList.toggle('active', t.dataset.screen === screenId);
-    });
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.toggle('active', t.dataset.screen === screenId));
   }
-
-  // ── File handling ─────────────────────────────────────────────────
-  document.getElementById('fileInput').addEventListener('change', e => {
-    const f = e.target.files[0];
-    if (f) ingestFile(f);
-  });
 
   function ingestFile(file) {
     currentFile = file;
     const reader = new FileReader();
     reader.onload = e => {
-      document.getElementById('previewImage').src = e.target.result;
+      const src = e.target.result;
+      const mobilePreview = document.getElementById('previewImage');
+      if (mobilePreview) mobilePreview.src = src;
       document.getElementById('previewCard').style.display = 'block';
-      document.getElementById('analyzeBtn').style.display = 'block';
       document.getElementById('analyzeBtn').disabled = false;
       document.getElementById('homeActions').style.display = 'none';
+      const desktopHeroImg = document.getElementById('desktopHeroImg');
+      if (desktopHeroImg) {
+        desktopHeroImg.src = src;
+        desktopHeroImg.style.display = 'block';
+        document.getElementById('desktopHeroPlaceholder').style.display = 'none';
+      }
+      const desktopAnalyzeBtn = document.getElementById('desktopAnalyzeBtn');
+      if (desktopAnalyzeBtn) { desktopAnalyzeBtn.disabled = false; desktopAnalyzeBtn.style.display = 'flex'; }
+      // Desktop: hide upload/camera btns, show analyze
+      document.querySelectorAll('.d-hero-btns').forEach(el => el.style.display = 'none');
     };
     reader.readAsDataURL(file);
   }
 
   function clearFile() {
     currentFile = null;
-    document.getElementById('fileInput').value = '';
+    if (fileInput) fileInput.value = '';
     document.getElementById('previewCard').style.display = 'none';
-    document.getElementById('analyzeBtn').style.display = 'none';
     document.getElementById('analyzeBtn').disabled = true;
     document.getElementById('homeActions').style.display = 'flex';
+    const desktopHeroImg = document.getElementById('desktopHeroImg');
+    if (desktopHeroImg) {
+      desktopHeroImg.src = '';
+      desktopHeroImg.style.display = 'none';
+      document.getElementById('desktopHeroPlaceholder').style.display = 'flex';
+    }
+    const desktopAnalyzeBtn = document.getElementById('desktopAnalyzeBtn');
+    if (desktopAnalyzeBtn) desktopAnalyzeBtn.disabled = true;
   }
 
-  // ── Camera ────────────────────────────────────────────────────────
   async function openCamera() {
     try {
-      stream = await navigator.mediaDevices.getUserMedia({video: {facingMode: 'environment'}});
+      stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
       document.getElementById('cameraView').style.display = 'flex';
       document.getElementById('cameraVideo').srcObject = stream;
-    } catch(e) {
+    } catch (e) {
       showToast('Camera access denied. Please use image upload.');
     }
   }
 
   function closeCamera() {
-    if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+    if (stream) {
+      stream.getTracks().forEach(t => t.stop());
+      stream = null;
+    }
     document.getElementById('cameraView').style.display = 'none';
   }
 
@@ -1087,108 +1058,175 @@
     canvas.getContext('2d').drawImage(video, 0, 0);
     canvas.toBlob(blob => {
       closeCamera();
-      ingestFile(new File([blob], 'photo.jpg', {type: 'image/jpeg'}));
+      ingestFile(new File([blob], 'photo.jpg', { type: 'image/jpeg' }));
     }, 'image/jpeg', 0.92);
   }
 
-  // ── Loading Loop ──────────────────────────────────────────────────
-  const loadingTexts = [
-    'Analyzing image...',
-    'Searching artwork data...',
-    'Finding similar works...',
-    'Preparing results...'
-  ];
   let loadingInterval = null;
-  let loadingIdx = 0;
-
   function startLoadingLoop() {
-    loadingIdx = 0;
-    document.getElementById('loadingText').textContent = loadingTexts[0];
+    let idx = 0;
+    const el = document.getElementById('loadingText');
+    const del = document.getElementById('desktopLoadingText');
+    if (el) el.textContent = loadingTexts[0];
+    if (del) del.textContent = loadingTexts[0];
     loadingInterval = setInterval(() => {
-      loadingIdx = (loadingIdx + 1) % loadingTexts.length;
-      const el = document.getElementById('loadingText');
-      el.style.opacity = 0;
-      setTimeout(() => {
-        el.textContent = loadingTexts[loadingIdx];
-        el.style.opacity = 1;
-      }, 200);
+      idx = (idx + 1) % loadingTexts.length;
+      [el, del].filter(Boolean).forEach(e => {
+        e.style.opacity = 0;
+        setTimeout(() => { e.textContent = loadingTexts[idx]; e.style.opacity = 1; }, 200);
+      });
     }, 900);
   }
 
   function stopLoadingLoop() {
-    clearInterval(loadingInterval);
+    if (loadingInterval) clearInterval(loadingInterval);
     loadingInterval = null;
   }
 
-  // ── Run Analysis ──────────────────────────────────────────────────
   async function runAnalysis() {
-    if (!currentFile) { showToast('Please select an image first.'); return; }
-
-    const savedSrc = document.getElementById('previewImage').src;
-    navigateTo('loading');
+    if (!currentFile) {
+      showToast('Please select an image first.');
+      return;
+    }
+    const savedSrc = currentFile ? URL.createObjectURL(currentFile) : '';
+    if (isMobile()) {
+      navigateTo('loading');
+    } else {
+      document.getElementById('desktopLoadingOverlay').style.display = 'block';
+      document.getElementById('desktopResult').style.display = 'none';
+    }
     startLoadingLoop();
 
     try {
       const formData = new FormData();
-      const blob = (currentFile.type && currentFile.type.startsWith('image/'))
-        ? currentFile
-        : new Blob([currentFile], {type: 'image/jpeg'});
+      const blob = currentFile.type?.startsWith('image/') ? currentFile : new Blob([currentFile], { type: 'image/jpeg' });
       formData.append('image', blob, currentFile.name || 'photo.jpg');
 
-      const res = await fetch(`${API_BASE}/api/analyze`, {method: 'POST', body: formData});
+      const res = await fetch(`${API_BASE}/api/analyze`, { method: 'POST', body: formData });
       if (!res.ok) throw new Error(`Server error ${res.status}`);
       const data = await res.json();
       if (data.error) throw new Error(data.error);
 
       analysisResult = data;
-      renderResult(data, savedSrc);
-      stopLoadingLoop();
-      document.querySelector('[data-screen="result"]').classList.remove('locked');
-      navigateTo('result');
 
-    } catch(e) {
+      if (isMobile()) {
+        renderMobileResult(data, savedSrc);
+        stopLoadingLoop();
+        document.querySelector('[data-screen="result"]').classList.remove('locked');
+        navigateTo('result');
+      } else {
+        renderDesktopResult(data, savedSrc);
+        stopLoadingLoop();
+        document.getElementById('desktopLoadingOverlay').style.display = 'none';
+        document.getElementById('desktopResult').style.display = 'block';
+        document.getElementById('desktopResult').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    } catch (e) {
       console.error(e);
       stopLoadingLoop();
-      navigateTo('home');
-      showToast('Error: ' + e.message.slice(0, 60));
+      if (isMobile()) {
+        navigateTo('home');
+      } else {
+        document.getElementById('desktopLoadingOverlay').style.display = 'none';
+      }
+      showToast('Error: ' + e.message.slice(0, 50));
     }
   }
 
-  // ── Render Result ─────────────────────────────────────────────────
-  function renderResult(data, savedSrc) {
-    if (savedSrc) document.getElementById('resultImage').src = savedSrc;
+  function renderDesktopResult(data, src) {
+    if (src) document.getElementById('desktopResultImage').src = src;
+    document.getElementById('desktopResultTitle').textContent = data.title || 'Unknown Artwork';
+    document.getElementById('desktopArtistYear').textContent = [data.artist, data.year].filter(Boolean).join(' · ') || '—';
+    document.getElementById('desktopDescription').textContent = data.description || '';
+
+    const meta = document.getElementById('desktopResultMeta');
+    meta.innerHTML = '';
+    [data.style, data.medium].filter(Boolean).forEach(text => {
+      const span = document.createElement('span');
+      span.className = 'chip';
+      span.textContent = text;
+      meta.appendChild(span);
+    });
+
+    const confidence = data.confidence ?? 88;
+    document.getElementById('desktopConfidenceValue').textContent = confidence + '%';
+    setTimeout(() => { document.getElementById('desktopConfidenceFill').style.width = confidence + '%'; }, 50);
+
+    const palette = document.getElementById('desktopPalette');
+    palette.innerHTML = '<span class="palette-label">Palette</span>';
+    (data.palette || ['#4a7c6f','#8da4a8','#2b3a55','#c9a84c','#1c1c1c']).forEach(color => {
+      const swatch = document.createElement('div');
+      swatch.className = 'swatch';
+      swatch.style.background = color;
+      palette.appendChild(swatch);
+    });
+
+    const tags = document.getElementById('desktopTags');
+    tags.innerHTML = '';
+    (data.tags || []).forEach(tag => {
+      const span = document.createElement('span');
+      span.className = 'tag';
+      span.textContent = tag.startsWith('#') ? tag : `#${tag}`;
+      tags.appendChild(span);
+    });
+
+    document.getElementById('desktopPriceRange').textContent = data.priceRange || '—';
+
+    const similar = (data.similar && data.similar.length) ? data.similar : ARTUE_WORKS.slice(0, 5);
+    const container = document.getElementById('desktopSimilar');
+    container.innerHTML = '';
+    similar.forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'desktop-similar-card';
+      card.innerHTML = `
+        <img src="${item.image || item.img || 'https://picsum.photos/seed/artue/400/300'}" alt="${item.title}">
+        <div>
+          <h5>${item.title}</h5>
+          <p>${item.artist}</p>
+        </div>`;
+      card.addEventListener('click', () => window.open(item.artueUrl || item.url || 'https://artue.io/en/works', '_blank'));
+      container.appendChild(card);
+    });
+  }
+
+  function renderMobileResult(data, src) {
+    if (src) document.getElementById('resultImage').src = src;
     document.getElementById('resultTitle').textContent = data.title || 'Unknown Artwork';
     document.getElementById('resultArtist').textContent = [data.artist, data.year].filter(Boolean).join(' · ');
     document.getElementById('resultDescription').textContent = data.description || '';
     document.getElementById('priceRange').textContent = data.priceRange || '';
 
-    // meta chips
     const meta = document.getElementById('resultMeta');
     meta.innerHTML = '';
-    [data.style, data.medium].filter(Boolean).forEach(t => {
-      meta.innerHTML += `<span class="chip">${t}</span>`;
+    [data.style, data.medium].filter(Boolean).forEach(text => {
+      const chip = document.createElement('span');
+      chip.className = 'chip';
+      chip.textContent = text;
+      meta.appendChild(chip);
     });
 
-    // confidence
-    const conf = data.confidence || 88;
-    document.getElementById('confidenceValue').textContent = conf + '%';
-    setTimeout(() => { document.getElementById('confidenceFill').style.width = conf + '%'; }, 100);
+    const confidence = data.confidence || 88;
+    document.getElementById('confidenceValue').textContent = confidence + '%';
+    setTimeout(() => { document.getElementById('confidenceFill').style.width = confidence + '%'; }, 50);
 
-    // palette
     const palette = document.getElementById('palette');
     palette.innerHTML = '<span class="palette-label">Palette</span>';
-    (data.palette || ['#4a7c6f','#8da4a8','#2b3a55','#c9a84c','#1c1c1c']).forEach(c => {
-      palette.innerHTML += `<div class="swatch" style="background:${c}"></div>`;
+    (data.palette || ['#4a7c6f','#8da4a8','#2b3a55','#c9a84c','#1c1c1c']).forEach(color => {
+      const swatch = document.createElement('div');
+      swatch.className = 'swatch';
+      swatch.style.background = color;
+      palette.appendChild(swatch);
     });
 
-    // tags
     const tags = document.getElementById('tagList');
     tags.innerHTML = '';
-    (data.tags || []).forEach(t => {
-      tags.innerHTML += `<span class="tag">${t.startsWith('#') ? t : '#' + t}</span>`;
+    (data.tags || []).forEach(tag => {
+      const span = document.createElement('span');
+      span.className = 'tag';
+      span.textContent = tag.startsWith('#') ? tag : `#${tag}`;
+      tags.appendChild(span);
     });
 
-    // similar works
     const similar = (data.similar && data.similar.length) ? data.similar : ARTUE_WORKS.slice(0, 5);
     const scroll = document.getElementById('similarScroll');
     scroll.innerHTML = '';
@@ -1196,38 +1234,44 @@
       const card = document.createElement('div');
       card.className = 'similar-card';
       card.innerHTML = `
-        <img src="${item.image || item.img || 'https://picsum.photos/seed/art/400/300'}" alt="${item.title}" loading="lazy">
+        <img src="${item.image || item.img || 'https://picsum.photos/seed/artue-mobile/400/300'}" alt="${item.title}">
         <div class="similar-card-body">
           <h4>${item.title}</h4>
           <p>${item.artist}</p>
           <button onclick="window.open('${item.artueUrl || item.url || 'https://artue.io/en/works'}','_blank')">View on Artue</button>
-        </div>
-      `;
+        </div>`;
       scroll.appendChild(card);
     });
   }
 
-  // ── Share ─────────────────────────────────────────────────────────
   async function shareResult() {
-    if (!analysisResult) { showToast('No result to share yet.'); return; }
+    if (!analysisResult) {
+      showToast('No result to share yet.');
+      return;
+    }
     const text = `${analysisResult.title || 'Artwork'} by ${analysisResult.artist || 'Unknown'} — analyzed with ArtLens`;
     if (navigator.share) {
-      try { await navigator.share({title: 'ArtLens Result', text, url: 'https://artue.io/en/works'}); } catch {}
+      try {
+        await navigator.share({ title: 'ArtLens Result', text, url: 'https://artue.io/en/works' });
+      } catch (e) {}
     } else {
-      try { await navigator.clipboard.writeText(text); showToast('Copied to clipboard!'); } catch { showToast('Share not supported.'); }
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast('Copied to clipboard!');
+      } catch (e) {
+        showToast('Share not supported.');
+      }
     }
   }
 
-  // ── Toast ─────────────────────────────────────────────────────────
   function showToast(msg) {
-    const t = document.createElement('div');
-    t.className = 'toast';
-    t.textContent = msg;
-    document.body.appendChild(t);
-    setTimeout(() => t.remove(), 3000);
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.textContent = msg;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
   }
 
-  // ── Artue Works Data ──────────────────────────────────────────────
   const ARTUE_WORKS = [
     {title:"The color of waves : Mint", artist:"Yeonhong Kim", price:"$870", img:"https://picsum.photos/seed/waves-mint/400/300", url:"https://artue.io/en/works"},
     {title:"tipping point-形-20", artist:"Jaehyuk Han", price:"$25,710", img:"https://picsum.photos/seed/tipping-form/400/300", url:"https://artue.io/en/works"},
@@ -1243,12 +1287,12 @@
     {title:"Moon Gazing", artist:"Mina Lee", price:"$2,340", img:"https://picsum.photos/seed/moon-gazing/400/300", url:"https://artue.io/en/works"},
     {title:"A widening crack", artist:"Hansol Noh", price:"Inquire", img:"https://picsum.photos/seed/crack-noh/400/300", url:"https://artue.io/en/artist/hansol-noh"},
     {title:"Still life with Sphere", artist:"Hansol Noh", price:"Inquire", img:"https://picsum.photos/seed/sphere-noh/400/300", url:"https://artue.io/en/artist/hansol-noh"},
-    {title:"ALICES", artist:"Hyeyoung Hwang", price:"$14,500", img:"https://picsum.photos/seed/alices-hwang/400/300", url:"https://artue.io/en/works"},
+    {title:"ALICES", artist:"Hyeyoung Hwang", price:"$14,500", img:"https://picsum.photos/seed/alices-hwang/400/300", url:"https://artue.io/en/works"}
   ];
 
-  // ── Explore Grid ──────────────────────────────────────────────────
   function renderExplore() {
     const grid = document.getElementById('exploreGrid');
+    grid.innerHTML = '';
     ARTUE_WORKS.forEach(item => {
       const card = document.createElement('div');
       card.className = 'explore-card';
@@ -1258,15 +1302,35 @@
           <h4>${item.title}</h4>
           <p>${item.artist}</p>
           <span class="price-chip">${item.price}</span>
-        </div>
-      `;
+        </div>`;
       card.addEventListener('click', () => window.open(item.url, '_blank'));
       grid.appendChild(card);
     });
   }
-  renderExplore();
 
-  // ── Nav Tabs ──────────────────────────────────────────────────────
+  function renderDesktopGallery() {
+    const seeds = ['https://picsum.photos/seed/art-main/800/600','https://picsum.photos/seed/art-r1/400/300','https://picsum.photos/seed/art-r2/400/300'];
+    const grid = document.getElementById('recentGrid');
+    grid.innerHTML = '';
+    ARTUE_WORKS.slice(0,3).forEach((work, idx) => {
+      const card = document.createElement('article');
+      card.className = 'recent-card' + (idx === 0 ? ' large' : '');
+      card.innerHTML = `
+        <img src="${seeds[idx]}" alt="${work.title}">
+        <div class="recent-overlay">
+          <div>
+            <h4>${work.title}</h4>
+            <p>${work.artist}</p>
+          </div>
+        </div>`;
+      card.addEventListener('click', () => window.open(work.url, '_blank'));
+      grid.appendChild(card);
+    });
+  }
+
+  renderExplore();
+  renderDesktopGallery();
+
   document.querySelectorAll('.nav-tab').forEach(tab => {
     tab.addEventListener('click', () => {
       const screen = tab.dataset.screen;
@@ -1278,7 +1342,6 @@
     });
   });
 
-  // ── Init Lucide ───────────────────────────────────────────────────
   if (typeof lucide !== 'undefined') lucide.createIcons();
 </script>
 </body>
