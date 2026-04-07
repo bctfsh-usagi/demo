@@ -937,8 +937,11 @@
         analysisResult = data;
         renderResult(data);
         stopLoadingLoop();
-        navigateTo('result');
         document.querySelector('[data-screen="result"]').classList.remove('locked');
+        navigateTo('result');
+        // 결과 화면 맨 위로 강제 스크롤
+        const rs = document.getElementById('screen-result');
+        if (rs) { rs.scrollTop = 0; setTimeout(() => { rs.scrollTop = 0; }, 100); setTimeout(() => { rs.scrollTop = 0; }, 400); }
       } catch (error) {
         console.error(error);
         stopLoadingLoop();
