@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ArtLens — 작품을 찍으면, 예술이 보인다</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Noto+Serif+KR:wght@300;400;600&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0f0f0f;
+      --surface: #1a1a1a;
+      --surface2: #222;
+      --gold: #c9a84c;
+      --gold-light: #e8d5a3;
+      --gold-dark: #9a7a2e;
+      --text: #f5f5f0;
+      --text-muted: #888;
+      --border: #2a2a2a;
+      --radius: 12px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Noto Sans KR', sans-serif;
+      font-weight: 300;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ───── NAVBAR ───── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 40px;
+      background: linear-gradient(to bottom, rgba(15,15,15,0.95), transparent);
+      backdrop-filter: blur(4px);
+    }
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      color: var(--gold);
+      letter-spacing: 2px;
+      text-decoration: none;
+    }
+    .nav-links {
+      display: flex; gap: 32px;
+      list-style: none;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      transition: color 0.3s;
+    }
+    .nav-links a:hover { color: var(--gold); }
+    @media (max-width: 600px) {
+      nav { padding: 16px 20px; }
+      .nav-links { display: none; }
+    }
+
+    /* ───── HERO ───── */
+    #hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 120px 24px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 40%, rgba(201,168,76,0.08) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 80% at 20% 80%, rgba(201,168,76,0.04) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 50% at 80% 20%, rgba(201,168,76,0.05) 0%, transparent 60%);
+      animation: heroPulse 8s ease-in-out infinite alternate;
+    }
+    @keyframes heroPulse {
+      0%   { opacity: 0.6; transform: scale(1); }
+      100% { opacity: 1;   transform: scale(1.05); }
+    }
+    .hero-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(201,168,76,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(201,168,76,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+    }
+    .hero-eyebrow {
+      font-size: 0.75rem;
+      letter-spacing: 4px;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      position: relative;
+    }
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.8rem, 7vw, 5.5rem);
+      font-weight: 700;
+      line-height: 1.15;
+      color: var(--text);
+      margin-bottom: 16px;
+      position: relative;
+    }
+    .hero-title span { color: var(--gold); }
+    .hero-tagline {
+      font-family: 'Noto Serif KR', serif;
+      font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+      color: var(--gold-light);
+      margin-bottom: 12px;
+      position: relative;
+      font-weight: 300;
+    }
+    .hero-sub {
+      color: var(--text-muted);
+      font-size: 1rem;
+      max-width: 480px;
+      margin: 0 auto 48px;
+      position: relative;
+    }
+    .hero-btns {
+      display: flex; gap: 16px; flex-wrap: wrap;
+      justify-content: center;
+      position: relative;
+    }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 14px 32px;
+      border-radius: 2px;
+      font-size: 0.9rem;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-weight: 400;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      border: none;
+    }
+    .btn-primary {
+      background: var(--gold);
+      color: #0f0f0f;
+    }
+    .btn-primary:hover {
+      background: var(--gold-light);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(201,168,76,0.3);
+    }
+    .btn-outline {
+      background: transparent;
+      color: var(--gold);
+      border: 1px solid var(--gold);
+    }
+    .btn-outline:hover {
+      background: rgba(201,168,76,0.1);
+      transform: translateY(-2px);
+    }
+    .scroll-hint {
+      position: absolute; bottom: 32px; left: 50%;
+      transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center;
+      gap: 8px; color: var(--text-muted); font-size: 0.75rem;
+      letter-spacing: 2px;
+      animation: fadeInUp 1s 1.5s both;
+    }
+    .scroll-hint::after {
+      content: '';
+      width: 1px; height: 40px;
+      background: linear-gradient(to bottom, var(--gold), transparent);
+      animation: scrollLine 2s ease-in-out infinite;
+    }
+    @keyframes scrollLine {
+      0%, 100% { transform: scaleY(1); opacity: 1; }
+      50% { transform: scaleY(0.5); opacity: 0.3; }
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateX(-50%) translateY(16px); }
+      to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+
+    /* ───── SECTIONS ───── */
+    section { padding: 100px 24px; }
+    .container { max-width: 1100px; margin: 0 auto; }
+    .section-label {
+      font-size: 0.7rem;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 12px;
+    }
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 400;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+    .section-desc {
+      color: var(--text-muted);
+      max-width: 560px;
+      font-size: 0.95rem;
+    }
+
+    /* fade-in on scroll */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ───── UPLOAD SECTION ───── */
+    #upload { background: var(--surface); }
+    .upload-area {
+      margin-top: 48px;
+      border: 1.5px dashed var(--gold-dark);
+      border-radius: var(--radius);
+      padding: 60px 40px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .upload-area:hover, .upload-area.drag-over {
+      border-color: var(--gold);
+      background: rgba(201,168,76,0.04);
+    }
+    .upload-icon {
+      width: 64px; height: 64px;
+      margin: 0 auto 20px;
+      border: 1.5px solid var(--gold-dark);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem;
+      transition: all 0.3s;
+    }
+    .upload-area:hover .upload-icon {
+      border-color: var(--gold);
+      box-shadow: 0 0 20px rgba(201,168,76,0.2);
+    }
+    .upload-text { color: var(--text-muted); font-size: 0.9rem; }
+    .upload-text strong { color: var(--text); }
+    .upload-or {
+      display: flex; align-items: center; gap: 16px;
+      margin: 32px 0;
+    }
+    .upload-or hr { flex: 1; border: none; border-top: 1px solid var(--border); }
+    .upload-or span { color: var(--text-muted); font-size: 0.8rem; letter-spacing: 2px; }
+    .camera-btn-wrap { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+    #previewWrap {
+      display: none;
+      margin-top: 32px;
+      border-radius: var(--radius);
+      overflow: hidden;
+      position: relative;
+    }
+    #previewImg {
+      width: 100%; max-height: 400px;
+      object-fit: contain;
+      display: block;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+    #videoWrap {
+      display: none;
+      margin-top: 32px;
+      border-radius: var(--radius);
+      overflow: hidden;
+      text-align: center;
+    }
+    #videoEl {
+      width: 100%; max-width: 560px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+    .analyze-row {
+      display: none;
+      margin-top: 24px;
+      text-align: center;
+    }
+    #fileInput { display: none; }
+
+    /* ───── LOADING ───── */
+    #loadingSection {
+      display: none;
+      text-align: center;
+      padding: 80px 24px;
+      background: var(--surface);
+    }
+    .loader-ring {
+      width: 80px; height: 80px;
+      margin: 0 auto 32px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      border-top-color: var(--gold);
+      animation: spin 1s linear infinite;
+      position: relative;
+    }
+    .loader-ring::after {
+      content: '';
+      position: absolute; inset: 6px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      border-bottom-color: var(--gold-dark);
+      animation: spin 1.5s linear reverse infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #loadingText {
+      font-family: 'Noto Serif KR', serif;
+      font-size: 1.1rem;
+      color: var(--gold-light);
+      min-height: 1.8em;
+    }
+
+    /* ───── RESULT SECTION ───── */
+    #resultSection {
+      display: none;
+      background: var(--bg);
+    }
+    .result-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      margin-top: 48px;
+    }
+    @media (max-width: 768px) {
+      .result-card { grid-template-columns: 1fr; }
+    }
+    .result-img-wrap {
+      position: relative;
+      overflow: hidden;
+    }
+    .result-img-wrap img {
+      width: 100%; height: 100%;
+      min-height: 320px;
+      object-fit: cover;
+      display: block;
+    }
+    .result-img-badge {
+      position: absolute; top: 16px; left: 16px;
+      background: rgba(15,15,15,0.85);
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      padding: 6px 12px;
+      border-radius: 2px;
+    }
+    .result-info {
+      padding: 40px 36px;
+      display: flex; flex-direction: column; gap: 20px;
+    }
+    .result-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      font-weight: 400;
+      line-height: 1.2;
+      color: var(--text);
+    }
+    .result-artist {
+      color: var(--gold);
+      font-size: 1rem;
+      letter-spacing: 1px;
+    }
+    .result-meta {
+      display: flex; flex-wrap: wrap; gap: 8px;
+    }
+    .meta-chip {
+      padding: 4px 12px;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+    .result-desc {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.8;
+      border-left: 2px solid var(--gold-dark);
+      padding-left: 16px;
+    }
+    .result-price {
+      font-family: 'Noto Serif KR', serif;
+      font-size: 1rem;
+      color: var(--gold-light);
+    }
+    .result-price span {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-left: 6px;
+    }
+    .confidence-wrap { display: flex; flex-direction: column; gap: 8px; }
+    .confidence-label {
+      display: flex; justify-content: space-between;
+      font-size: 0.8rem; color: var(--text-muted);
+    }
+    .confidence-bar {
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .confidence-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(to right, var(--gold-dark), var(--gold));
+      border-radius: 2px;
+      transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
+    }
+    .palette-wrap {
+      display: flex; gap: 8px; align-items: center;
+    }
+    .palette-label { font-size: 0.75rem; color: var(--text-muted); margin-right: 4px; }
+    .swatch {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: transform 0.2s;
+      cursor: default;
+    }
+    .swatch:hover { transform: scale(1.2); }
+    .result-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag {
+      padding: 4px 10px;
+      background: rgba(201,168,76,0.1);
+      border: 1px solid rgba(201,168,76,0.2);
+      border-radius: 2px;
+      font-size: 0.75rem;
+      color: var(--gold);
+    }
+
+    /* ───── SIMILAR WORKS ───── */
+    #similar { background: var(--surface); }
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      margin-top: 48px;
+    }
+    .art-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    .art-card:hover {
+      transform: translateY(-6px);
+      border-color: var(--gold-dark);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(201,168,76,0.15);
+    }
+    .art-card-img {
+      width: 100%;
+      aspect-ratio: 4/3;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.5s ease;
+    }
+    .art-card:hover .art-card-img { transform: scale(1.04); }
+    .art-card-body { padding: 20px 20px 24px; }
+    .art-card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem;
+      margin-bottom: 4px;
+    }
+    .art-card-artist { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 12px; }
+    .art-card-meta {
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 8px;
+    }
+    .art-card-style {
+      font-size: 0.72rem; letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--gold);
+      padding: 3px 8px;
+      border: 1px solid rgba(201,168,76,0.3);
+    }
+    .art-card-price { font-size: 0.9rem; color: var(--gold-light); }
+    .art-card-btn {
+      display: block; width: 100%;
+      margin-top: 16px;
+      padding: 10px;
+      text-align: center;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      letter-spacing: 1px;
+      cursor: pointer;
+      border-radius: 2px;
+      transition: all 0.3s;
+      font-family: 'Noto Sans KR', sans-serif;
+      text-decoration: none;
+    }
+    .art-card-btn:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+      background: rgba(201,168,76,0.05);
+    }
+
+    /* ───── CTA ───── */
+    #cta {
+      background: radial-gradient(ellipse 70% 70% at 50% 50%, rgba(201,168,76,0.07) 0%, transparent 70%), var(--bg);
+      text-align: center;
+    }
+    #cta .section-title {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      margin-bottom: 20px;
+    }
+    #cta .section-desc { margin: 0 auto 40px; max-width: 520px; font-size: 1rem; }
+    .cta-divider {
+      width: 60px; height: 1px;
+      background: var(--gold);
+      margin: 0 auto 32px;
+    }
+
+    /* ───── FOOTER ───── */
+    footer {
+      padding: 48px 24px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+    .footer-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      color: var(--gold);
+      letter-spacing: 3px;
+      margin-bottom: 8px;
+    }
+    .footer-tagline {
+      font-family: 'Noto Serif KR', serif;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+    .footer-powered {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+    }
+    .footer-powered a { color: var(--gold); text-decoration: none; }
+    .footer-powered a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav>
+    <a href="#" class="nav-logo">ArtLens</a>
+    <ul class="nav-links">
+      <li><a href="#upload">작품 분석</a></li>
+      <li><a href="#similar">유사 작품</a></li>
+      <li><a href="https://artue.io/ko" target="_blank">ARTUE</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grid"></div>
+    <p class="hero-eyebrow">AI Art Recognition</p>
+    <h1 class="hero-title">Art<span>Lens</span></h1>
+    <p class="hero-tagline">작품을 찍으면, 예술이 보인다</p>
+    <p class="hero-sub">AI가 당신의 감성과 작품을 연결합니다.<br>이미지 하나로 작품의 모든 것을 알아보세요.</p>
+    <div class="hero-btns">
+      <button class="btn btn-primary" onclick="startCamera()">📷 사진 촬영</button>
+      <button class="btn btn-outline" onclick="triggerUpload()">🖼️ 이미지 업로드</button>
+    </div>
+    <div class="scroll-hint">SCROLL</div>
+  </section>
+
+  <!-- UPLOAD -->
+  <section id="upload">
+    <div class="container">
+      <div class="fade-in">
+        <p class="section-label">Analyze</p>
+        <h2 class="section-title">작품을 분석해 보세요</h2>
+        <p class="section-desc">사진을 촬영하거나 이미지를 업로드하면 AI가 작품 정보를 즉시 분석합니다.</p>
+      </div>
+      <div class="fade-in" style="transition-delay:0.15s">
+        <div class="upload-area" id="dropZone"
+             onclick="triggerUpload()"
+             ondragover="onDragOver(event)"
+             ondragleave="onDragLeave(event)"
+             ondrop="onDrop(event)">
+          <div class="upload-icon">🖼️</div>
+          <p class="upload-text"><strong>이미지를 이곳에 드래그</strong>하거나 클릭하여 업로드하세요</p>
+          <p class="upload-text" style="font-size:0.8rem; margin-top:8px;">JPG, PNG, WEBP · 최대 20MB</p>
+        </div>
+        <div class="upload-or"><hr/><span>OR</span><hr/></div>
+        <div class="camera-btn-wrap">
+          <button class="btn btn-outline" onclick="startCamera()">📷 카메라로 촬영하기</button>
+        </div>
+        <input type="file" id="fileInput" accept="image/*" onchange="onFileSelect(event)" />
+        <div id="videoWrap">
+          <video id="videoEl" autoplay playsinline></video>
+          <div style="margin-top:16px; display:flex; gap:12px; justify-content:center;">
+            <button class="btn btn-primary" onclick="capturePhoto()">📸 촬영하기</button>
+            <button class="btn btn-outline" onclick="stopCamera()">✕ 취소</button>
+          </div>
+        </div>
+        <canvas id="snapCanvas" style="display:none;"></canvas>
+        <div id="previewWrap">
+          <img id="previewImg" alt="미리보기" />
+        </div>
+        <div class="analyze-row" id="analyzeRow">
+          <button class="btn btn-primary" style="font-size:1rem; padding:16px 48px;" onclick="startAnalysis()">
+            ✦ 분석 시작
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOADING -->
+  <section id="loadingSection">
+    <div class="container" style="text-align:center;">
+      <div class="loader-ring"></div>
+      <p id="loadingText">이미지 분석 중...</p>
+    </div>
+  </section>
+
+  <!-- RESULT -->
+  <section id="resultSection">
+    <div class="container">
+      <div class="fade-in">
+        <p class="section-label">Result</p>
+        <h2 class="section-title">분석 결과</h2>
+      </div>
+      <div class="result-card fade-in" style="transition-delay:0.15s">
+        <div class="result-img-wrap">
+          <img id="resultImg" src="" alt="분석된 작품" />
+          <div class="result-img-badge">AI 분석 완료</div>
+        </div>
+        <div class="result-info">
+          <div>
+            <h3 class="result-title">수련<br><small style="font-size:1rem; color:var(--text-muted);">Water Lilies</small></h3>
+            <p class="result-artist">클로드 모네 (Claude Monet)</p>
+          </div>
+          <div class="result-meta">
+            <span class="meta-chip">1906</span>
+            <span class="meta-chip">인상주의</span>
+            <span class="meta-chip">유화 · 캔버스</span>
+            <span class="meta-chip">프랑스</span>
+          </div>
+          <p class="result-desc">모네의 지베르니 정원에서 영감을 받은 작품으로, 빛과 물의 반영을 통해 자연의 순간적인 아름다움을 포착했습니다.</p>
+          <p class="result-price">₩ 2,500,000 ~ ₩ 8,000,000 <span>프린트 기준 추정가</span></p>
+          <div class="confidence-wrap">
+            <div class="confidence-label">
+              <span>유사도 신뢰도</span>
+              <span id="confVal">0%</span>
+            </div>
+            <div class="confidence-bar">
+              <div class="confidence-fill" id="confFill"></div>
+            </div>
+          </div>
+          <div class="palette-wrap">
+            <span class="palette-label">색상 팔레트</span>
+            <div class="swatch" style="background:#4a7c6f;"></div>
+            <div class="swatch" style="background:#7ba89b;"></div>
+            <div class="swatch" style="background:#2c5a6b;"></div>
+            <div class="swatch" style="background:#d4a853;"></div>
+            <div class="swatch" style="background:#1a3a2a;"></div>
+          </div>
+          <div class="result-tags">
+            <span class="tag">#인상주의</span>
+            <span class="tag">#풍경화</span>
+            <span class="tag">#자연</span>
+            <span class="tag">#프랑스미술</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SIMILAR WORKS -->
+  <section id="similar">
+    <div class="container">
+      <div class="fade-in">
+        <p class="section-label">Recommendations</p>
+        <h2 class="section-title">유사한 작품 추천</h2>
+        <p class="section-desc">AI가 선별한 유사 스타일의 작품들입니다. 마음에 드는 작품을 컬렉션에 추가해 보세요.</p>
+      </div>
+      <div class="cards-grid">
+        <div class="art-card fade-in" style="transition-delay:0.1s">
+          <img class="art-card-img" src="https://picsum.photos/400/300?random=11" alt="빛의 정원" loading="lazy" />
+          <div class="art-card-body">
+            <h3 class="art-card-title">빛의 정원</h3>
+            <p class="art-card-artist">이지현 (Ji-Hyun Lee)</p>
+            <div class="art-card-meta">
+              <span class="art-card-style">추상화</span>
+              <span class="art-card-price">₩ 1,200,000</span>
+            </div>
+            <a class="art-card-btn" href="https://artue.io/ko" target="_blank">자세히 보기 →</a>
+          </div>
+        </div>
+        <div class="art-card fade-in" style="transition-delay:0.2s">
+          <img class="art-card-img" src="https://picsum.photos/400/300?random=22" alt="푸른 수평선" loading="lazy" />
+          <div class="art-card-body">
+            <h3 class="art-card-title">푸른 수평선</h3>
+            <p class="art-card-artist">박서연 (Seo-Yeon Park)</p>
+            <div class="art-card-meta">
+              <span class="art-card-style">풍경화</span>
+              <span class="art-card-price">₩ 890,000</span>
+            </div>
+            <a class="art-card-btn" href="https://artue.io/ko" target="_blank">자세히 보기 →</a>
+          </div>
+        </div>
+        <div class="art-card fade-in" style="transition-delay:0.3s">
+          <img class="art-card-img" src="https://picsum.photos/400/300?random=33" alt="황금빛 오후" loading="lazy" />
+          <div class="art-card-body">
+            <h3 class="art-card-title">황금빛 오후</h3>
+            <p class="art-card-artist">김태양 (Tae-Yang Kim)</p>
+            <div class="art-card-meta">
+              <span class="art-card-style">인상주의</span>
+              <span class="art-card-price">₩ 1,560,000</span>
+            </div>
+            <a class="art-card-btn" href="https://artue.io/ko" target="_blank">자세히 보기 →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section id="cta">
+    <div class="container fade-in">
+      <p class="section-label">Collection</p>
+      <div class="cta-divider"></div>
+      <h2 class="section-title">더 많은 작품을 만나보세요</h2>
+      <p class="section-desc">감성을 학습하는 AI가 당신만의 컬렉션을 완성합니다.<br>지금 ARTUE에서 수천 점의 작품을 만나보세요.</p>
+      <a class="btn btn-primary" href="https://artue.io/ko" target="_blank" style="font-size:0.95rem; padding:16px 48px; letter-spacing:2px;">
+        ARTUE에서 구매하기
+      </a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p class="footer-logo">ArtLens</p>
+    <p class="footer-tagline">작품을 찍으면, 예술이 보인다</p>
+    <p class="footer-powered">Powered by <a href="https://artue.io/ko" target="_blank">ARTUE</a></p>
+  </footer>
+
+  <script>
+    // ── Intersection Observer for fade-in ──
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); }
+      });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+    // ── State ──
+    let stream = null;
+    let capturedBlob = null;
+
+    // ── Upload trigger ──
+    function triggerUpload() {
+      document.getElementById('fileInput').click();
+    }
+
+    function onFileSelect(e) {
+      const file = e.target.files[0];
+      if (file) showPreview(file);
+    }
+
+    // ── Drag & Drop ──
+    function onDragOver(e) {
+      e.preventDefault();
+      document.getElementById('dropZone').classList.add('drag-over');
+    }
+    function onDragLeave(e) {
+      document.getElementById('dropZone').classList.remove('drag-over');
+    }
+    function onDrop(e) {
+      e.preventDefault();
+      document.getElementById('dropZone').classList.remove('drag-over');
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith('image/')) showPreview(file);
+    }
+
+    // ── Camera ──
+    async function startCamera() {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
+        });
+        const video = document.getElementById('videoEl');
+        video.srcObject = stream;
+        document.getElementById('videoWrap').style.display = 'block';
+        document.getElementById('upload').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } catch (err) {
+        alert('카메라 접근 권한이 필요합니다.\n설정에서 카메라 권한을 허용해 주세요.');
+      }
+    }
+
+    function capturePhoto() {
+      const video = document.getElementById('videoEl');
+      const canvas = document.getElementById('snapCanvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      canvas.getContext('2d').drawImage(video, 0, 0);
+      canvas.toBlob(blob => {
+        capturedBlob = blob;
+        showPreview(blob);
+        stopCamera();
+      }, 'image/jpeg', 0.92);
+    }
+
+    function stopCamera() {
+      if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+      document.getElementById('videoWrap').style.display = 'none';
+    }
+
+    // ── Show preview ──
+    function showPreview(file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = document.getElementById('previewImg');
+        img.src = e.target.result;
+        document.getElementById('previewWrap').style.display = 'block';
+        document.getElementById('analyzeRow').style.display = 'block';
+        document.getElementById('resultSection').style.display = 'none';
+        document.getElementById('loadingSection').style.display = 'none';
+        document.getElementById('similar').scrollIntoView
+          ? null
+          : void 0;
+        img.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // ── Analysis ──
+    const loadingTexts = [
+      '이미지 분석 중...',
+      '작품 정보 검색 중...',
+      '유사 작품 탐색 중...',
+      '결과를 정리하는 중...'
+    ];
+
+    function startAnalysis() {
+      const previewSrc = document.getElementById('previewImg').src;
+
+      // hide upload, show loading
+      document.getElementById('analyzeRow').style.display = 'none';
+      document.getElementById('loadingSection').style.display = 'block';
+      document.getElementById('loadingSection').scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      let idx = 0;
+      const textEl = document.getElementById('loadingText');
+      textEl.textContent = loadingTexts[0];
+      const textInterval = setInterval(() => {
+        idx = (idx + 1) % loadingTexts.length;
+        textEl.style.opacity = 0;
+        setTimeout(() => {
+          textEl.textContent = loadingTexts[idx];
+          textEl.style.opacity = 1;
+        }, 300);
+      }, 700);
+      textEl.style.transition = 'opacity 0.3s';
+
+      setTimeout(() => {
+        clearInterval(textInterval);
+        showResult(previewSrc);
+      }, 2800);
+    }
+
+    function showResult(src) {
+      document.getElementById('loadingSection').style.display = 'none';
+      document.getElementById('resultSection').style.display = 'block';
+      document.getElementById('resultImg').src = src;
+
+      // trigger fade-in for result elements
+      document.querySelectorAll('#resultSection .fade-in').forEach(el => {
+        el.classList.remove('visible');
+        setTimeout(() => el.classList.add('visible'), 50);
+      });
+
+      // animate confidence bar
+      setTimeout(() => {
+        document.getElementById('confFill').style.width = '92%';
+        animateCount(document.getElementById('confVal'), 0, 92, 1200, '%');
+      }, 400);
+
+      document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      // also show similar section
+      document.getElementById('similar').style.display = 'block';
+    }
+
+    function animateCount(el, from, to, duration, suffix) {
+      const start = performance.now();
+      function step(now) {
+        const t = Math.min((now - start) / duration, 1);
+        const ease = 1 - Math.pow(1 - t, 3);
+        el.textContent = Math.round(from + (to - from) * ease) + suffix;
+        if (t < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+  </script>
+</body>
+</html>
